@@ -63,7 +63,7 @@ namespace sm70_cp_450_GUI
         {
             var updateTimer = new Timer
             {
-                Interval = 100 // 100 milliseconds = 0.1 seconds
+                Interval = 500 // 100 milliseconds = 0.1 seconds
             };
             updateTimer.Tick += (sender, e) => UpdateLoop();
             updateTimer.Start();
@@ -84,9 +84,9 @@ namespace sm70_cp_450_GUI
 
 
 
-            VoltageDisplay.Text = Math.Floor(voltage / 100000).ToString();
-            AmperageDisplay.Text = Math.Floor(current / 10000).ToString();
-            WattageDisplay.Text = power.ToString();
+            VoltageDisplay.Text = (voltage / 10000).ToString();
+            AmperageDisplay.Text = (current / 1000).ToString();
+            WattageDisplay.Text = (power).ToString();
 
             StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
 
@@ -482,7 +482,7 @@ namespace sm70_cp_450_GUI
 
         private void LockButtons()
         {
-            ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = !_started;
+            ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = BatteryConnectButton.Enabled = !_started;
         }
 
         private void UpdateButtonColors(Button clickedButton)
