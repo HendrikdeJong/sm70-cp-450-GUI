@@ -13,7 +13,18 @@ namespace sm70_cp_450_GUI
 
         private bool _EditingValues = false;
         private bool _started = false;
-        private int _chargeState = 0;
+        private bool _discharged = false;
+
+        private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
+
+        private enum AvailablePrograms
+        {
+            None,
+            Connecting_Battery,
+            Charging,
+            Discharging,
+            DischargeTo30Procent
+        }
 
         private double _ratedVoltage = 0;  // Voltage on label of battery
         private double _ratedCapacity = 0; // Amp/Hours on label of battery
@@ -28,36 +39,66 @@ namespace sm70_cp_450_GUI
         private double _negativeAppliedPower = 0;
 
         private double _highestBatteryvoltage = 0;
-        private double _batteryvoltage = 0;
-        private double _batteryAmps = 0;
 
+        private string _remoteStatus_CV;
+        private string _remoteStatus_CC;
+        private string _remoteStatus_CP;
 
         public Form1()
         {
             InitializeComponent();
             InitializeTcpClient();
             InitializeUpdateTimer();
+            InitializeSettings();
+        }
+
+        private async void InitializeSettings()
+        {
+            await SetSystemRemoteSetting_CV("Remote");
+            await SetSystemRemoteSetting_CC("Remote");
+            await SetSystemRemoteSetting_CP("Remote");
         }
 
         private void InitializeUpdateTimer()
         {
             var updateTimer = new Timer
             {
-                Interval = 500 // 500 milliseconds = 0.5 seconds
+                Interval = 100 // 100 milliseconds = 0.1 seconds
             };
-            updateTimer.Tick += async (sender, e) => await UpdateLoop();
+            updateTimer.Tick += (sender, e) => UpdateLoop();
             updateTimer.Start();
         }
 
-        private async Task UpdateLoop()
+        private void UpdateLoop()
+        {
+            LockButtons();
+            UpdateUI();
+        }
+
+        private async void UpdateUI()
         {
             double voltage = await MeasureOutputVoltage();
             double current = await MeasureOutputCurrent();
             double power = await MeasureOutputPower();
+            double status = await PowerSinkOutput();
 
-            VoltageDisplay.Text = voltage.ToString();
-            AmperageDisplay.Text = current.ToString();
+
+
+            VoltageDisplay.Text = Math.Floor(voltage / 100000).ToString();
+            AmperageDisplay.Text = Math.Floor(current / 10000).ToString();
             WattageDisplay.Text = power.ToString();
+
+            StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
+
+            StartStopButton.Enabled = _SelectedProgram != AvailablePrograms.None;
+
+            if (voltage > _highestBatteryvoltage) _highestBatteryvoltage = voltage;
+
+        }
+
+        private double ParseResponseToDouble(string response)
+        {
+            return double.TryParse(response, out double result) ? result : double.NaN;
         }
 
         #region TCP Socket
@@ -131,7 +172,6 @@ namespace sm70_cp_450_GUI
 
         #region Query Methods
 
-        #region Getinfo
 
         public async Task<double> maxOutputVoltage()
         {
@@ -210,8 +250,40 @@ namespace sm70_cp_450_GUI
             string response = await SendQueryAsync("OUTPut? \n");
             return ParseResponseToDouble(response);
         }
-        #endregion
-        #region SetInfo
+
+        public async Task<double> PowerSinkOutput()
+        {
+            string response = await SendQueryAsync("SYSTem:POWersink output? \n");
+            return ParseResponseToDouble(response);
+        }
+
+        public async Task<string> SystemRemoteSetting_CV()
+        {
+            string response = await SendQueryAsync("SYSTem:REMote:CV? \n");
+            return response;
+        }
+
+        public async Task<string> SystemRemoteSetting_CC()
+        {
+            string response = await SendQueryAsync("SYSTem:REMote:CC? \n");
+            return response;
+        }
+
+        public async Task<string> SystemRemoteSetting_CP()
+        {
+            string response = await SendQueryAsync("SYSTem:REMote:CP? \n");
+            return response;
+        }
+
+        //public async Task<string> ReadErrorLog()
+        //{
+        //    string response = Consolelog + await SendQueryAsync("SYSTem:Error?\n");
+        //    return response;
+        //}
+
+
+
+
 
         public async Task<double> SetOutputVoltage(double OutputVoltage)
         {
@@ -245,14 +317,29 @@ namespace sm70_cp_450_GUI
             return ParseResponseToDouble(response);
         }
 
-        #endregion
-
-        private double ParseResponseToDouble(string response)
+        public async Task<double> SetPowersinkOutput(bool state)
         {
-            return double.TryParse(response, out double result) ? result : double.NaN;
+            string response = await SendQueryAsync($"SYSTem:POWersink {state}\n");
+            return ParseResponseToDouble(response);
         }
 
+        public async Task<string> SetSystemRemoteSetting_CV(string state)
+        {
+            string response = await SendQueryAsync($"SYSTem:REMote:CV {state}\n");
+            return response;
+        }
+        public async Task<string> SetSystemRemoteSetting_CC(string state)
+        {
+            string response = await SendQueryAsync($"SYSTem:REMote:CV {state}\n");
+            return response;
+        }
+        public async Task<string> SetSystemRemoteSetting_CP(string state)
+        {
+            string response = await SendQueryAsync($"SYSTem:REMote:CV {state}\n");
+            return response;
+        }
         #endregion
+
 
 
 
@@ -272,30 +359,6 @@ namespace sm70_cp_450_GUI
             //MessageBox.Show("applied data" + _ratedVoltage + "V " + amps + "A " + watts + "W");
         }
 
-
-
-
-        private void UpdateFromBatteryLabelData(object sender, EventArgs e)
-        {
-            _ratedVoltage = ParseInput(RatedBatteryVoltageUI.Text);
-            _ratedCapacity = ParseInput(RatedBatteryVoltageUI.Text);
-            _cRating = ParseInput(RatedBatteryVoltageUI.Text);
-            CalculateWith_cRating();
-        }
-
-
-        private void UpdateFromManualOveride()
-        {
-            _appliedVoltage = ParseInput(AppliedVolts_UI.Text);
-            _appliedCurrent = ParseInput(AppliedChargeAmps_UI.Text);
-            _appliedPower = ParseInput(AppliedChargeWatts_UI.Text);
-
-            _negativeAppliedCurrent = ParseInput(AppliedDischargeAmps_UI.Text);
-            _negativeAppliedPower = ParseInput(AppliedDischargeWatts_UI.Text);
-
-            SaveSettings(_appliedVoltage, _appliedCurrent, _appliedPower, _negativeAppliedCurrent, _negativeAppliedPower);
-        }
-
         private double ParseInput(string input)
         {
             if (double.TryParse(RemoveNonNumeric(input), out double result))
@@ -308,7 +371,6 @@ namespace sm70_cp_450_GUI
                 return 0;  // or handle appropriately
             }
         }
-
 
         private void ToggleManualEditing(object sender, EventArgs e)
         {
@@ -330,9 +392,26 @@ namespace sm70_cp_450_GUI
                 UpdateFromManualOveride();
             }
         }
+        private void UpdateFromManualOveride()
+        {
+            _appliedVoltage = ParseInput(AppliedVolts_UI.Text);
+            _appliedCurrent = ParseInput(AppliedChargeAmps_UI.Text);
+            _appliedPower = ParseInput(AppliedChargeWatts_UI.Text);
 
+            _negativeAppliedCurrent = ParseInput(AppliedDischargeAmps_UI.Text);
+            _negativeAppliedPower = ParseInput(AppliedDischargeWatts_UI.Text);
 
-        private void SaveSettings(Double V, double A, Double W, Double N_A, Double N_W)
+            SaveSettings(_appliedVoltage, _appliedCurrent, _appliedPower, _negativeAppliedCurrent, _negativeAppliedPower);
+        }
+        private void UpdateFromBatteryLabelData(object sender, EventArgs e)
+        {
+            _ratedVoltage = ParseInput(RatedBatteryVoltageUI.Text);
+            _ratedCapacity = ParseInput(RatedBatteryAmperageUI.Text);
+            _cRating = ParseInput(C_Rating_UI.Text);
+            CalculateWith_cRating();
+        }
+
+        private void SaveSettings(double V, double A, double W, double N_A, double N_W)
         {
             _appliedVoltage = V;
             _appliedCurrent = A;
@@ -348,117 +427,112 @@ namespace sm70_cp_450_GUI
             AppliedDischargeWatts_UI.Text = "-" + Math.Abs(_negativeAppliedPower).ToString() + " W";
             SetSettings();
         }
-
         private async void SetSettings()
         {
             await SetOutputVoltage(_appliedVoltage);
-            await SetOutputCurrent(_appliedCurrent);
-            await SetOutputCurrent(_negativeAppliedCurrent);
-            await SetOutputPower(_appliedPower);
-            await SetOutputPower(_negativeAppliedPower);
+            await SetOutputCurrent(0);
+            await SetOutputPower(0);
+            await SetOutputCurrentNegative(0);
+            await SetOutputPowerNegative(0);
+
+            if (_started)
+            {
+                switch (_SelectedProgram)
+                {
+                    case AvailablePrograms.None:
+                        break;
+                    case AvailablePrograms.Connecting_Battery:
+                        await SetOutputVoltage(_appliedVoltage);
+                        break;
+                    case AvailablePrograms.Charging:
+                        await SetOutputCurrent(_appliedCurrent);
+                        await SetOutputPower(_appliedPower);
+                        break;
+                    case AvailablePrograms.Discharging:
+                        await SetOutputCurrentNegative(_negativeAppliedCurrent);
+                        await SetOutputPowerNegative(_negativeAppliedPower);
+                        break;
+                    case AvailablePrograms.DischargeTo30Procent:
+                        if (!_discharged)
+                        {
+                            await SetOutputCurrentNegative(_negativeAppliedCurrent);
+                            await SetOutputPowerNegative(_negativeAppliedPower);
+                        }
+                        else if (_discharged)
+                        {
+                            await SetOutputCurrent(_appliedCurrent);
+                            await SetOutputPower(_appliedPower);
+                        }
+                        break;
+                }
+            }
+
         }
-        private async void SetPositiveValues()
+
+        private async void toggleOutput()
         {
-            await SetOutputCurrent(_appliedCurrent);
-            await SetOutputPower(_appliedPower);
-            MessageBox.Show("Set positive values");
+            if (_started) await SendQueryAsync("OUTPut ON\n");
+            else await SendQueryAsync("OUTPut OFF\n");
+
         }
-
-        private async void SetNegagtiveValues()
-        {
-            await SetOutputCurrent(_negativeAppliedCurrent);
-            await SetOutputPower(_negativeAppliedPower);
-            MessageBox.Show("Set negative values");
-        }
-
-        //private void ToggleOutputState(object sender, EventArgs e)
-        //{
-        //    if (_started == true)
-        //    {
-        //        _started = false;
-        //        ChargeButton.Enabled = true;
-        //        Charge30Button.Enabled = true;
-        //        DischargeButton.Enabled = true;
-        //        EditValueButton.Enabled = false;
-        //        ApplyBatteryDataButton.Enabled = false;
-
-        //        StartStopButton.Text = "Stop";
-        //        StartStopButton.BackColor = Color.Red;
-        //        ToggleOutputValues();
-        //    }
-        //    else if (_started == false)
-        //    {
-        //        _started = true;
-        //        ChargeButton.Enabled = false;
-        //        Charge30Button.Enabled = false;
-        //        DischargeButton.Enabled = false;
-        //        EditValueButton.Enabled = true;
-        //        ApplyBatteryDataButton.Enabled = true;
-
-        //        StartStopButton.Text = "Start";
-        //        StartStopButton.BackColor = Color.Green;
-        //        ToggleOutputValues();
-        //    }
-        //}
-
-        //private async void ToggleOutputValues()
-        //{
-        //    if (!_started)
-        //    {
-        //        await SetOutputCurrent(0);
-        //        await SetOutputCurrentNegative(0);
-        //        await SetOutputPower(0);
-        //        await SetOutputPowerNegative(0);
-        //    }
-        //    else
-        //    {
-        //        switch (_chargeState)
-        //        {
-        //            case 1:
-        //                await SetOutputCurrent(_appliedAmps);
-        //                await SetOutputPower(_appliedAmps);
-        //                break;
-        //            case 2:
-        //                await SetOutputCurrentNegative(_appliedAmps);
-        //                await SetOutputPowerNegative(_appliedAmps);
-        //                break;
-        //            case 3:
-
-        //                break;
-        //        }
-        //    }
-        //}
-
-
         #endregion
 
         #region Buttons
 
+
+        private void LockButtons()
+        {
+            ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = !_started;
+        }
+
+        private void UpdateButtonColors(Button clickedButton)
+        {
+            // Reset all button colors
+            BatteryConnectButton.BackColor = SystemColors.Control;
+            ChargeButton.BackColor = SystemColors.Control;
+            DischargeButton.BackColor = SystemColors.Control;
+            Charge30Button.BackColor = SystemColors.Control;
+
+            // Set the clicked button's color to Yellow
+            clickedButton.BackColor = Color.Yellow;
+        }
+
+
+
+        private void ToggleStartStopButton(object sender, EventArgs e)
+        {
+            _started = !_started;
+            StartStopButton.BackColor = _started ? Color.Red : Color.Green;
+            StartStopButton.Text = _started ? "Stop" : "Start";
+            toggleOutput();
+            SetSettings();
+        }
+
         private void ChargeButton_Click(object sender, EventArgs e)
         {
-            //_chargeState = 1;
-            //ChargeButton.BackColor = Color.Yellow;
-            //DischargeButton.BackColor = Color.White;
-            //Charge30Button.BackColor = Color.White;
-
+            UpdateButtonColors(ChargeButton);
+            _SelectedProgram = AvailablePrograms.Charging;
         }
 
         private void DischargeButton_Click(object sender, EventArgs e)
         {
-            //_chargeState = 2;
-            //DischargeButton.BackColor = Color.Yellow;
-            //Charge30Button.BackColor = Color.White;
-            //ChargeButton.BackColor = Color.White;
+            UpdateButtonColors(DischargeButton);
+            _SelectedProgram = AvailablePrograms.Discharging;
         }
 
         private void Charge30Button_Click(object sender, EventArgs e)
         {
-            //_chargeState = 3;
-            //Charge30Button.BackColor = Color.Yellow;
-            //DischargeButton.BackColor = Color.White;
-            //ChargeButton.BackColor = Color.White;
+            UpdateButtonColors(Charge30Button);
+            _SelectedProgram = AvailablePrograms.DischargeTo30Procent;
         }
+        private void BatteryConnectButton_Click(object sender, EventArgs e)
+        {
+            UpdateButtonColors(BatteryConnectButton);
+            _SelectedProgram = AvailablePrograms.Connecting_Battery;
 
+            ToggleStartStopButton(sender, e);
+        }
         #endregion
+
     }
 }
