@@ -1,6 +1,6 @@
 ﻿namespace sm70_cp_450_GUI
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,17 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             LiveInfoData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
+            tableLayoutPanel9 = new TableLayoutPanel();
+            Label_MachineAppliedVoltage_UI = new Label();
+            Label_Remote_CV_UI = new Label();
+            tableLayoutPanel8 = new TableLayoutPanel();
+            InputField_StoredValueVoltage = new TextBox();
+            Button_Toggle_ValueEditor = new Button();
+            tableLayoutPanel7 = new TableLayoutPanel();
+            InputField_StoredValuePowerMin = new TextBox();
+            InputField_StoredValuePowerPlus = new TextBox();
+            tableLayoutPanel5 = new TableLayoutPanel();
+            Label_MachineAppliedPowerPlus_UI = new Label();
+            Label_Remote_CP_UI = new Label();
+            Label_MachineAppliedPowerMin_UI = new Label();
             WattageDisplay = new Label();
-            AppliedChargeAmps_UI = new TextBox();
             VoltageDisplay = new Label();
             AmperageDisplay = new Label();
-            AppliedVolts_UI = new TextBox();
-            AppliedChargeWatts_UI = new TextBox();
-            AppliedDischargeAmps_UI = new TextBox();
-            AppliedDischargeWatts_UI = new TextBox();
-            EditValueButton = new Button();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            Label_MachineAppliedCurrentPlus_UI = new Label();
+            Label_Remote_CC_UI = new Label();
+            Label_MachineAppliedCurrentMin_UI = new Label();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            InputField_StoredValueCurrentMin = new TextBox();
+            InputField_StoredValueCurrentPlus = new TextBox();
             OperationsBox_UI = new GroupBox();
             tableLayoutPanel4 = new TableLayoutPanel();
             BatteryConnectButton = new Button();
@@ -46,18 +61,7 @@
             Charge30Button = new Button();
             ChargeButton = new Button();
             DischargeButton = new Button();
-            StatusCurrentOperation_UI = new TextBox();
-            label7 = new Label();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            BatteryInfo = new GroupBox();
-            groupBox1 = new GroupBox();
-            tableLayoutPanel1 = new TableLayoutPanel();
-            RemoteCP_UI = new Label();
-            RemoteCC_UI = new Label();
-            StatusLabel_UI = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            RemoteCV_UI = new Label();
             groupBox2 = new GroupBox();
             ApplyBatteryDataButton = new Button();
             C_Rating_UI = new TextBox();
@@ -66,14 +70,28 @@
             label6 = new Label();
             label2 = new Label();
             RatedBatteryAmperageUI = new TextBox();
+            settingsBox_UI = new GroupBox();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            groupBox1 = new GroupBox();
+            textBox1 = new TextBox();
+            label3 = new Label();
+            Name1 = new Label();
+            StatusCurrentOperation_UI = new TextBox();
+            label7 = new Label();
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            tableLayoutPanel9.SuspendLayout();
+            tableLayoutPanel8.SuspendLayout();
+            tableLayoutPanel7.SuspendLayout();
+            tableLayoutPanel5.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
+            tableLayoutPanel6.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
-            BatteryInfo.SuspendLayout();
-            groupBox1.SuspendLayout();
-            tableLayoutPanel1.SuspendLayout();
             groupBox2.SuspendLayout();
+            settingsBox_UI.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -82,7 +100,7 @@
             LiveInfoData.Dock = DockStyle.Top;
             LiveInfoData.Location = new Point(0, 0);
             LiveInfoData.Name = "LiveInfoData";
-            LiveInfoData.Size = new Size(782, 192);
+            LiveInfoData.Size = new Size(821, 211);
             LiveInfoData.TabIndex = 5;
             LiveInfoData.TabStop = false;
             LiveInfoData.Text = "Info";
@@ -94,50 +112,209 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel9, 0, 1);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel8, 0, 2);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel7, 2, 2);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel5, 2, 1);
             tableLayoutPanel2.Controls.Add(WattageDisplay, 2, 0);
-            tableLayoutPanel2.Controls.Add(AppliedChargeAmps_UI, 1, 1);
             tableLayoutPanel2.Controls.Add(VoltageDisplay, 0, 0);
             tableLayoutPanel2.Controls.Add(AmperageDisplay, 1, 0);
-            tableLayoutPanel2.Controls.Add(AppliedVolts_UI, 0, 1);
-            tableLayoutPanel2.Controls.Add(AppliedChargeWatts_UI, 2, 1);
-            tableLayoutPanel2.Controls.Add(AppliedDischargeAmps_UI, 1, 2);
-            tableLayoutPanel2.Controls.Add(AppliedDischargeWatts_UI, 2, 2);
-            tableLayoutPanel2.Controls.Add(EditValueButton, 0, 2);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel3, 1, 1);
+            tableLayoutPanel2.Controls.Add(tableLayoutPanel6, 1, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 25);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 3;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(776, 164);
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 35F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
+            tableLayoutPanel2.Size = new Size(815, 183);
             tableLayoutPanel2.TabIndex = 1;
+            // 
+            // tableLayoutPanel9
+            // 
+            tableLayoutPanel9.AutoSize = true;
+            tableLayoutPanel9.ColumnCount = 2;
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.Controls.Add(Label_MachineAppliedVoltage_UI, 1, 0);
+            tableLayoutPanel9.Controls.Add(Label_Remote_CV_UI, 0, 0);
+            tableLayoutPanel9.Dock = DockStyle.Fill;
+            tableLayoutPanel9.Location = new Point(3, 48);
+            tableLayoutPanel9.Name = "tableLayoutPanel9";
+            tableLayoutPanel9.RowCount = 2;
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.Size = new Size(265, 58);
+            tableLayoutPanel9.TabIndex = 0;
+            // 
+            // Label_MachineAppliedVoltage_UI
+            // 
+            Label_MachineAppliedVoltage_UI.AutoSize = true;
+            Label_MachineAppliedVoltage_UI.Dock = DockStyle.Fill;
+            Label_MachineAppliedVoltage_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedVoltage_UI.Location = new Point(135, 0);
+            Label_MachineAppliedVoltage_UI.Name = "Label_MachineAppliedVoltage_UI";
+            Label_MachineAppliedVoltage_UI.Size = new Size(127, 29);
+            Label_MachineAppliedVoltage_UI.TabIndex = 13;
+            Label_MachineAppliedVoltage_UI.Text = "0 V";
+            Label_MachineAppliedVoltage_UI.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Remote_CV_UI
+            // 
+            Label_Remote_CV_UI.AutoSize = true;
+            Label_Remote_CV_UI.Dock = DockStyle.Fill;
+            Label_Remote_CV_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CV_UI.Location = new Point(3, 0);
+            Label_Remote_CV_UI.Name = "Label_Remote_CV_UI";
+            Label_Remote_CV_UI.Size = new Size(126, 29);
+            Label_Remote_CV_UI.TabIndex = 12;
+            Label_Remote_CV_UI.Text = "Front";
+            Label_Remote_CV_UI.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // tableLayoutPanel8
+            // 
+            tableLayoutPanel8.ColumnCount = 1;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel8.Controls.Add(InputField_StoredValueVoltage, 0, 0);
+            tableLayoutPanel8.Controls.Add(Button_Toggle_ValueEditor, 0, 1);
+            tableLayoutPanel8.Dock = DockStyle.Fill;
+            tableLayoutPanel8.Location = new Point(3, 112);
+            tableLayoutPanel8.Name = "tableLayoutPanel8";
+            tableLayoutPanel8.RowCount = 2;
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.Size = new Size(265, 68);
+            tableLayoutPanel8.TabIndex = 12;
+            // 
+            // InputField_StoredValueVoltage
+            // 
+            InputField_StoredValueVoltage.Dock = DockStyle.Fill;
+            InputField_StoredValueVoltage.Location = new Point(3, 3);
+            InputField_StoredValueVoltage.Name = "InputField_StoredValueVoltage";
+            InputField_StoredValueVoltage.PlaceholderText = "0 A";
+            InputField_StoredValueVoltage.ReadOnly = true;
+            InputField_StoredValueVoltage.Size = new Size(259, 29);
+            InputField_StoredValueVoltage.TabIndex = 0;
+            InputField_StoredValueVoltage.Tag = "";
+            InputField_StoredValueVoltage.TextAlign = HorizontalAlignment.Center;
+            // 
+            // Button_Toggle_ValueEditor
+            // 
+            Button_Toggle_ValueEditor.AutoSize = true;
+            Button_Toggle_ValueEditor.Dock = DockStyle.Fill;
+            Button_Toggle_ValueEditor.Location = new Point(3, 37);
+            Button_Toggle_ValueEditor.Name = "Button_Toggle_ValueEditor";
+            Button_Toggle_ValueEditor.Size = new Size(259, 28);
+            Button_Toggle_ValueEditor.TabIndex = 1;
+            Button_Toggle_ValueEditor.Text = "Edit values";
+            Button_Toggle_ValueEditor.UseVisualStyleBackColor = true;
+            Button_Toggle_ValueEditor.Click += ToggleManualEditing;
+            // 
+            // tableLayoutPanel7
+            // 
+            tableLayoutPanel7.ColumnCount = 1;
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel7.Controls.Add(InputField_StoredValuePowerMin, 0, 1);
+            tableLayoutPanel7.Controls.Add(InputField_StoredValuePowerPlus, 0, 0);
+            tableLayoutPanel7.Dock = DockStyle.Fill;
+            tableLayoutPanel7.Location = new Point(545, 112);
+            tableLayoutPanel7.Name = "tableLayoutPanel7";
+            tableLayoutPanel7.RowCount = 2;
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Size = new Size(267, 68);
+            tableLayoutPanel7.TabIndex = 11;
+            // 
+            // InputField_StoredValuePowerMin
+            // 
+            InputField_StoredValuePowerMin.Dock = DockStyle.Fill;
+            InputField_StoredValuePowerMin.Location = new Point(3, 37);
+            InputField_StoredValuePowerMin.Name = "InputField_StoredValuePowerMin";
+            InputField_StoredValuePowerMin.PlaceholderText = "0 W";
+            InputField_StoredValuePowerMin.ReadOnly = true;
+            InputField_StoredValuePowerMin.Size = new Size(261, 29);
+            InputField_StoredValuePowerMin.TabIndex = 2;
+            InputField_StoredValuePowerMin.Tag = "";
+            InputField_StoredValuePowerMin.TextAlign = HorizontalAlignment.Center;
+            // 
+            // InputField_StoredValuePowerPlus
+            // 
+            InputField_StoredValuePowerPlus.Dock = DockStyle.Fill;
+            InputField_StoredValuePowerPlus.Location = new Point(3, 3);
+            InputField_StoredValuePowerPlus.Name = "InputField_StoredValuePowerPlus";
+            InputField_StoredValuePowerPlus.PlaceholderText = "0 W";
+            InputField_StoredValuePowerPlus.ReadOnly = true;
+            InputField_StoredValuePowerPlus.Size = new Size(261, 29);
+            InputField_StoredValuePowerPlus.TabIndex = 1;
+            InputField_StoredValuePowerPlus.Tag = "";
+            InputField_StoredValuePowerPlus.TextAlign = HorizontalAlignment.Center;
+            // 
+            // tableLayoutPanel5
+            // 
+            tableLayoutPanel5.ColumnCount = 2;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.Controls.Add(Label_MachineAppliedPowerPlus_UI, 1, 0);
+            tableLayoutPanel5.Controls.Add(Label_Remote_CP_UI, 0, 0);
+            tableLayoutPanel5.Controls.Add(Label_MachineAppliedPowerMin_UI, 1, 1);
+            tableLayoutPanel5.Dock = DockStyle.Fill;
+            tableLayoutPanel5.Location = new Point(545, 48);
+            tableLayoutPanel5.Name = "tableLayoutPanel5";
+            tableLayoutPanel5.RowCount = 2;
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.Size = new Size(267, 58);
+            tableLayoutPanel5.TabIndex = 8;
+            // 
+            // Label_MachineAppliedPowerPlus_UI
+            // 
+            Label_MachineAppliedPowerPlus_UI.AutoSize = true;
+            Label_MachineAppliedPowerPlus_UI.Dock = DockStyle.Fill;
+            Label_MachineAppliedPowerPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedPowerPlus_UI.Location = new Point(136, 0);
+            Label_MachineAppliedPowerPlus_UI.Name = "Label_MachineAppliedPowerPlus_UI";
+            Label_MachineAppliedPowerPlus_UI.Size = new Size(128, 29);
+            Label_MachineAppliedPowerPlus_UI.TabIndex = 11;
+            Label_MachineAppliedPowerPlus_UI.Text = "0 W";
+            Label_MachineAppliedPowerPlus_UI.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Remote_CP_UI
+            // 
+            Label_Remote_CP_UI.AutoSize = true;
+            Label_Remote_CP_UI.Dock = DockStyle.Fill;
+            Label_Remote_CP_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CP_UI.Location = new Point(3, 0);
+            Label_Remote_CP_UI.Name = "Label_Remote_CP_UI";
+            Label_Remote_CP_UI.Size = new Size(127, 29);
+            Label_Remote_CP_UI.TabIndex = 10;
+            Label_Remote_CP_UI.Text = "Front";
+            Label_Remote_CP_UI.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_MachineAppliedPowerMin_UI
+            // 
+            Label_MachineAppliedPowerMin_UI.AutoSize = true;
+            Label_MachineAppliedPowerMin_UI.Dock = DockStyle.Fill;
+            Label_MachineAppliedPowerMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedPowerMin_UI.Location = new Point(136, 29);
+            Label_MachineAppliedPowerMin_UI.Name = "Label_MachineAppliedPowerMin_UI";
+            Label_MachineAppliedPowerMin_UI.Size = new Size(128, 29);
+            Label_MachineAppliedPowerMin_UI.TabIndex = 9;
+            Label_MachineAppliedPowerMin_UI.Text = "-0 W";
+            Label_MachineAppliedPowerMin_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // WattageDisplay
             // 
             WattageDisplay.AutoSize = true;
             WattageDisplay.Dock = DockStyle.Fill;
             WattageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
-            WattageDisplay.Location = new Point(520, 0);
+            WattageDisplay.Location = new Point(546, 0);
             WattageDisplay.Margin = new Padding(4, 0, 4, 0);
             WattageDisplay.Name = "WattageDisplay";
-            WattageDisplay.Size = new Size(252, 38);
+            WattageDisplay.Size = new Size(265, 45);
             WattageDisplay.TabIndex = 2;
             WattageDisplay.Text = "0.0 W";
             WattageDisplay.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // AppliedChargeAmps_UI
-            // 
-            AppliedChargeAmps_UI.Dock = DockStyle.Fill;
-            AppliedChargeAmps_UI.Location = new Point(268, 48);
-            AppliedChargeAmps_UI.Margin = new Padding(10);
-            AppliedChargeAmps_UI.Name = "AppliedChargeAmps_UI";
-            AppliedChargeAmps_UI.PlaceholderText = "0.0 A";
-            AppliedChargeAmps_UI.ReadOnly = true;
-            AppliedChargeAmps_UI.Size = new Size(238, 29);
-            AppliedChargeAmps_UI.TabIndex = 10;
-            AppliedChargeAmps_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // VoltageDisplay
             // 
@@ -147,7 +324,7 @@
             VoltageDisplay.Location = new Point(4, 0);
             VoltageDisplay.Margin = new Padding(4, 0, 4, 0);
             VoltageDisplay.Name = "VoltageDisplay";
-            VoltageDisplay.Size = new Size(250, 38);
+            VoltageDisplay.Size = new Size(263, 45);
             VoltageDisplay.TabIndex = 0;
             VoltageDisplay.Text = "0.0 V";
             VoltageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -157,81 +334,112 @@
             AmperageDisplay.AutoSize = true;
             AmperageDisplay.Dock = DockStyle.Fill;
             AmperageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
-            AmperageDisplay.Location = new Point(262, 0);
+            AmperageDisplay.Location = new Point(275, 0);
             AmperageDisplay.Margin = new Padding(4, 0, 4, 0);
             AmperageDisplay.Name = "AmperageDisplay";
-            AmperageDisplay.Size = new Size(250, 38);
+            AmperageDisplay.Size = new Size(263, 45);
             AmperageDisplay.TabIndex = 1;
             AmperageDisplay.Text = "0.0 A";
             AmperageDisplay.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // AppliedVolts_UI
+            // tableLayoutPanel3
             // 
-            AppliedVolts_UI.Dock = DockStyle.Fill;
-            AppliedVolts_UI.Location = new Point(10, 48);
-            AppliedVolts_UI.Margin = new Padding(10);
-            AppliedVolts_UI.Name = "AppliedVolts_UI";
-            AppliedVolts_UI.PlaceholderText = "0.0 V";
-            AppliedVolts_UI.ReadOnly = true;
-            AppliedVolts_UI.Size = new Size(238, 29);
-            AppliedVolts_UI.TabIndex = 9;
-            AppliedVolts_UI.TextAlign = HorizontalAlignment.Center;
+            tableLayoutPanel3.ColumnCount = 2;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Controls.Add(Label_MachineAppliedCurrentPlus_UI, 1, 0);
+            tableLayoutPanel3.Controls.Add(Label_Remote_CC_UI, 0, 0);
+            tableLayoutPanel3.Controls.Add(Label_MachineAppliedCurrentMin_UI, 1, 1);
+            tableLayoutPanel3.Dock = DockStyle.Fill;
+            tableLayoutPanel3.Location = new Point(274, 48);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 2;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Size = new Size(265, 58);
+            tableLayoutPanel3.TabIndex = 7;
             // 
-            // AppliedChargeWatts_UI
+            // Label_MachineAppliedCurrentPlus_UI
             // 
-            AppliedChargeWatts_UI.Dock = DockStyle.Fill;
-            AppliedChargeWatts_UI.Location = new Point(526, 48);
-            AppliedChargeWatts_UI.Margin = new Padding(10);
-            AppliedChargeWatts_UI.Name = "AppliedChargeWatts_UI";
-            AppliedChargeWatts_UI.PlaceholderText = "0.0 W";
-            AppliedChargeWatts_UI.ReadOnly = true;
-            AppliedChargeWatts_UI.Size = new Size(240, 29);
-            AppliedChargeWatts_UI.TabIndex = 11;
-            AppliedChargeWatts_UI.TextAlign = HorizontalAlignment.Center;
+            Label_MachineAppliedCurrentPlus_UI.AutoSize = true;
+            Label_MachineAppliedCurrentPlus_UI.Dock = DockStyle.Fill;
+            Label_MachineAppliedCurrentPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedCurrentPlus_UI.Location = new Point(135, 0);
+            Label_MachineAppliedCurrentPlus_UI.Name = "Label_MachineAppliedCurrentPlus_UI";
+            Label_MachineAppliedCurrentPlus_UI.Size = new Size(127, 29);
+            Label_MachineAppliedCurrentPlus_UI.TabIndex = 10;
+            Label_MachineAppliedCurrentPlus_UI.Text = "0 A";
+            Label_MachineAppliedCurrentPlus_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // AppliedDischargeAmps_UI
+            // Label_Remote_CC_UI
             // 
-            AppliedDischargeAmps_UI.Dock = DockStyle.Fill;
-            AppliedDischargeAmps_UI.Location = new Point(268, 97);
-            AppliedDischargeAmps_UI.Margin = new Padding(10);
-            AppliedDischargeAmps_UI.Name = "AppliedDischargeAmps_UI";
-            AppliedDischargeAmps_UI.PlaceholderText = "-0.0 A";
-            AppliedDischargeAmps_UI.ReadOnly = true;
-            AppliedDischargeAmps_UI.Size = new Size(238, 29);
-            AppliedDischargeAmps_UI.TabIndex = 12;
-            AppliedDischargeAmps_UI.TextAlign = HorizontalAlignment.Center;
+            Label_Remote_CC_UI.AutoSize = true;
+            Label_Remote_CC_UI.Dock = DockStyle.Fill;
+            Label_Remote_CC_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CC_UI.Location = new Point(3, 0);
+            Label_Remote_CC_UI.Name = "Label_Remote_CC_UI";
+            Label_Remote_CC_UI.Size = new Size(126, 29);
+            Label_Remote_CC_UI.TabIndex = 9;
+            Label_Remote_CC_UI.Text = "Front";
+            Label_Remote_CC_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // AppliedDischargeWatts_UI
+            // Label_MachineAppliedCurrentMin_UI
             // 
-            AppliedDischargeWatts_UI.Dock = DockStyle.Fill;
-            AppliedDischargeWatts_UI.Location = new Point(526, 97);
-            AppliedDischargeWatts_UI.Margin = new Padding(10);
-            AppliedDischargeWatts_UI.Name = "AppliedDischargeWatts_UI";
-            AppliedDischargeWatts_UI.PlaceholderText = "-0.0 W";
-            AppliedDischargeWatts_UI.ReadOnly = true;
-            AppliedDischargeWatts_UI.Size = new Size(240, 29);
-            AppliedDischargeWatts_UI.TabIndex = 13;
-            AppliedDischargeWatts_UI.TextAlign = HorizontalAlignment.Center;
+            Label_MachineAppliedCurrentMin_UI.AutoSize = true;
+            Label_MachineAppliedCurrentMin_UI.Dock = DockStyle.Fill;
+            Label_MachineAppliedCurrentMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedCurrentMin_UI.Location = new Point(135, 29);
+            Label_MachineAppliedCurrentMin_UI.Name = "Label_MachineAppliedCurrentMin_UI";
+            Label_MachineAppliedCurrentMin_UI.Size = new Size(127, 29);
+            Label_MachineAppliedCurrentMin_UI.TabIndex = 8;
+            Label_MachineAppliedCurrentMin_UI.Text = "-0 A";
+            Label_MachineAppliedCurrentMin_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // EditValueButton
+            // tableLayoutPanel6
             // 
-            EditValueButton.Anchor = AnchorStyles.Top;
-            EditValueButton.AutoSize = true;
-            EditValueButton.Location = new Point(9, 90);
-            EditValueButton.Name = "EditValueButton";
-            EditValueButton.Size = new Size(240, 38);
-            EditValueButton.TabIndex = 14;
-            EditValueButton.Text = "Edit Values";
-            EditValueButton.UseVisualStyleBackColor = true;
-            EditValueButton.Click += ToggleManualEditing;
+            tableLayoutPanel6.ColumnCount = 1;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.Controls.Add(InputField_StoredValueCurrentMin, 0, 1);
+            tableLayoutPanel6.Controls.Add(InputField_StoredValueCurrentPlus, 0, 0);
+            tableLayoutPanel6.Dock = DockStyle.Fill;
+            tableLayoutPanel6.Location = new Point(274, 112);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 2;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel6.Size = new Size(265, 68);
+            tableLayoutPanel6.TabIndex = 10;
+            // 
+            // InputField_StoredValueCurrentMin
+            // 
+            InputField_StoredValueCurrentMin.Dock = DockStyle.Fill;
+            InputField_StoredValueCurrentMin.Location = new Point(3, 37);
+            InputField_StoredValueCurrentMin.Name = "InputField_StoredValueCurrentMin";
+            InputField_StoredValueCurrentMin.PlaceholderText = "0 A";
+            InputField_StoredValueCurrentMin.ReadOnly = true;
+            InputField_StoredValueCurrentMin.Size = new Size(259, 29);
+            InputField_StoredValueCurrentMin.TabIndex = 1;
+            InputField_StoredValueCurrentMin.Tag = "";
+            InputField_StoredValueCurrentMin.TextAlign = HorizontalAlignment.Center;
+            // 
+            // InputField_StoredValueCurrentPlus
+            // 
+            InputField_StoredValueCurrentPlus.Dock = DockStyle.Fill;
+            InputField_StoredValueCurrentPlus.Location = new Point(3, 3);
+            InputField_StoredValueCurrentPlus.Name = "InputField_StoredValueCurrentPlus";
+            InputField_StoredValueCurrentPlus.PlaceholderText = "0 A";
+            InputField_StoredValueCurrentPlus.ReadOnly = true;
+            InputField_StoredValueCurrentPlus.Size = new Size(259, 29);
+            InputField_StoredValueCurrentPlus.TabIndex = 0;
+            InputField_StoredValueCurrentPlus.Tag = "";
+            InputField_StoredValueCurrentPlus.TextAlign = HorizontalAlignment.Center;
             // 
             // OperationsBox_UI
             // 
             OperationsBox_UI.Controls.Add(tableLayoutPanel4);
-            OperationsBox_UI.Dock = DockStyle.Bottom;
-            OperationsBox_UI.Location = new Point(341, 382);
+            OperationsBox_UI.Location = new Point(3, 195);
             OperationsBox_UI.Name = "OperationsBox_UI";
-            OperationsBox_UI.Size = new Size(441, 191);
+            OperationsBox_UI.Size = new Size(492, 225);
             OperationsBox_UI.TabIndex = 8;
             OperationsBox_UI.TabStop = false;
             OperationsBox_UI.Text = "Operations";
@@ -254,16 +462,16 @@
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(435, 163);
+            tableLayoutPanel4.Size = new Size(486, 197);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // BatteryConnectButton
             // 
             BatteryConnectButton.BackColor = Color.White;
             BatteryConnectButton.Dock = DockStyle.Fill;
-            BatteryConnectButton.Location = new Point(3, 84);
+            BatteryConnectButton.Location = new Point(3, 101);
             BatteryConnectButton.Name = "BatteryConnectButton";
-            BatteryConnectButton.Size = new Size(138, 76);
+            BatteryConnectButton.Size = new Size(155, 93);
             BatteryConnectButton.TabIndex = 12;
             BatteryConnectButton.Text = "Connect Battery";
             BatteryConnectButton.UseVisualStyleBackColor = false;
@@ -275,9 +483,9 @@
             StartStopButton.BackColor = Color.Chartreuse;
             StartStopButton.Dock = DockStyle.Fill;
             StartStopButton.Enabled = false;
-            StartStopButton.Location = new Point(292, 84);
+            StartStopButton.Location = new Point(326, 101);
             StartStopButton.Name = "StartStopButton";
-            StartStopButton.Size = new Size(140, 76);
+            StartStopButton.Size = new Size(157, 93);
             StartStopButton.TabIndex = 11;
             StartStopButton.Text = "Start";
             StartStopButton.UseVisualStyleBackColor = false;
@@ -288,9 +496,9 @@
             Charge30Button.BackColor = Color.White;
             Charge30Button.Dock = DockStyle.Fill;
             Charge30Button.Enabled = false;
-            Charge30Button.Location = new Point(292, 3);
+            Charge30Button.Location = new Point(326, 3);
             Charge30Button.Name = "Charge30Button";
-            Charge30Button.Size = new Size(140, 75);
+            Charge30Button.Size = new Size(157, 92);
             Charge30Button.TabIndex = 2;
             Charge30Button.Text = "Discharge to 30%";
             Charge30Button.UseVisualStyleBackColor = false;
@@ -302,7 +510,7 @@
             ChargeButton.Dock = DockStyle.Fill;
             ChargeButton.Location = new Point(3, 3);
             ChargeButton.Name = "ChargeButton";
-            ChargeButton.Size = new Size(138, 75);
+            ChargeButton.Size = new Size(155, 92);
             ChargeButton.TabIndex = 0;
             ChargeButton.Text = "Charge";
             ChargeButton.UseVisualStyleBackColor = false;
@@ -312,148 +520,13 @@
             // 
             DischargeButton.BackColor = Color.White;
             DischargeButton.Dock = DockStyle.Fill;
-            DischargeButton.Location = new Point(147, 3);
+            DischargeButton.Location = new Point(164, 3);
             DischargeButton.Name = "DischargeButton";
-            DischargeButton.Size = new Size(139, 75);
+            DischargeButton.Size = new Size(156, 92);
             DischargeButton.TabIndex = 1;
             DischargeButton.Text = "Discharge";
             DischargeButton.UseVisualStyleBackColor = false;
             DischargeButton.Click += DischargeButton_Click;
-            // 
-            // StatusCurrentOperation_UI
-            // 
-            StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            StatusCurrentOperation_UI.Location = new Point(537, 195);
-            StatusCurrentOperation_UI.Margin = new Padding(0);
-            StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
-            StatusCurrentOperation_UI.ReadOnly = true;
-            StatusCurrentOperation_UI.Size = new Size(242, 36);
-            StatusCurrentOperation_UI.TabIndex = 15;
-            StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            label7.Location = new Point(350, 195);
-            label7.Name = "label7";
-            label7.Size = new Size(281, 43);
-            label7.TabIndex = 12;
-            label7.Text = "Current Operation:";
-            // 
-            // BatteryInfo
-            // 
-            BatteryInfo.Controls.Add(groupBox1);
-            BatteryInfo.Controls.Add(groupBox2);
-            BatteryInfo.Dock = DockStyle.Left;
-            BatteryInfo.Location = new Point(0, 192);
-            BatteryInfo.Name = "BatteryInfo";
-            BatteryInfo.Size = new Size(341, 381);
-            BatteryInfo.TabIndex = 6;
-            BatteryInfo.TabStop = false;
-            BatteryInfo.Text = "Battery Data";
-            // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(tableLayoutPanel1);
-            groupBox1.Dock = DockStyle.Bottom;
-            groupBox1.Location = new Point(3, 212);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(335, 166);
-            groupBox1.TabIndex = 15;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Status";
-            // 
-            // tableLayoutPanel1
-            // 
-            tableLayoutPanel1.AutoSize = true;
-            tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.Controls.Add(RemoteCP_UI, 1, 2);
-            tableLayoutPanel1.Controls.Add(RemoteCC_UI, 1, 1);
-            tableLayoutPanel1.Controls.Add(StatusLabel_UI, 0, 0);
-            tableLayoutPanel1.Controls.Add(label3, 0, 1);
-            tableLayoutPanel1.Controls.Add(label4, 0, 2);
-            tableLayoutPanel1.Controls.Add(RemoteCV_UI, 1, 0);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddColumns;
-            tableLayoutPanel1.Location = new Point(3, 25);
-            tableLayoutPanel1.Margin = new Padding(0);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 3;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(329, 138);
-            tableLayoutPanel1.TabIndex = 4;
-            // 
-            // RemoteCP_UI
-            // 
-            RemoteCP_UI.AutoSize = true;
-            RemoteCP_UI.Dock = DockStyle.Fill;
-            RemoteCP_UI.Location = new Point(103, 92);
-            RemoteCP_UI.Margin = new Padding(0);
-            RemoteCP_UI.Name = "RemoteCP_UI";
-            RemoteCP_UI.Size = new Size(226, 46);
-            RemoteCP_UI.TabIndex = 10;
-            RemoteCP_UI.Text = "Local";
-            RemoteCP_UI.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // RemoteCC_UI
-            // 
-            RemoteCC_UI.AutoSize = true;
-            RemoteCC_UI.Dock = DockStyle.Fill;
-            RemoteCC_UI.Location = new Point(103, 46);
-            RemoteCC_UI.Margin = new Padding(0);
-            RemoteCC_UI.Name = "RemoteCC_UI";
-            RemoteCC_UI.Size = new Size(226, 46);
-            RemoteCC_UI.TabIndex = 9;
-            RemoteCC_UI.Text = "Local";
-            RemoteCC_UI.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // StatusLabel_UI
-            // 
-            StatusLabel_UI.AutoSize = true;
-            StatusLabel_UI.Dock = DockStyle.Fill;
-            StatusLabel_UI.Location = new Point(3, 0);
-            StatusLabel_UI.Name = "StatusLabel_UI";
-            StatusLabel_UI.Padding = new Padding(3);
-            StatusLabel_UI.Size = new Size(97, 46);
-            StatusLabel_UI.TabIndex = 0;
-            StatusLabel_UI.Text = "Remote CV:";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Dock = DockStyle.Fill;
-            label3.Location = new Point(3, 46);
-            label3.Name = "label3";
-            label3.Padding = new Padding(3);
-            label3.Size = new Size(97, 46);
-            label3.TabIndex = 1;
-            label3.Text = "Remote CC:";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Dock = DockStyle.Fill;
-            label4.Location = new Point(3, 92);
-            label4.Name = "label4";
-            label4.Padding = new Padding(3);
-            label4.Size = new Size(97, 46);
-            label4.TabIndex = 2;
-            label4.Text = "Remote CP:";
-            // 
-            // RemoteCV_UI
-            // 
-            RemoteCV_UI.AutoSize = true;
-            RemoteCV_UI.Dock = DockStyle.Fill;
-            RemoteCV_UI.Location = new Point(103, 0);
-            RemoteCV_UI.Margin = new Padding(0);
-            RemoteCV_UI.Name = "RemoteCV_UI";
-            RemoteCV_UI.Size = new Size(226, 46);
-            RemoteCV_UI.TabIndex = 8;
-            RemoteCV_UI.Text = "Local";
-            RemoteCV_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // groupBox2
             // 
@@ -464,10 +537,9 @@
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(label2);
             groupBox2.Controls.Add(RatedBatteryAmperageUI);
-            groupBox2.Dock = DockStyle.Top;
-            groupBox2.Location = new Point(3, 25);
+            groupBox2.Location = new Point(3, 3);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(335, 186);
+            groupBox2.Size = new Size(492, 186);
             groupBox2.TabIndex = 14;
             groupBox2.TabStop = false;
             groupBox2.Text = "Factory Information";
@@ -476,7 +548,7 @@
             // 
             ApplyBatteryDataButton.Location = new Point(16, 140);
             ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
-            ApplyBatteryDataButton.Size = new Size(313, 36);
+            ApplyBatteryDataButton.Size = new Size(470, 36);
             ApplyBatteryDataButton.TabIndex = 11;
             ApplyBatteryDataButton.Text = "Apply";
             ApplyBatteryDataButton.UseVisualStyleBackColor = true;
@@ -485,7 +557,7 @@
             // C_Rating_UI
             // 
             C_Rating_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            C_Rating_UI.Location = new Point(209, 105);
+            C_Rating_UI.Location = new Point(366, 105);
             C_Rating_UI.Name = "C_Rating_UI";
             C_Rating_UI.PlaceholderText = "C1";
             C_Rating_UI.Size = new Size(120, 29);
@@ -494,7 +566,7 @@
             // RatedBatteryVoltageUI
             // 
             RatedBatteryVoltageUI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            RatedBatteryVoltageUI.Location = new Point(209, 35);
+            RatedBatteryVoltageUI.Location = new Point(366, 35);
             RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
             RatedBatteryVoltageUI.PlaceholderText = "Voltage";
             RatedBatteryVoltageUI.Size = new Size(120, 29);
@@ -533,65 +605,151 @@
             // RatedBatteryAmperageUI
             // 
             RatedBatteryAmperageUI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            RatedBatteryAmperageUI.Location = new Point(209, 70);
+            RatedBatteryAmperageUI.Location = new Point(366, 70);
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
             RatedBatteryAmperageUI.Size = new Size(120, 29);
             RatedBatteryAmperageUI.TabIndex = 7;
             // 
-            // Form1
+            // settingsBox_UI
+            // 
+            settingsBox_UI.Controls.Add(flowLayoutPanel1);
+            settingsBox_UI.Dock = DockStyle.Right;
+            settingsBox_UI.Location = new Point(317, 211);
+            settingsBox_UI.Name = "settingsBox_UI";
+            settingsBox_UI.Size = new Size(504, 457);
+            settingsBox_UI.TabIndex = 9;
+            settingsBox_UI.TabStop = false;
+            settingsBox_UI.Text = "Settings";
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Controls.Add(groupBox2);
+            flowLayoutPanel1.Controls.Add(OperationsBox_UI);
+            flowLayoutPanel1.Dock = DockStyle.Fill;
+            flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanel1.Location = new Point(3, 25);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(498, 429);
+            flowLayoutPanel1.TabIndex = 0;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(textBox1);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(Name1);
+            groupBox1.Controls.Add(StatusCurrentOperation_UI);
+            groupBox1.Controls.Add(label7);
+            groupBox1.Dock = DockStyle.Fill;
+            groupBox1.Location = new Point(0, 211);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(317, 457);
+            groupBox1.TabIndex = 16;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Status";
+            // 
+            // textBox1
+            // 
+            textBox1.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox1.Location = new Point(172, 73);
+            textBox1.Margin = new Padding(0);
+            textBox1.Name = "textBox1";
+            textBox1.ReadOnly = true;
+            textBox1.Size = new Size(136, 36);
+            textBox1.TabIndex = 20;
+            textBox1.Text = "2h 25m 20s";
+            textBox1.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label3
+            // 
+            label3.Location = new Point(6, 73);
+            label3.Name = "label3";
+            label3.Size = new Size(184, 36);
+            label3.TabIndex = 19;
+            label3.Text = "Online:";
+            label3.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Name1
+            // 
+            Name1.AutoSize = true;
+            Name1.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point);
+            Name1.Location = new Point(3, 25);
+            Name1.Name = "Name1";
+            Name1.Size = new Size(184, 37);
+            Name1.TabIndex = 18;
+            Name1.Text = "SM70-CP-450";
+            // 
+            // StatusCurrentOperation_UI
+            // 
+            StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            StatusCurrentOperation_UI.Location = new Point(172, 115);
+            StatusCurrentOperation_UI.Margin = new Padding(0);
+            StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
+            StatusCurrentOperation_UI.ReadOnly = true;
+            StatusCurrentOperation_UI.Size = new Size(136, 36);
+            StatusCurrentOperation_UI.TabIndex = 17;
+            StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label7
+            // 
+            label7.Location = new Point(6, 115);
+            label7.Name = "label7";
+            label7.Size = new Size(184, 36);
+            label7.TabIndex = 16;
+            label7.Text = "Current Operation:";
+            label7.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(782, 573);
-            Controls.Add(StatusCurrentOperation_UI);
-            Controls.Add(OperationsBox_UI);
-            Controls.Add(label7);
-            Controls.Add(BatteryInfo);
+            ClientSize = new Size(821, 668);
+            Controls.Add(groupBox1);
+            Controls.Add(settingsBox_UI);
             Controls.Add(LiveInfoData);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
-            Name = "Form1";
-            Text = "Sm15k Controller";
+            Name = "MainForm";
+            Text = "Whisper Power - Sm15k Controller";
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
+            tableLayoutPanel9.ResumeLayout(false);
+            tableLayoutPanel9.PerformLayout();
+            tableLayoutPanel8.ResumeLayout(false);
+            tableLayoutPanel8.PerformLayout();
+            tableLayoutPanel7.ResumeLayout(false);
+            tableLayoutPanel7.PerformLayout();
+            tableLayoutPanel5.ResumeLayout(false);
+            tableLayoutPanel5.PerformLayout();
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
+            tableLayoutPanel6.ResumeLayout(false);
+            tableLayoutPanel6.PerformLayout();
             OperationsBox_UI.ResumeLayout(false);
             OperationsBox_UI.PerformLayout();
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel4.PerformLayout();
-            BatteryInfo.ResumeLayout(false);
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
-            tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            settingsBox_UI.ResumeLayout(false);
+            flowLayoutPanel1.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
         private GroupBox LiveInfoData;
-        private Label AmperageDisplay;
-        private Label VoltageDisplay;
-        private Label WattageDisplay;
-        private TableLayoutPanel tableLayoutPanel2;
         private GroupBox OperationsBox_UI;
         private TableLayoutPanel tableLayoutPanel4;
         private Button Charge30Button;
         private Button ChargeButton;
         private Button DischargeButton;
-        private TextBox AppliedChargeWatts_UI;
-        private TextBox AppliedChargeAmps_UI;
-        private TextBox AppliedVolts_UI;
-        private TextBox AppliedDischargeAmps_UI;
-        private TextBox AppliedDischargeWatts_UI;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private Button EditValueButton;
         private Button StartStopButton;
-        private GroupBox BatteryInfo;
         private GroupBox groupBox2;
         private Button ApplyBatteryDataButton;
         private TextBox C_Rating_UI;
@@ -600,16 +758,38 @@
         private Label label6;
         private Label label2;
         private TextBox RatedBatteryAmperageUI;
+        private Button BatteryConnectButton;
+        private GroupBox settingsBox_UI;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private TableLayoutPanel tableLayoutPanel2;
+        private Label WattageDisplay;
+        private Label VoltageDisplay;
+        private Label AmperageDisplay;
+        private TableLayoutPanel tableLayoutPanel5;
+        private TableLayoutPanel tableLayoutPanel3;
+        private TableLayoutPanel tableLayoutPanel7;
+        private TableLayoutPanel tableLayoutPanel6;
+        private TextBox InputField_StoredValueCurrentPlus;
+        private TextBox InputField_StoredValuePowerMin;
+        private TextBox InputField_StoredValuePowerPlus;
+        private TextBox InputField_StoredValueCurrentMin;
+        private Label Label_MachineAppliedPowerPlus_UI;
+        private Label Label_Remote_CP_UI;
+        private Label Label_MachineAppliedPowerMin_UI;
+        private Label Label_MachineAppliedCurrentPlus_UI;
+        private Label Label_Remote_CC_UI;
+        private Label Label_MachineAppliedCurrentMin_UI;
+        private TableLayoutPanel tableLayoutPanel8;
+        private TextBox InputField_StoredValueVoltage;
+        private Button Button_Toggle_ValueEditor;
+        private TableLayoutPanel tableLayoutPanel9;
+        private Label Label_MachineAppliedVoltage_UI;
+        private Label Label_Remote_CV_UI;
+        private GroupBox groupBox1;
+        private TextBox textBox1;
+        private Label label3;
+        private Label Name1;
         private TextBox StatusCurrentOperation_UI;
         private Label label7;
-        private Button BatteryConnectButton;
-        private GroupBox groupBox1;
-        private TableLayoutPanel tableLayoutPanel1;
-        private Label RemoteCP_UI;
-        private Label RemoteCC_UI;
-        private Label StatusLabel_UI;
-        private Label label3;
-        private Label label4;
-        private Label RemoteCV_UI;
     }
 }
