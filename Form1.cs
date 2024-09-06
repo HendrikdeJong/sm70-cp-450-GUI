@@ -347,7 +347,7 @@ namespace sm70_cp_450_GUI
 
         private static string RemoveNonNumeric(string input)
         {
-            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-').ToArray());
+            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
         }
 
         private void CalculateWith_cRating()
@@ -356,7 +356,6 @@ namespace sm70_cp_450_GUI
             double watts = amps * _ratedVoltage;
             _ratedPower = watts;
             SaveSettings(_ratedVoltage, amps, watts, -amps, -watts);
-            //MessageBox.Show("applied data" + _ratedVoltage + "V " + amps + "A " + watts + "W");
         }
 
         private double ParseInput(string input)
@@ -367,8 +366,8 @@ namespace sm70_cp_450_GUI
             }
             else
             {
-                MessageBox.Show($"Invalid input: {input}");
-                return 0;  // or handle appropriately
+                //MessageBox.Show($"Invalid input: {input}");
+                return 0;
             }
         }
 
@@ -442,7 +441,9 @@ namespace sm70_cp_450_GUI
                     case AvailablePrograms.None:
                         break;
                     case AvailablePrograms.Connecting_Battery:
+
                         await SetOutputVoltage(_appliedVoltage);
+                        await SetOutputCurrent(.5);
                         break;
                     case AvailablePrograms.Charging:
                         await SetOutputCurrent(_appliedCurrent);
