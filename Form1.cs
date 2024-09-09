@@ -6,6 +6,7 @@ namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
     {
+        private SemaphoreSlim _commandQueueSemaphore = new SemaphoreSlim(1, 1); // Ensures sequential command execution
         private TcpClient _tcpClient;
         private NetworkStream _networkStream;
         private const string ServerIp = "169.254.0.102";
@@ -38,17 +39,21 @@ namespace sm70_cp_450_GUI
         private double _StoredNegativeCurrent = 0;
         private double _StoredNegativePower = 0;
 
-
-        //private string _remoteStatus_CV;
-        //private string _remoteStatus_CC;
-        //private string _remoteStatus_CP;
-
         public MainForm()
         {
             InitializeComponent();
-            InitializeTcpClient();
+            Load += MainForm_Load; // Register the form load event
             InitializeTimers();
             InitializeSettings();
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            // Display the form first, then attempt to establish the connection
+            Show(); // Ensure the form is shown instantly
+            MessageBox.Show("Attempting to establish TCP connection. Please wait...");
+
+            await InitializeTcpClient(); // Initialize connection asynchronously
         }
 
         private async void InitializeSettings()
@@ -75,38 +80,35 @@ namespace sm70_cp_450_GUI
             SystemDisplay.Start();
         }
 
-        private void UpdateLoop()
+        private async void UpdateLoop()
         {
-            LockButtons();
-            UpdateUI();
+            await _commandQueueSemaphore.WaitAsync();
+            try
+            {
+                LockButtons();
+                await UpdateUI();
+            }
+            finally
+            {
+                _commandQueueSemaphore.Release();
+            }
         }
 
         private bool _updatingUI = false;
 
-        private async void UpdateUI()
+        private async Task UpdateUI()
         {
-            if (_updatingUI) return;  // Prevent overlapping updates
-            _updatingUI = true;
+            var voltageTask = MeasureOutputVoltage();
+            var currentTask = MeasureOutputCurrent();
+            var powerTask = MeasureOutputPower();
 
-            try
-            {
-                var voltageTask = MeasureOutputVoltage();
-                var currentTask = MeasureOutputCurrent();
-                var powerTask = MeasureOutputPower();
+            await Task.WhenAll(voltageTask, currentTask, powerTask);
 
-                await Task.WhenAll(voltageTask, currentTask, powerTask);  // Wait for all tasks to complete
+            VoltageDisplay.Text = (await voltageTask / 10000).ToString() + " V";
+            AmperageDisplay.Text = (await currentTask / 1000).ToString() + " A";
+            WattageDisplay.Text = (await powerTask).ToString() + " W";
 
-                VoltageDisplay.Text = (await voltageTask / 10000).ToString() + " V";
-                AmperageDisplay.Text = (await currentTask / 1000).ToString() + " A";
-                WattageDisplay.Text = (await powerTask).ToString() + " W";
-
-                StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
-                StartStopButton.Enabled = _SelectedProgram != AvailablePrograms.None;
-            }
-            finally
-            {
-                _updatingUI = false;
-            }
+            StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
         }
 
         private bool _updatingMachineValues = false;
@@ -148,97 +150,79 @@ namespace sm70_cp_450_GUI
 
         #region TCP Socket
 
-        private void InitializeTcpClient()
+        private async Task InitializeTcpClient()
         {
             _tcpClient = new TcpClient();
             try
             {
-                _tcpClient.Connect(ServerIp, ServerPort);
+                // Attempt to connect asynchronously
+                await _tcpClient.ConnectAsync(ServerIp, ServerPort);
                 _networkStream = _tcpClient.GetStream();
                 MessageBox.Show("TCP connection established.");
             }
             catch (Exception ex)
             {
+                // Notify the user of the failure
                 MessageBox.Show("TCP connection failed: " + ex.Message);
             }
         }
 
         private async Task<string> SendQueryAsync(string query, int timeoutMilliseconds = 5000)
         {
-            if (_networkStream == null || !_tcpClient.Connected)
+            await _commandQueueSemaphore.WaitAsync(); // Wait until previous query finishes
+            try
             {
-                // Display error in the status strip
-                StatusCurrentOperation_UI.Text = "TCP connection is not open.";
-                return null;
-            }
-
-            using (var cts = new CancellationTokenSource(timeoutMilliseconds))
-            {
-                try
+                if (_networkStream == null || !_tcpClient.Connected)
                 {
-                    byte[] messageBuffer = Encoding.UTF8.GetBytes(query);
+                    // Display error in the status strip
+                    errorlog_Label_UI.Text = "TCP connection is not open.";
+                    return null;
+                }
 
-                    var writeTask = _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length, cts.Token);
-                    var flushTask = _networkStream.FlushAsync(cts.Token);
-                    var receiveTask = ReceiveMessageAsync(cts.Token);
-
-                    await Task.WhenAny(writeTask, Task.Delay(timeoutMilliseconds, cts.Token));
-
-                    if (writeTask.IsCompleted)
+                using (var cts = new CancellationTokenSource(timeoutMilliseconds))
+                {
+                    try
                     {
-                        await flushTask;  // Ensure flushing is done
-                        await Task.WhenAny(receiveTask, Task.Delay(timeoutMilliseconds, cts.Token));
+                        byte[] messageBuffer = Encoding.UTF8.GetBytes(query);
+                        var writeTask = _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length, cts.Token);
+                        var flushTask = _networkStream.FlushAsync(cts.Token);
+                        var receiveTask = ReceiveMessageAsync(cts.Token);
 
+                        await Task.WhenAll(writeTask, flushTask); // Ensure both writing and flushing are completed
+
+                        await Task.WhenAny(receiveTask, Task.Delay(timeoutMilliseconds, cts.Token));
                         if (receiveTask.IsCompleted)
                         {
                             return await receiveTask;
                         }
+
+                        // Timeout handling
+                        errorlog_Label_UI.Text = "Timeout occurred during network communication.";
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        errorlog_Label_UI.Text = "Operation timed out.";
+                    }
+                    catch (Exception ex)
+                    {
+                        errorlog_Label_UI.Text = "Error sending query: " + ex.Message;
                     }
 
-                    // If we reach here, the operation has timed out
-                    StatusCurrentOperation_UI.Text = "Timeout occurred during network communication.";
+                    return null;
                 }
-                catch (TaskCanceledException)
-                {
-                    StatusCurrentOperation_UI.Text = "Operation timed out.";
-                }
-                catch (Exception ex)
-                {
-                    StatusCurrentOperation_UI.Text = "Error sending query: " + ex.Message;
-                }
-
-                return null;
+            }
+            finally
+            {
+                _commandQueueSemaphore.Release(); // Release semaphore for the next command/query
             }
         }
-
-
-        //public async Task<bool> SendCommandAsync(string command)
-        //{
-        //    if (_networkStream == null || !_tcpClient.Connected)
-        //    {
-        //        return false;
-        //    }
-
-        //    try
-        //    {
-        //        byte[] commandBuffer = Encoding.UTF8.GetBytes(command);
-        //        await _networkStream.WriteAsync(commandBuffer, 0, commandBuffer.Length);
-        //        await _networkStream.FlushAsync();
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Error sending command: " + ex.Message);
-        //        return false;
-        //    }
-        //}
 
         private async Task<string> ReceiveMessageAsync(CancellationToken cancellationToken)
         {
             if (_networkStream == null || !_tcpClient.Connected)
             {
                 // Display error in the status strip
-                StatusCurrentOperation_UI.Text = "Network stream is not available.";
+                errorlog_Label_UI.Text = "Network stream is not available.";
                 return null;
             }
 
@@ -259,12 +243,12 @@ namespace sm70_cp_450_GUI
             }
             catch (TaskCanceledException)
             {
-                StatusCurrentOperation_UI.Text = "Message receiving operation was canceled.";
+                errorlog_Label_UI.Text = "Message receiving operation was canceled.";
                 return null;
             }
             catch (Exception ex)
             {
-                StatusCurrentOperation_UI.Text = "Error receiving message: " + ex.Message;
+                errorlog_Label_UI.Text = "Error receiving message: " + ex.Message;
                 return null;
             }
         }

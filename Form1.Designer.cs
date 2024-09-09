@@ -73,6 +73,8 @@
             settingsBox_UI = new GroupBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
             groupBox1 = new GroupBox();
+            CommandStrip_UI = new StatusStrip();
+            errorlog_Label_UI = new ToolStripStatusLabel();
             textBox1 = new TextBox();
             label3 = new Label();
             Name1 = new Label();
@@ -92,6 +94,7 @@
             settingsBox_UI.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             groupBox1.SuspendLayout();
+            CommandStrip_UI.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -482,7 +485,6 @@
             StartStopButton.AutoSize = true;
             StartStopButton.BackColor = Color.Chartreuse;
             StartStopButton.Dock = DockStyle.Fill;
-            StartStopButton.Enabled = false;
             StartStopButton.Location = new Point(326, 101);
             StartStopButton.Name = "StartStopButton";
             StartStopButton.Size = new Size(157, 93);
@@ -635,6 +637,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(CommandStrip_UI);
             groupBox1.Controls.Add(textBox1);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(Name1);
@@ -647,6 +650,22 @@
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
+            // 
+            // CommandStrip_UI
+            // 
+            CommandStrip_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            CommandStrip_UI.Items.AddRange(new ToolStripItem[] { errorlog_Label_UI });
+            CommandStrip_UI.Location = new Point(3, 428);
+            CommandStrip_UI.Name = "CommandStrip_UI";
+            CommandStrip_UI.Size = new Size(311, 26);
+            CommandStrip_UI.TabIndex = 21;
+            CommandStrip_UI.Text = "statusStrip1";
+            // 
+            // errorlog_Label_UI
+            // 
+            errorlog_Label_UI.Name = "errorlog_Label_UI";
+            errorlog_Label_UI.Size = new Size(157, 21);
+            errorlog_Label_UI.Text = "toolStripStatusLabel1";
             // 
             // textBox1
             // 
@@ -738,6 +757,8 @@
             flowLayoutPanel1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            CommandStrip_UI.ResumeLayout(false);
+            CommandStrip_UI.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -791,5 +812,7 @@
         private Label Name1;
         private TextBox StatusCurrentOperation_UI;
         private Label label7;
+        private StatusStrip CommandStrip_UI;
+        private ToolStripStatusLabel errorlog_Label_UI;
     }
 }
