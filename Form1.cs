@@ -6,6 +6,7 @@ namespace sm70_cp_450_GUI
 {
     public partial class Form1 : Form
     {
+        private SemaphoreSlim _commandQueueSemaphore = new SemaphoreSlim(1, 1);
         private TcpClient _tcpClient;
         private NetworkStream _networkStream;
         private const string ServerIp = "169.254.0.102";
@@ -103,48 +104,79 @@ namespace sm70_cp_450_GUI
 
         #region TCP Socket
 
-        private void InitializeTcpClient()
+        private async Task InitializeTcpClient()
         {
             _tcpClient = new TcpClient();
             try
             {
-                _tcpClient.Connect(ServerIp, ServerPort);
+                // Attempt to connect asynchronously
+                await _tcpClient.ConnectAsync(ServerIp, ServerPort);
                 _networkStream = _tcpClient.GetStream();
                 MessageBox.Show("TCP connection established.");
             }
             catch (Exception ex)
             {
+                // Notify the user of the failure
                 MessageBox.Show("TCP connection failed: " + ex.Message);
             }
         }
 
-        private async Task<string> SendQueryAsync(string query)
+        private async Task<string> SendQueryAsync(string query, int timeoutMilliseconds = 5000)
         {
-            if (_networkStream == null || !_tcpClient.Connected)
-            {
-                //MessageBox.Show("TCP connection is not open.");
-                return null;
-            }
-
+            await _commandQueueSemaphore.WaitAsync(); // Wait until previous query finishes
             try
             {
-                byte[] messageBuffer = Encoding.UTF8.GetBytes(query);
-                await _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length);
-                await _networkStream.FlushAsync();
-                return await ReceiveMessageAsync();
+                if (_networkStream == null || !_tcpClient.Connected)
+                {
+                    // Display error in the status strip
+                    //errorlog_Label_UI.Text = "TCP connection is not open.";
+                    return null;
+                }
+
+                using (var cts = new CancellationTokenSource(timeoutMilliseconds))
+                {
+                    try
+                    {
+                        byte[] messageBuffer = Encoding.UTF8.GetBytes(query);
+                        var writeTask = _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length, cts.Token);
+                        var flushTask = _networkStream.FlushAsync(cts.Token);
+                        var receiveTask = ReceiveMessageAsync(cts.Token);
+
+                        await Task.WhenAll(writeTask, flushTask); // Ensure both writing and flushing are completed
+
+                        await Task.WhenAny(receiveTask, Task.Delay(timeoutMilliseconds, cts.Token));
+                        if (receiveTask.IsCompleted)
+                        {
+                            return await receiveTask;
+                        }
+
+                        // Timeout handling
+                        //errorlog_Label_UI.Text = "Timeout occurred during network communication.";
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        //errorlog_Label_UI.Text = "Operation timed out.";
+                    }
+                    catch (Exception ex)
+                    {
+                        //errorlog_Label_UI.Text = "Error sending query: " + ex.Message;
+                    }
+
+                    return null;
+                }
             }
-            catch (Exception ex)
+            finally
             {
-                MessageBox.Show("Error sending query: " + ex.Message);
-                return null;
+                _commandQueueSemaphore.Release(); // Release semaphore for the next command/query
             }
         }
 
-        private async Task<string> ReceiveMessageAsync()
+        private async Task<string> ReceiveMessageAsync(CancellationToken cancellationToken)
         {
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                MessageBox.Show("Network stream is not available.");
+                // Display error in the status strip
+                //errorlog_Label_UI.Text = "Network stream is not available.";
                 return null;
             }
 
@@ -153,17 +185,24 @@ namespace sm70_cp_450_GUI
                 var buffer = new byte[1024];
                 var stringBuilder = new StringBuilder();
                 int bytesRead;
+
                 do
                 {
-                    bytesRead = await _networkStream.ReadAsync(buffer, 0, buffer.Length);
+                    // Use ReadAsync with the cancellationToken
+                    bytesRead = await _networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                     stringBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                } while (_networkStream.DataAvailable);
+                } while (_networkStream.DataAvailable && !cancellationToken.IsCancellationRequested);
 
                 return stringBuilder.ToString();
             }
+            catch (TaskCanceledException)
+            {
+                //errorlog_Label_UI.Text = "Message receiving operation was canceled.";
+                return null;
+            }
             catch (Exception ex)
             {
-                MessageBox.Show("Error receiving message: " + ex.Message);
+                //errorlog_Label_UI.Text = "Error receiving message: " + ex.Message;
                 return null;
             }
         }

@@ -104,14 +104,14 @@
             tableLayoutPanel2.Controls.Add(AppliedDischargeWatts_UI, 2, 2);
             tableLayoutPanel2.Controls.Add(EditValueButton, 0, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(3, 30);
+            tableLayoutPanel2.Location = new Point(3, 25);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 3;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(776, 159);
+            tableLayoutPanel2.Size = new Size(776, 164);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // WattageDisplay
@@ -122,7 +122,7 @@
             WattageDisplay.Location = new Point(520, 0);
             WattageDisplay.Margin = new Padding(4, 0, 4, 0);
             WattageDisplay.Name = "WattageDisplay";
-            WattageDisplay.Size = new Size(252, 47);
+            WattageDisplay.Size = new Size(252, 38);
             WattageDisplay.TabIndex = 2;
             WattageDisplay.Text = "0.0 W";
             WattageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -130,12 +130,12 @@
             // AppliedChargeAmps_UI
             // 
             AppliedChargeAmps_UI.Dock = DockStyle.Fill;
-            AppliedChargeAmps_UI.Location = new Point(268, 57);
+            AppliedChargeAmps_UI.Location = new Point(268, 48);
             AppliedChargeAmps_UI.Margin = new Padding(10);
             AppliedChargeAmps_UI.Name = "AppliedChargeAmps_UI";
             AppliedChargeAmps_UI.PlaceholderText = "0.0 A";
             AppliedChargeAmps_UI.ReadOnly = true;
-            AppliedChargeAmps_UI.Size = new Size(238, 34);
+            AppliedChargeAmps_UI.Size = new Size(238, 29);
             AppliedChargeAmps_UI.TabIndex = 10;
             AppliedChargeAmps_UI.TextAlign = HorizontalAlignment.Center;
             // 
@@ -147,7 +147,7 @@
             VoltageDisplay.Location = new Point(4, 0);
             VoltageDisplay.Margin = new Padding(4, 0, 4, 0);
             VoltageDisplay.Name = "VoltageDisplay";
-            VoltageDisplay.Size = new Size(250, 47);
+            VoltageDisplay.Size = new Size(250, 38);
             VoltageDisplay.TabIndex = 0;
             VoltageDisplay.Text = "0.0 V";
             VoltageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -160,7 +160,7 @@
             AmperageDisplay.Location = new Point(262, 0);
             AmperageDisplay.Margin = new Padding(4, 0, 4, 0);
             AmperageDisplay.Name = "AmperageDisplay";
-            AmperageDisplay.Size = new Size(250, 47);
+            AmperageDisplay.Size = new Size(250, 38);
             AmperageDisplay.TabIndex = 1;
             AmperageDisplay.Text = "0.0 A";
             AmperageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -168,48 +168,48 @@
             // AppliedVolts_UI
             // 
             AppliedVolts_UI.Dock = DockStyle.Fill;
-            AppliedVolts_UI.Location = new Point(10, 57);
+            AppliedVolts_UI.Location = new Point(10, 48);
             AppliedVolts_UI.Margin = new Padding(10);
             AppliedVolts_UI.Name = "AppliedVolts_UI";
             AppliedVolts_UI.PlaceholderText = "0.0 V";
             AppliedVolts_UI.ReadOnly = true;
-            AppliedVolts_UI.Size = new Size(238, 34);
+            AppliedVolts_UI.Size = new Size(238, 29);
             AppliedVolts_UI.TabIndex = 9;
             AppliedVolts_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // AppliedChargeWatts_UI
             // 
             AppliedChargeWatts_UI.Dock = DockStyle.Fill;
-            AppliedChargeWatts_UI.Location = new Point(526, 57);
+            AppliedChargeWatts_UI.Location = new Point(526, 48);
             AppliedChargeWatts_UI.Margin = new Padding(10);
             AppliedChargeWatts_UI.Name = "AppliedChargeWatts_UI";
             AppliedChargeWatts_UI.PlaceholderText = "0.0 W";
             AppliedChargeWatts_UI.ReadOnly = true;
-            AppliedChargeWatts_UI.Size = new Size(240, 34);
+            AppliedChargeWatts_UI.Size = new Size(240, 29);
             AppliedChargeWatts_UI.TabIndex = 11;
             AppliedChargeWatts_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // AppliedDischargeAmps_UI
             // 
             AppliedDischargeAmps_UI.Dock = DockStyle.Fill;
-            AppliedDischargeAmps_UI.Location = new Point(268, 111);
+            AppliedDischargeAmps_UI.Location = new Point(268, 97);
             AppliedDischargeAmps_UI.Margin = new Padding(10);
             AppliedDischargeAmps_UI.Name = "AppliedDischargeAmps_UI";
             AppliedDischargeAmps_UI.PlaceholderText = "-0.0 A";
             AppliedDischargeAmps_UI.ReadOnly = true;
-            AppliedDischargeAmps_UI.Size = new Size(238, 34);
+            AppliedDischargeAmps_UI.Size = new Size(238, 29);
             AppliedDischargeAmps_UI.TabIndex = 12;
             AppliedDischargeAmps_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // AppliedDischargeWatts_UI
             // 
             AppliedDischargeWatts_UI.Dock = DockStyle.Fill;
-            AppliedDischargeWatts_UI.Location = new Point(526, 111);
+            AppliedDischargeWatts_UI.Location = new Point(526, 97);
             AppliedDischargeWatts_UI.Margin = new Padding(10);
             AppliedDischargeWatts_UI.Name = "AppliedDischargeWatts_UI";
             AppliedDischargeWatts_UI.PlaceholderText = "-0.0 W";
             AppliedDischargeWatts_UI.ReadOnly = true;
-            AppliedDischargeWatts_UI.Size = new Size(240, 34);
+            AppliedDischargeWatts_UI.Size = new Size(240, 29);
             AppliedDischargeWatts_UI.TabIndex = 13;
             AppliedDischargeWatts_UI.TextAlign = HorizontalAlignment.Center;
             // 
@@ -217,7 +217,7 @@
             // 
             EditValueButton.Anchor = AnchorStyles.Top;
             EditValueButton.AutoSize = true;
-            EditValueButton.Location = new Point(9, 104);
+            EditValueButton.Location = new Point(9, 90);
             EditValueButton.Name = "EditValueButton";
             EditValueButton.Size = new Size(240, 38);
             EditValueButton.TabIndex = 14;
@@ -249,21 +249,21 @@
             tableLayoutPanel4.Controls.Add(ChargeButton, 0, 0);
             tableLayoutPanel4.Controls.Add(DischargeButton, 1, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(3, 30);
+            tableLayoutPanel4.Location = new Point(3, 25);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(435, 158);
+            tableLayoutPanel4.Size = new Size(435, 163);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // BatteryConnectButton
             // 
             BatteryConnectButton.BackColor = Color.White;
             BatteryConnectButton.Dock = DockStyle.Fill;
-            BatteryConnectButton.Location = new Point(3, 82);
+            BatteryConnectButton.Location = new Point(3, 84);
             BatteryConnectButton.Name = "BatteryConnectButton";
-            BatteryConnectButton.Size = new Size(138, 73);
+            BatteryConnectButton.Size = new Size(138, 76);
             BatteryConnectButton.TabIndex = 12;
             BatteryConnectButton.Text = "Connect Battery";
             BatteryConnectButton.UseVisualStyleBackColor = false;
@@ -275,9 +275,9 @@
             StartStopButton.BackColor = Color.Chartreuse;
             StartStopButton.Dock = DockStyle.Fill;
             StartStopButton.Enabled = false;
-            StartStopButton.Location = new Point(292, 82);
+            StartStopButton.Location = new Point(292, 84);
             StartStopButton.Name = "StartStopButton";
-            StartStopButton.Size = new Size(140, 73);
+            StartStopButton.Size = new Size(140, 76);
             StartStopButton.TabIndex = 11;
             StartStopButton.Text = "Start";
             StartStopButton.UseVisualStyleBackColor = false;
@@ -290,7 +290,7 @@
             Charge30Button.Enabled = false;
             Charge30Button.Location = new Point(292, 3);
             Charge30Button.Name = "Charge30Button";
-            Charge30Button.Size = new Size(140, 73);
+            Charge30Button.Size = new Size(140, 75);
             Charge30Button.TabIndex = 2;
             Charge30Button.Text = "Discharge to 30%";
             Charge30Button.UseVisualStyleBackColor = false;
@@ -302,7 +302,7 @@
             ChargeButton.Dock = DockStyle.Fill;
             ChargeButton.Location = new Point(3, 3);
             ChargeButton.Name = "ChargeButton";
-            ChargeButton.Size = new Size(138, 73);
+            ChargeButton.Size = new Size(138, 75);
             ChargeButton.TabIndex = 0;
             ChargeButton.Text = "Charge";
             ChargeButton.UseVisualStyleBackColor = false;
@@ -314,7 +314,7 @@
             DischargeButton.Dock = DockStyle.Fill;
             DischargeButton.Location = new Point(147, 3);
             DischargeButton.Name = "DischargeButton";
-            DischargeButton.Size = new Size(139, 73);
+            DischargeButton.Size = new Size(139, 75);
             DischargeButton.TabIndex = 1;
             DischargeButton.Text = "Discharge";
             DischargeButton.UseVisualStyleBackColor = false;
@@ -327,7 +327,7 @@
             StatusCurrentOperation_UI.Margin = new Padding(0);
             StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
             StatusCurrentOperation_UI.ReadOnly = true;
-            StatusCurrentOperation_UI.Size = new Size(242, 43);
+            StatusCurrentOperation_UI.Size = new Size(242, 36);
             StatusCurrentOperation_UI.TabIndex = 15;
             StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
             // 
@@ -376,24 +376,24 @@
             tableLayoutPanel1.Controls.Add(RemoteCV_UI, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddColumns;
-            tableLayoutPanel1.Location = new Point(3, 30);
+            tableLayoutPanel1.Location = new Point(3, 25);
             tableLayoutPanel1.Margin = new Padding(0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(329, 133);
+            tableLayoutPanel1.Size = new Size(329, 138);
             tableLayoutPanel1.TabIndex = 4;
             // 
             // RemoteCP_UI
             // 
             RemoteCP_UI.AutoSize = true;
             RemoteCP_UI.Dock = DockStyle.Fill;
-            RemoteCP_UI.Location = new Point(124, 88);
+            RemoteCP_UI.Location = new Point(103, 92);
             RemoteCP_UI.Margin = new Padding(0);
             RemoteCP_UI.Name = "RemoteCP_UI";
-            RemoteCP_UI.Size = new Size(205, 45);
+            RemoteCP_UI.Size = new Size(226, 46);
             RemoteCP_UI.TabIndex = 10;
             RemoteCP_UI.Text = "Local";
             RemoteCP_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -402,10 +402,10 @@
             // 
             RemoteCC_UI.AutoSize = true;
             RemoteCC_UI.Dock = DockStyle.Fill;
-            RemoteCC_UI.Location = new Point(124, 44);
+            RemoteCC_UI.Location = new Point(103, 46);
             RemoteCC_UI.Margin = new Padding(0);
             RemoteCC_UI.Name = "RemoteCC_UI";
-            RemoteCC_UI.Size = new Size(205, 44);
+            RemoteCC_UI.Size = new Size(226, 46);
             RemoteCC_UI.TabIndex = 9;
             RemoteCC_UI.Text = "Local";
             RemoteCC_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -417,7 +417,7 @@
             StatusLabel_UI.Location = new Point(3, 0);
             StatusLabel_UI.Name = "StatusLabel_UI";
             StatusLabel_UI.Padding = new Padding(3);
-            StatusLabel_UI.Size = new Size(118, 44);
+            StatusLabel_UI.Size = new Size(97, 46);
             StatusLabel_UI.TabIndex = 0;
             StatusLabel_UI.Text = "Remote CV:";
             // 
@@ -425,10 +425,10 @@
             // 
             label3.AutoSize = true;
             label3.Dock = DockStyle.Fill;
-            label3.Location = new Point(3, 44);
+            label3.Location = new Point(3, 46);
             label3.Name = "label3";
             label3.Padding = new Padding(3);
-            label3.Size = new Size(118, 44);
+            label3.Size = new Size(97, 46);
             label3.TabIndex = 1;
             label3.Text = "Remote CC:";
             // 
@@ -436,10 +436,10 @@
             // 
             label4.AutoSize = true;
             label4.Dock = DockStyle.Fill;
-            label4.Location = new Point(3, 88);
+            label4.Location = new Point(3, 92);
             label4.Name = "label4";
             label4.Padding = new Padding(3);
-            label4.Size = new Size(118, 45);
+            label4.Size = new Size(97, 46);
             label4.TabIndex = 2;
             label4.Text = "Remote CP:";
             // 
@@ -447,10 +447,10 @@
             // 
             RemoteCV_UI.AutoSize = true;
             RemoteCV_UI.Dock = DockStyle.Fill;
-            RemoteCV_UI.Location = new Point(124, 0);
+            RemoteCV_UI.Location = new Point(103, 0);
             RemoteCV_UI.Margin = new Padding(0);
             RemoteCV_UI.Name = "RemoteCV_UI";
-            RemoteCV_UI.Size = new Size(205, 44);
+            RemoteCV_UI.Size = new Size(226, 46);
             RemoteCV_UI.TabIndex = 8;
             RemoteCV_UI.Text = "Local";
             RemoteCV_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -465,7 +465,7 @@
             groupBox2.Controls.Add(label2);
             groupBox2.Controls.Add(RatedBatteryAmperageUI);
             groupBox2.Dock = DockStyle.Top;
-            groupBox2.Location = new Point(3, 30);
+            groupBox2.Location = new Point(3, 25);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(335, 186);
             groupBox2.TabIndex = 14;
@@ -488,7 +488,7 @@
             C_Rating_UI.Location = new Point(209, 105);
             C_Rating_UI.Name = "C_Rating_UI";
             C_Rating_UI.PlaceholderText = "C1";
-            C_Rating_UI.Size = new Size(120, 34);
+            C_Rating_UI.Size = new Size(120, 29);
             C_Rating_UI.TabIndex = 10;
             // 
             // RatedBatteryVoltageUI
@@ -497,7 +497,7 @@
             RatedBatteryVoltageUI.Location = new Point(209, 35);
             RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
             RatedBatteryVoltageUI.PlaceholderText = "Voltage";
-            RatedBatteryVoltageUI.Size = new Size(120, 34);
+            RatedBatteryVoltageUI.Size = new Size(120, 29);
             RatedBatteryVoltageUI.TabIndex = 3;
             // 
             // label1
@@ -505,7 +505,7 @@
             label1.AutoSize = true;
             label1.Location = new Point(12, 32);
             label1.Name = "label1";
-            label1.Size = new Size(135, 28);
+            label1.Size = new Size(106, 21);
             label1.TabIndex = 6;
             label1.Text = "Rated Voltage";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -515,7 +515,7 @@
             label6.AutoSize = true;
             label6.Location = new Point(12, 102);
             label6.Name = "label6";
-            label6.Size = new Size(86, 28);
+            label6.Size = new Size(69, 21);
             label6.TabIndex = 9;
             label6.Text = "C Rating";
             label6.TextAlign = ContentAlignment.MiddleCenter;
@@ -525,7 +525,7 @@
             label2.AutoSize = true;
             label2.Location = new Point(12, 67);
             label2.Name = "label2";
-            label2.Size = new Size(140, 28);
+            label2.Size = new Size(110, 21);
             label2.TabIndex = 8;
             label2.Text = "Rated capacity";
             label2.TextAlign = ContentAlignment.MiddleCenter;
@@ -536,12 +536,12 @@
             RatedBatteryAmperageUI.Location = new Point(209, 70);
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
-            RatedBatteryAmperageUI.Size = new Size(120, 34);
+            RatedBatteryAmperageUI.Size = new Size(120, 29);
             RatedBatteryAmperageUI.TabIndex = 7;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(11F, 28F);
+            AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(782, 573);
             Controls.Add(StatusCurrentOperation_UI);
