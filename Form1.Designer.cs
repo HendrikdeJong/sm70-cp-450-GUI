@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             LiveInfoData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
@@ -73,13 +74,14 @@
             settingsBox_UI = new GroupBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
             groupBox1 = new GroupBox();
-            CommandStrip_UI = new StatusStrip();
-            errorlog_Label_UI = new ToolStripStatusLabel();
+            ConsoleBox = new GroupBox();
+            Console_ErrorTextbox_UI = new RichTextBox();
             textBox1 = new TextBox();
             label3 = new Label();
             Name1 = new Label();
             StatusCurrentOperation_UI = new TextBox();
             label7 = new Label();
+            contextMenuStrip1 = new ContextMenuStrip(components);
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -94,7 +96,7 @@
             settingsBox_UI.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             groupBox1.SuspendLayout();
-            CommandStrip_UI.SuspendLayout();
+            ConsoleBox.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -637,7 +639,7 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(CommandStrip_UI);
+            groupBox1.Controls.Add(ConsoleBox);
             groupBox1.Controls.Add(textBox1);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(Name1);
@@ -651,21 +653,30 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
             // 
-            // CommandStrip_UI
+            // ConsoleBox
             // 
-            CommandStrip_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            CommandStrip_UI.Items.AddRange(new ToolStripItem[] { errorlog_Label_UI });
-            CommandStrip_UI.Location = new Point(3, 428);
-            CommandStrip_UI.Name = "CommandStrip_UI";
-            CommandStrip_UI.Size = new Size(311, 26);
-            CommandStrip_UI.TabIndex = 21;
-            CommandStrip_UI.Text = "statusStrip1";
+            ConsoleBox.Controls.Add(Console_ErrorTextbox_UI);
+            ConsoleBox.Dock = DockStyle.Bottom;
+            ConsoleBox.Location = new Point(3, 220);
+            ConsoleBox.Name = "ConsoleBox";
+            ConsoleBox.Size = new Size(311, 234);
+            ConsoleBox.TabIndex = 22;
+            ConsoleBox.TabStop = false;
+            ConsoleBox.Text = "Console";
             // 
-            // errorlog_Label_UI
+            // Console_ErrorTextbox_UI
             // 
-            errorlog_Label_UI.Name = "errorlog_Label_UI";
-            errorlog_Label_UI.Size = new Size(157, 21);
-            errorlog_Label_UI.Text = "toolStripStatusLabel1";
+            Console_ErrorTextbox_UI.BackColor = SystemColors.ControlLight;
+            Console_ErrorTextbox_UI.Dock = DockStyle.Fill;
+            Console_ErrorTextbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_ErrorTextbox_UI.ForeColor = SystemColors.ActiveCaptionText;
+            Console_ErrorTextbox_UI.Location = new Point(3, 25);
+            Console_ErrorTextbox_UI.Name = "Console_ErrorTextbox_UI";
+            Console_ErrorTextbox_UI.ReadOnly = true;
+            Console_ErrorTextbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
+            Console_ErrorTextbox_UI.Size = new Size(305, 206);
+            Console_ErrorTextbox_UI.TabIndex = 0;
+            Console_ErrorTextbox_UI.Text = "";
             // 
             // textBox1
             // 
@@ -718,6 +729,11 @@
             label7.Text = "Current Operation:";
             label7.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(61, 4);
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
@@ -757,8 +773,7 @@
             flowLayoutPanel1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
-            CommandStrip_UI.ResumeLayout(false);
-            CommandStrip_UI.PerformLayout();
+            ConsoleBox.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -812,7 +827,8 @@
         private Label Name1;
         private TextBox StatusCurrentOperation_UI;
         private Label label7;
-        private StatusStrip CommandStrip_UI;
-        private ToolStripStatusLabel errorlog_Label_UI;
+        private ContextMenuStrip contextMenuStrip1;
+        private GroupBox ConsoleBox;
+        private RichTextBox Console_ErrorTextbox_UI;
     }
 }
