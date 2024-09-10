@@ -75,8 +75,12 @@
             flowLayoutPanel1 = new FlowLayoutPanel();
             groupBox1 = new GroupBox();
             ConsoleBox = new GroupBox();
-            Console_ErrorTextbox_UI = new RichTextBox();
-            textBox1 = new TextBox();
+            tabControl1 = new TabControl();
+            Simple = new TabPage();
+            Console_Simple_Textbox_UI = new RichTextBox();
+            Advanced = new TabPage();
+            Console_Advanced_Textbox_UI = new RichTextBox();
+            Label_Time_UI = new TextBox();
             label3 = new Label();
             Name1 = new Label();
             StatusCurrentOperation_UI = new TextBox();
@@ -97,6 +101,9 @@
             flowLayoutPanel1.SuspendLayout();
             groupBox1.SuspendLayout();
             ConsoleBox.SuspendLayout();
+            tabControl1.SuspendLayout();
+            Simple.SuspendLayout();
+            Advanced.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -640,7 +647,7 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(ConsoleBox);
-            groupBox1.Controls.Add(textBox1);
+            groupBox1.Controls.Add(Label_Time_UI);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(Name1);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
@@ -655,40 +662,86 @@
             // 
             // ConsoleBox
             // 
-            ConsoleBox.Controls.Add(Console_ErrorTextbox_UI);
+            ConsoleBox.Controls.Add(tabControl1);
             ConsoleBox.Dock = DockStyle.Bottom;
-            ConsoleBox.Location = new Point(3, 220);
+            ConsoleBox.Location = new Point(3, 245);
             ConsoleBox.Name = "ConsoleBox";
-            ConsoleBox.Size = new Size(311, 234);
+            ConsoleBox.Size = new Size(311, 209);
             ConsoleBox.TabIndex = 22;
             ConsoleBox.TabStop = false;
             ConsoleBox.Text = "Console";
             // 
-            // Console_ErrorTextbox_UI
+            // tabControl1
             // 
-            Console_ErrorTextbox_UI.BackColor = SystemColors.ControlLight;
-            Console_ErrorTextbox_UI.Dock = DockStyle.Fill;
-            Console_ErrorTextbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            Console_ErrorTextbox_UI.ForeColor = SystemColors.ActiveCaptionText;
-            Console_ErrorTextbox_UI.Location = new Point(3, 25);
-            Console_ErrorTextbox_UI.Name = "Console_ErrorTextbox_UI";
-            Console_ErrorTextbox_UI.ReadOnly = true;
-            Console_ErrorTextbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_ErrorTextbox_UI.Size = new Size(305, 206);
-            Console_ErrorTextbox_UI.TabIndex = 0;
-            Console_ErrorTextbox_UI.Text = "";
+            tabControl1.Controls.Add(Simple);
+            tabControl1.Controls.Add(Advanced);
+            tabControl1.Dock = DockStyle.Fill;
+            tabControl1.Location = new Point(3, 25);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(305, 181);
+            tabControl1.TabIndex = 0;
             // 
-            // textBox1
+            // Simple
             // 
-            textBox1.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox1.Location = new Point(172, 73);
-            textBox1.Margin = new Padding(0);
-            textBox1.Name = "textBox1";
-            textBox1.ReadOnly = true;
-            textBox1.Size = new Size(136, 36);
-            textBox1.TabIndex = 20;
-            textBox1.Text = "2h 25m 20s";
-            textBox1.TextAlign = HorizontalAlignment.Center;
+            Simple.Controls.Add(Console_Simple_Textbox_UI);
+            Simple.Location = new Point(4, 30);
+            Simple.Margin = new Padding(0);
+            Simple.Name = "Simple";
+            Simple.Size = new Size(297, 147);
+            Simple.TabIndex = 0;
+            Simple.Text = "Simple / only errors";
+            Simple.UseVisualStyleBackColor = true;
+            // 
+            // Console_Simple_Textbox_UI
+            // 
+            Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
+            Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
+            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
+            Console_Simple_Textbox_UI.Location = new Point(0, 0);
+            Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
+            Console_Simple_Textbox_UI.ReadOnly = true;
+            Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
+            Console_Simple_Textbox_UI.Size = new Size(297, 147);
+            Console_Simple_Textbox_UI.TabIndex = 4;
+            Console_Simple_Textbox_UI.Text = "";
+            // 
+            // Advanced
+            // 
+            Advanced.Controls.Add(Console_Advanced_Textbox_UI);
+            Advanced.Location = new Point(4, 30);
+            Advanced.Margin = new Padding(0);
+            Advanced.Name = "Advanced";
+            Advanced.Size = new Size(297, 147);
+            Advanced.TabIndex = 1;
+            Advanced.Text = "Advanced / Debug";
+            Advanced.UseVisualStyleBackColor = true;
+            // 
+            // Console_Advanced_Textbox_UI
+            // 
+            Console_Advanced_Textbox_UI.BackColor = SystemColors.ControlLight;
+            Console_Advanced_Textbox_UI.Dock = DockStyle.Fill;
+            Console_Advanced_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_Advanced_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
+            Console_Advanced_Textbox_UI.Location = new Point(0, 0);
+            Console_Advanced_Textbox_UI.Name = "Console_Advanced_Textbox_UI";
+            Console_Advanced_Textbox_UI.ReadOnly = true;
+            Console_Advanced_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
+            Console_Advanced_Textbox_UI.Size = new Size(297, 147);
+            Console_Advanced_Textbox_UI.TabIndex = 5;
+            Console_Advanced_Textbox_UI.Text = "";
+            // 
+            // Label_Time_UI
+            // 
+            Label_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Time_UI.Location = new Point(172, 73);
+            Label_Time_UI.Margin = new Padding(0);
+            Label_Time_UI.Name = "Label_Time_UI";
+            Label_Time_UI.ReadOnly = true;
+            Label_Time_UI.Size = new Size(136, 36);
+            Label_Time_UI.TabIndex = 20;
+            Label_Time_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // label3
             // 
@@ -774,6 +827,9 @@
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ConsoleBox.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
+            Simple.ResumeLayout(false);
+            Advanced.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -822,13 +878,17 @@
         private Label Label_MachineAppliedVoltage_UI;
         private Label Label_Remote_CV_UI;
         private GroupBox groupBox1;
-        private TextBox textBox1;
+        private TextBox Label_Time_UI;
         private Label label3;
         private Label Name1;
         private TextBox StatusCurrentOperation_UI;
         private Label label7;
         private ContextMenuStrip contextMenuStrip1;
         private GroupBox ConsoleBox;
-        private RichTextBox Console_ErrorTextbox_UI;
+        private TabControl tabControl1;
+        private TabPage Simple;
+        private RichTextBox Console_Simple_Textbox_UI;
+        private TabPage Advanced;
+        private RichTextBox Console_Advanced_Textbox_UI;
     }
 }
