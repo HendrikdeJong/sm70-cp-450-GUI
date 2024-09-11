@@ -74,6 +74,8 @@
             settingsBox_UI = new GroupBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
             groupBox1 = new GroupBox();
+            Label_Elapsed_Time_UI = new TextBox();
+            label4 = new Label();
             ConsoleBox = new GroupBox();
             tabControl1 = new TabControl();
             Simple = new TabPage();
@@ -646,6 +648,8 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(Label_Elapsed_Time_UI);
+            groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(ConsoleBox);
             groupBox1.Controls.Add(Label_Time_UI);
             groupBox1.Controls.Add(label3);
@@ -659,6 +663,27 @@
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
+            // 
+            // Label_Elapsed_Time_UI
+            // 
+            Label_Elapsed_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Elapsed_Time_UI.Location = new Point(172, 166);
+            Label_Elapsed_Time_UI.Margin = new Padding(0);
+            Label_Elapsed_Time_UI.Name = "Label_Elapsed_Time_UI";
+            Label_Elapsed_Time_UI.ReadOnly = true;
+            Label_Elapsed_Time_UI.Size = new Size(136, 36);
+            Label_Elapsed_Time_UI.TabIndex = 24;
+            Label_Elapsed_Time_UI.Text = "00:00:00";
+            Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label4
+            // 
+            label4.Location = new Point(6, 166);
+            label4.Name = "label4";
+            label4.Size = new Size(151, 36);
+            label4.TabIndex = 23;
+            label4.Text = "Time Elapsed:";
+            label4.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // ConsoleBox
             // 
@@ -710,10 +735,10 @@
             // Advanced
             // 
             Advanced.Controls.Add(Console_Advanced_Textbox_UI);
-            Advanced.Location = new Point(4, 30);
+            Advanced.Location = new Point(4, 24);
             Advanced.Margin = new Padding(0);
             Advanced.Name = "Advanced";
-            Advanced.Size = new Size(297, 147);
+            Advanced.Size = new Size(297, 159);
             Advanced.TabIndex = 1;
             Advanced.Text = "Advanced / Debug";
             Advanced.UseVisualStyleBackColor = true;
@@ -728,7 +753,7 @@
             Console_Advanced_Textbox_UI.Name = "Console_Advanced_Textbox_UI";
             Console_Advanced_Textbox_UI.ReadOnly = true;
             Console_Advanced_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Advanced_Textbox_UI.Size = new Size(297, 147);
+            Console_Advanced_Textbox_UI.Size = new Size(297, 159);
             Console_Advanced_Textbox_UI.TabIndex = 5;
             Console_Advanced_Textbox_UI.Text = "";
             // 
@@ -741,13 +766,14 @@
             Label_Time_UI.ReadOnly = true;
             Label_Time_UI.Size = new Size(136, 36);
             Label_Time_UI.TabIndex = 20;
+            Label_Time_UI.Text = "Not connected";
             Label_Time_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // label3
             // 
             label3.Location = new Point(6, 73);
             label3.Name = "label3";
-            label3.Size = new Size(184, 36);
+            label3.Size = new Size(151, 36);
             label3.TabIndex = 19;
             label3.Text = "Online:";
             label3.TextAlign = ContentAlignment.MiddleLeft;
@@ -771,13 +797,14 @@
             StatusCurrentOperation_UI.ReadOnly = true;
             StatusCurrentOperation_UI.Size = new Size(136, 36);
             StatusCurrentOperation_UI.TabIndex = 17;
+            StatusCurrentOperation_UI.Text = "None";
             StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
             // 
             // label7
             // 
             label7.Location = new Point(6, 115);
             label7.Name = "label7";
-            label7.Size = new Size(184, 36);
+            label7.Size = new Size(151, 36);
             label7.TabIndex = 16;
             label7.Text = "Current Operation:";
             label7.TextAlign = ContentAlignment.MiddleLeft;
@@ -890,5 +917,7 @@
         private RichTextBox Console_Simple_Textbox_UI;
         private TabPage Advanced;
         private RichTextBox Console_Advanced_Textbox_UI;
+        private TextBox Label_Elapsed_Time_UI;
+        private Label label4;
     }
 }

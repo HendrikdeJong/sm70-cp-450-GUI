@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Timer = System.Windows.Forms.Timer;
@@ -29,6 +31,11 @@ namespace sm70_cp_450_GUI
         private double _ratedCapacity = 0;
         private double _cRating = 0;
         private double _ratedPower = 0;
+
+        private TimeSpan _timeToDischarge30Percent;
+
+        private Stopwatch _stopwatch = new Stopwatch();
+        private TimeSpan _maxChargingTime;
 
         private double _StoredVoltageSetting = 0;
         private double _StoredCurrent = 0;
@@ -128,9 +135,41 @@ namespace sm70_cp_450_GUI
                 RequestTime();
 
                 LockButtons();
+
+                // Always update the elapsed time display
+                if (_stopwatch.IsRunning)
+                {
+                    TimeSpan elapsed = _stopwatch.Elapsed;
+                    Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
+                }
+
+                // Monitor the battery during discharging
+                if (_SelectedProgram == AvailablePrograms.DischargeTo30Percent)
+                {
+                    MonitorDischargeTo30Percent();
+                }
             };
             updateTimer.Start();
 
+        }
+
+
+        private void MonitorDischargeTo30Percent()
+        {
+            if (_started && _stopwatch.IsRunning)
+            {
+                TimeSpan elapsed = _stopwatch.Elapsed;
+                Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
+
+                // Check if the elapsed time is greater than or equal to the time to reach 30%
+                if (elapsed >= _timeToDischarge30Percent)
+                {
+                    ToggleStartStopButton(null, EventArgs.Empty);
+
+                    // Notify the user that discharging has completed
+                    MessageBox.Show("Battery has been discharged to approximately 30% capacity.");
+                }
+            }
         }
 
         private void InitializeSettings()
@@ -407,8 +446,16 @@ namespace sm70_cp_450_GUI
 
         private void toggleOutput()
         {
-            if (_started) EnqueueCommand("OUTPut ON\n");
-            else EnqueueCommand("OUTPut OFF\n");
+            if (_started)
+            {
+                EnqueueCommand("OUTPut ON\n");
+                _stopwatch.Start();  // Start the stopwatch
+            }
+            else
+            {
+                EnqueueCommand("OUTPut OFF\n");
+                _stopwatch.Stop();   // Stop the stopwatch
+            }
         }
 
         #endregion
@@ -500,7 +547,7 @@ namespace sm70_cp_450_GUI
             if (_EditingValues)
             {
                 Button_Toggle_ValueEditor.Text = "Save And Update Values";
-                UpdateFromManualOverride();
+                //UpdateFromManualOverride();
             }
             else
             {
@@ -511,6 +558,11 @@ namespace sm70_cp_450_GUI
 
         private void UpdateFromManualOverride()
         {
+            InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
+            InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
+            InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
+            InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
+            InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
             _StoredVoltageSetting = ParseInput(InputField_StoredValueVoltage.Text);
             _StoredCurrent = ParseInput(InputField_StoredValueCurrentPlus.Text);
             _StoredPower = ParseInput(InputField_StoredValuePowerPlus.Text);
@@ -519,9 +571,14 @@ namespace sm70_cp_450_GUI
             SaveSettings(_StoredVoltageSetting, _StoredCurrent, _StoredPower, _StoredNegativeCurrent, _StoredNegativePower);
         }
 
+        private static string RemoveNonNumeric(string input)
+        {
+            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
+        }
+
         private double ParseInput(string input)
         {
-            if (double.TryParse(input, out double result)) return result;
+            if (double.TryParse(RemoveNonNumeric(input), out double result)) return result;
             return 0;
         }
 
@@ -591,12 +648,50 @@ namespace sm70_cp_450_GUI
 
         private void CalculateWithCRating()
         {
-            double amps = _ratedCapacity * _cRating;
-            double watts = amps * _ratedVoltage;
+            double amps = _ratedCapacity * _cRating;  // How much current can be applied safely
+            double watts = amps * _ratedVoltage;      // Power in watts
             _ratedPower = watts;
+
             SaveSettings(_ratedVoltage, amps, watts, -amps, -watts);
+
+            // Calculate max charging time in hours, then convert to TimeSpan
+            double maxChargingHours = _ratedCapacity / amps;
+            _maxChargingTime = TimeSpan.FromHours(maxChargingHours);
         }
 
+        // Function to calculate time to discharge to 30%
+        private void CalculateDischargeTimeTo30Percent()
+        {
+            // Ensure _ratedCapacity and _cRating are not zero or negative
+            if (_ratedCapacity <= 0 || _cRating <= 0)
+            {
+                MessageBox.Show("Invalid rated capacity or C-rating. Please check your battery settings.");
+                return;
+            }
+
+            // Assuming you're discharging at _cRating * _ratedCapacity amps
+            double dischargeCurrent = _ratedCapacity * _cRating;
+
+            // Prevent division by zero
+            if (dischargeCurrent <= 0)
+            {
+                MessageBox.Show("Discharge current is zero or invalid. Cannot calculate discharge time.");
+                return;
+            }
+
+            // Full discharge time in hours
+            double fullDischargeTimeHours = _ratedCapacity / dischargeCurrent;
+
+            // Check for invalid result (NaN)
+            if (double.IsNaN(fullDischargeTimeHours) || fullDischargeTimeHours <= 0)
+            {
+                MessageBox.Show("Calculated discharge time is invalid.");
+                return;
+            }
+
+            // Time to discharge to 30% (70% of the full discharge time)
+            _timeToDischarge30Percent = TimeSpan.FromHours(fullDischargeTimeHours * 0.70);
+        }
 
 
 
@@ -610,7 +705,7 @@ namespace sm70_cp_450_GUI
             ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = BatteryConnectButton.Enabled = !_started;
         }
 
-        private void ToggleStartStopButton(object sender, EventArgs e)
+        private void ToggleStartStopButton(object? sender, EventArgs? e)
         {
             _started = !_started;
             StartStopButton.BackColor = _started ? Color.Red : Color.Green;
@@ -629,18 +724,38 @@ namespace sm70_cp_450_GUI
         {
             UpdateButtonColors(ChargeButton);
             _SelectedProgram = AvailablePrograms.Charging;
+            _stopwatch.Reset();
+            Label_Elapsed_Time_UI.Text = "00:00:00";
         }
 
         private void DischargeButton_Click(object sender, EventArgs e)
         {
             UpdateButtonColors(DischargeButton);
             _SelectedProgram = AvailablePrograms.Discharging;
+            _stopwatch.Reset();
+            Label_Elapsed_Time_UI.Text = "00:00:00";
         }
+
+        //private void Charge30Button_Click(object sender, EventArgs e)
+        //{
+        //    UpdateButtonColors(Charge30Button);
+        //    _SelectedProgram = AvailablePrograms.DischargeTo30Percent;
+        //    _stopwatch.Reset();
+        //    Label_Elapsed_Time_UI.Text = "00:00:00";
+        //}
+
 
         private void Charge30Button_Click(object sender, EventArgs e)
         {
             UpdateButtonColors(Charge30Button);
             _SelectedProgram = AvailablePrograms.DischargeTo30Percent;
+
+            // Reset the stopwatch
+            _stopwatch.Reset();
+            Label_Elapsed_Time_UI.Text = "00:00:00";
+
+            // Calculate the time to discharge to 30%
+            CalculateDischargeTimeTo30Percent();
         }
 
         private void BatteryConnectButton_Click(object sender, EventArgs e)
