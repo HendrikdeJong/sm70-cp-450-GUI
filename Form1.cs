@@ -1,3 +1,4 @@
+using sm70_cp_450_GUI.Properties;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
@@ -7,11 +8,9 @@ namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
     {
-        private const string ServerIp = "169.254.0.102";
-        private const int ServerPort = 8462;
         private TcpConnectionHandler _tcpConnectionHandler;
         private bool _started = false;
-        private bool _discharged = false;
+        private bool DischargeTo30Bool = false;
         private bool _EditingValues = false;
         private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
 
@@ -21,10 +20,10 @@ namespace sm70_cp_450_GUI
 
         private bool _showAll = false;
 
-        private double _ratedVoltage = 0;
-        private double _ratedCapacity = 0;
-        private double _cRating = 0;
-        private double _ratedPower = 0;
+        private double _ratedVoltage = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._ratedVoltage : 0;
+        private double _ratedCapacity = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._ratedCapacity : 0;
+        private double _cRating = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._cRating : 0;
+        private double _ratedPower = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._ratedPower : 0;
 
         List<BatteryMetrics> batteryData = new List<BatteryMetrics>();
         private TimeSpan _timeToDischarge30Percent;
@@ -45,11 +44,11 @@ namespace sm70_cp_450_GUI
         private Stopwatch _stopwatch = new Stopwatch();
         private TimeSpan _maxChargingTime;
 
-        private double _StoredVoltageSetting = 0;
-        private double _StoredCurrent = 0;
-        private double _StoredPower = 0;
-        private double _StoredNegativeCurrent = 0;
-        private double _StoredNegativePower = 0;
+        private double _StoredVoltageSetting = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._StoredVoltageSetting : 0;
+        private double _StoredCurrent = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._StoredCurrent : 0;
+        private double _StoredPower = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._StoredPower : 0;
+        private double _StoredNegativeCurrent = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._StoredNegativeCurrent : 0;
+        private double _StoredNegativePower = Properties.Settings.Default._KeepMemory ? Properties.Settings.Default._StoredNegativePower : 0;
 
         // Queues for queries and commands
         private ConcurrentQueue<string> _commandQueue = new ConcurrentQueue<string>();
@@ -70,7 +69,6 @@ namespace sm70_cp_450_GUI
             Connecting_Battery,
             Charging,
             Discharging,
-            DischargeTo30Percent
         }
 
         public MainForm()
@@ -98,12 +96,17 @@ namespace sm70_cp_450_GUI
                 { "SYSTem:TIMe?", (response) => Label_Time_UI.Text = response},
             };
 
+
+
             InitializeTimers();
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
             Show();
+            toolStripMenuSetting_keepmemory.Checked = Properties.Settings.Default._KeepMemory;
+            string ServerIp = Properties.Settings.Default._IpAddres;
+            int ServerPort = int.Parse(Properties.Settings.Default._Port);
             _tcpConnectionHandler = new TcpConnectionHandler(ServerIp, ServerPort);
 
             MessageBox.Show("Attempting to establish TCP connection. Please wait...");
@@ -143,6 +146,8 @@ namespace sm70_cp_450_GUI
                 RequestRemoteSetting_CC();
                 RequestRemoteSetting_CP();
 
+                StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
+
                 RequestTime();
                 LockButtons();
 
@@ -161,7 +166,7 @@ namespace sm70_cp_450_GUI
                 }
 
                 // Monitor the battery during discharging
-                if (_SelectedProgram == AvailablePrograms.DischargeTo30Percent)
+                if (DischargeTo30Bool)
                 {
                     MonitorDischargeTo30Percent();
                 }
@@ -296,7 +301,7 @@ namespace sm70_cp_450_GUI
                     AddConsoleError($"[ERROR] Exception while processing command: {ex.Message}");
                 }
             }
-            
+
             _isProcessingCommandQueue = false;  // Mark the end of processing
         }
 
@@ -502,6 +507,17 @@ namespace sm70_cp_450_GUI
             _StoredNegativeCurrent = N_A;
             _StoredNegativePower = N_W;
 
+            Properties.Settings.Default._StoredVoltageSetting = V;
+            Properties.Settings.Default._StoredCurrent = A;
+            Properties.Settings.Default._StoredPower = W;
+            Properties.Settings.Default._StoredNegativeCurrent = N_A;
+            Properties.Settings.Default._StoredNegativePower = N_W;
+
+            Properties.Settings.Default._cRating = _cRating;
+            Properties.Settings.Default._ratedVoltage = _ratedVoltage;
+            Properties.Settings.Default._ratedCapacity = _ratedCapacity;
+            Properties.Settings.Default._ratedPower = _ratedPower;
+
             InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
             InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
             InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
@@ -533,18 +549,6 @@ namespace sm70_cp_450_GUI
                     case AvailablePrograms.Discharging:
                         SetOutputCurrentNegative(_StoredNegativeCurrent);
                         SetOutputPowerNegative(_StoredNegativePower);
-                        break;
-                    case AvailablePrograms.DischargeTo30Percent:
-                        if (!_discharged)
-                        {
-                            SetOutputCurrentNegative(_StoredNegativeCurrent);
-                            SetOutputPowerNegative(_StoredNegativePower);
-                        }
-                        else if (_discharged)
-                        {
-                            SetOutputCurrent(_StoredCurrent);
-                            SetOutputPower(_StoredPower);
-                        }
                         break;
                 }
             }
@@ -779,6 +783,7 @@ namespace sm70_cp_450_GUI
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
             batteryData.Clear();
+            DischargeTo30Bool = false;
         }
 
         private void DischargeButton_Click(object sender, EventArgs e)
@@ -788,14 +793,14 @@ namespace sm70_cp_450_GUI
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
             batteryData.Clear();
-
+            DischargeTo30Bool = false;
         }
 
-        private void Charge30Button_Click(object sender, EventArgs e)
+        private void DischargeTo30Button_Click(object sender, EventArgs e)
         {
             UpdateButtonColors(Charge30Button);
-            _SelectedProgram = AvailablePrograms.DischargeTo30Percent;
-
+            DischargeTo30Bool = true;
+            _SelectedProgram = AvailablePrograms.Discharging;
             // Reset the stopwatch
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
@@ -810,6 +815,7 @@ namespace sm70_cp_450_GUI
         {
             UpdateButtonColors(BatteryConnectButton);
             _SelectedProgram = AvailablePrograms.Connecting_Battery;
+            DischargeTo30Bool = false;
             ToggleStartStopButton(sender, e);
         }
 
@@ -825,5 +831,14 @@ namespace sm70_cp_450_GUI
 
         #endregion
 
+        private void toolStripMenuSetting_keepmemory_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepmemory.Checked;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+        }
     }
 }

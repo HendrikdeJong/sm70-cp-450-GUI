@@ -83,6 +83,8 @@
             ToolStripMenu_SaveSettings = new ToolStripMenuItem();
             ToolStripMenu_LoadSettings = new ToolStripMenuItem();
             toolStripMenuItem5 = new ToolStripMenuItem();
+            toolStripMenuISettings = new ToolStripMenuItem();
+            toolStripMenuSetting_keepmemory = new ToolStripMenuItem();
             FactoryInformationBox = new GroupBox();
             ApplyBatteryDataButton = new Button();
             C_Rating_UI = new TextBox();
@@ -519,7 +521,7 @@
             Charge30Button.TabIndex = 2;
             Charge30Button.Text = "Discharge to 30%";
             Charge30Button.UseVisualStyleBackColor = false;
-            Charge30Button.Click += Charge30Button_Click;
+            Charge30Button.Click += DischargeTo30Button_Click;
             // 
             // ChargeButton
             // 
@@ -559,7 +561,7 @@
             groupBox1.Controls.Add(label4);
             groupBox1.Location = new Point(12, 231);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(421, 474);
+            groupBox1.Size = new Size(438, 474);
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
@@ -570,7 +572,7 @@
             ConsoleBox.Dock = DockStyle.Bottom;
             ConsoleBox.Location = new Point(3, 298);
             ConsoleBox.Name = "ConsoleBox";
-            ConsoleBox.Size = new Size(415, 173);
+            ConsoleBox.Size = new Size(432, 173);
             ConsoleBox.TabIndex = 22;
             ConsoleBox.TabStop = false;
             ConsoleBox.Text = "Console";
@@ -585,7 +587,7 @@
             Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
             Console_Simple_Textbox_UI.ReadOnly = true;
             Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Simple_Textbox_UI.Size = new Size(409, 145);
+            Console_Simple_Textbox_UI.Size = new Size(426, 145);
             Console_Simple_Textbox_UI.TabIndex = 5;
             Console_Simple_Textbox_UI.Text = "";
             // 
@@ -593,11 +595,11 @@
             // 
             Label_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Time_UI.Location = new Point(279, 71);
+            Label_Time_UI.Location = new Point(257, 71);
             Label_Time_UI.Margin = new Padding(0);
             Label_Time_UI.Name = "Label_Time_UI";
             Label_Time_UI.ReadOnly = true;
-            Label_Time_UI.Size = new Size(136, 36);
+            Label_Time_UI.Size = new Size(175, 36);
             Label_Time_UI.TabIndex = 20;
             Label_Time_UI.Text = "Not connected";
             Label_Time_UI.TextAlign = HorizontalAlignment.Center;
@@ -625,11 +627,11 @@
             // 
             StatusCurrentOperation_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            StatusCurrentOperation_UI.Location = new Point(279, 113);
+            StatusCurrentOperation_UI.Location = new Point(257, 113);
             StatusCurrentOperation_UI.Margin = new Padding(0);
             StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
             StatusCurrentOperation_UI.ReadOnly = true;
-            StatusCurrentOperation_UI.Size = new Size(136, 36);
+            StatusCurrentOperation_UI.Size = new Size(175, 36);
             StatusCurrentOperation_UI.TabIndex = 17;
             StatusCurrentOperation_UI.Text = "None";
             StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
@@ -647,11 +649,11 @@
             // 
             Label_Elapsed_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_Elapsed_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Elapsed_Time_UI.Location = new Point(279, 154);
+            Label_Elapsed_Time_UI.Location = new Point(257, 154);
             Label_Elapsed_Time_UI.Margin = new Padding(0);
             Label_Elapsed_Time_UI.Name = "Label_Elapsed_Time_UI";
             Label_Elapsed_Time_UI.ReadOnly = true;
-            Label_Elapsed_Time_UI.Size = new Size(136, 36);
+            Label_Elapsed_Time_UI.Size = new Size(175, 36);
             Label_Elapsed_Time_UI.TabIndex = 24;
             Label_Elapsed_Time_UI.Text = "00:00:00";
             Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
@@ -672,7 +674,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem5 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem5, toolStripMenuISettings });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(907, 24);
@@ -690,7 +692,7 @@
             // 
             ToolStripMenu_Export_DropDown.DropDownItems.AddRange(new ToolStripItem[] { RuntimeCSV_ToolstripItem, errorLogToolStripMenuItem });
             ToolStripMenu_Export_DropDown.Name = "ToolStripMenu_Export_DropDown";
-            ToolStripMenu_Export_DropDown.Size = new Size(180, 22);
+            ToolStripMenu_Export_DropDown.Size = new Size(145, 22);
             ToolStripMenu_Export_DropDown.Text = "Export";
             // 
             // RuntimeCSV_ToolstripItem
@@ -710,19 +712,19 @@
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(142, 6);
             // 
             // ToolStripMenu_SaveSettings
             // 
             ToolStripMenu_SaveSettings.Name = "ToolStripMenu_SaveSettings";
-            ToolStripMenu_SaveSettings.Size = new Size(180, 22);
+            ToolStripMenu_SaveSettings.Size = new Size(145, 22);
             ToolStripMenu_SaveSettings.Text = "Save Settings";
             ToolStripMenu_SaveSettings.Click += SaveSettings;
             // 
             // ToolStripMenu_LoadSettings
             // 
             ToolStripMenu_LoadSettings.Name = "ToolStripMenu_LoadSettings";
-            ToolStripMenu_LoadSettings.Size = new Size(180, 22);
+            ToolStripMenu_LoadSettings.Size = new Size(145, 22);
             ToolStripMenu_LoadSettings.Text = "Load Settings";
             ToolStripMenu_LoadSettings.Click += LoadSettings;
             // 
@@ -732,6 +734,21 @@
             toolStripMenuItem5.Name = "toolStripMenuItem5";
             toolStripMenuItem5.Size = new Size(44, 20);
             toolStripMenuItem5.Text = "Help";
+            // 
+            // toolStripMenuISettings
+            // 
+            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepmemory });
+            toolStripMenuISettings.Name = "toolStripMenuISettings";
+            toolStripMenuISettings.Size = new Size(61, 20);
+            toolStripMenuISettings.Text = "Settings";
+            // 
+            // toolStripMenuSetting_keepmemory
+            // 
+            toolStripMenuSetting_keepmemory.CheckOnClick = true;
+            toolStripMenuSetting_keepmemory.Name = "toolStripMenuSetting_keepmemory";
+            toolStripMenuSetting_keepmemory.Size = new Size(148, 22);
+            toolStripMenuSetting_keepmemory.Text = "Keep memory";
+            toolStripMenuSetting_keepmemory.CheckedChanged += toolStripMenuSetting_keepmemory_CheckedChanged;
             // 
             // FactoryInformationBox
             // 
@@ -843,6 +860,7 @@
             Margin = new Padding(4);
             Name = "MainForm";
             Text = "Whisper Power - Sm15k Controller";
+            FormClosing += MainForm_FormClosing;
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -938,5 +956,7 @@
         private ToolStripMenuItem ToolStripMenu_SaveSettings;
         private ToolStripMenuItem ToolStripMenu_LoadSettings;
         private ToolStripMenuItem toolStripMenuItem5;
+        private ToolStripMenuItem toolStripMenuISettings;
+        private ToolStripMenuItem toolStripMenuSetting_keepmemory;
     }
 }
