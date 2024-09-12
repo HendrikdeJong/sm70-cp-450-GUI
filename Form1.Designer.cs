@@ -63,7 +63,27 @@
             ChargeButton = new Button();
             DischargeButton = new Button();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            groupBox2 = new GroupBox();
+            groupBox1 = new GroupBox();
+            ConsoleBox = new GroupBox();
+            Console_Simple_Textbox_UI = new RichTextBox();
+            Label_Time_UI = new TextBox();
+            label3 = new Label();
+            Name1 = new Label();
+            StatusCurrentOperation_UI = new TextBox();
+            label7 = new Label();
+            Label_Elapsed_Time_UI = new TextBox();
+            label4 = new Label();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            menuStrip1 = new MenuStrip();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            ToolStripMenu_Export_DropDown = new ToolStripMenuItem();
+            RuntimeCSV_ToolstripItem = new ToolStripMenuItem();
+            errorLogToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            ToolStripMenu_SaveSettings = new ToolStripMenuItem();
+            ToolStripMenu_LoadSettings = new ToolStripMenuItem();
+            toolStripMenuItem5 = new ToolStripMenuItem();
+            FactoryInformationBox = new GroupBox();
             ApplyBatteryDataButton = new Button();
             C_Rating_UI = new TextBox();
             RatedBatteryVoltageUI = new TextBox();
@@ -71,23 +91,7 @@
             label6 = new Label();
             label2 = new Label();
             RatedBatteryAmperageUI = new TextBox();
-            settingsBox_UI = new GroupBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
-            groupBox1 = new GroupBox();
-            Label_Elapsed_Time_UI = new TextBox();
-            label4 = new Label();
-            ConsoleBox = new GroupBox();
-            tabControl1 = new TabControl();
-            Simple = new TabPage();
-            Console_Simple_Textbox_UI = new RichTextBox();
-            Advanced = new TabPage();
-            Console_Advanced_Textbox_UI = new RichTextBox();
-            Label_Time_UI = new TextBox();
-            label3 = new Label();
-            Name1 = new Label();
-            StatusCurrentOperation_UI = new TextBox();
-            label7 = new Label();
-            contextMenuStrip1 = new ContextMenuStrip(components);
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -98,23 +102,21 @@
             tableLayoutPanel6.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
-            groupBox2.SuspendLayout();
-            settingsBox_UI.SuspendLayout();
-            flowLayoutPanel1.SuspendLayout();
             groupBox1.SuspendLayout();
             ConsoleBox.SuspendLayout();
-            tabControl1.SuspendLayout();
-            Simple.SuspendLayout();
-            Advanced.SuspendLayout();
+            menuStrip1.SuspendLayout();
+            FactoryInformationBox.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
             // 
+            LiveInfoData.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            LiveInfoData.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             LiveInfoData.Controls.Add(tableLayoutPanel2);
-            LiveInfoData.Dock = DockStyle.Top;
-            LiveInfoData.Location = new Point(0, 0);
+            LiveInfoData.Location = new Point(12, 27);
             LiveInfoData.Name = "LiveInfoData";
-            LiveInfoData.Size = new Size(821, 211);
+            LiveInfoData.Size = new Size(883, 198);
             LiveInfoData.TabIndex = 5;
             LiveInfoData.TabStop = false;
             LiveInfoData.Text = "Info";
@@ -142,7 +144,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 35F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
-            tableLayoutPanel2.Size = new Size(815, 183);
+            tableLayoutPanel2.Size = new Size(877, 170);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // tableLayoutPanel9
@@ -154,12 +156,12 @@
             tableLayoutPanel9.Controls.Add(Label_MachineAppliedVoltage_UI, 1, 0);
             tableLayoutPanel9.Controls.Add(Label_Remote_CV_UI, 0, 0);
             tableLayoutPanel9.Dock = DockStyle.Fill;
-            tableLayoutPanel9.Location = new Point(3, 48);
+            tableLayoutPanel9.Location = new Point(3, 45);
             tableLayoutPanel9.Name = "tableLayoutPanel9";
             tableLayoutPanel9.RowCount = 2;
             tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel9.Size = new Size(265, 58);
+            tableLayoutPanel9.Size = new Size(286, 53);
             tableLayoutPanel9.TabIndex = 0;
             // 
             // Label_MachineAppliedVoltage_UI
@@ -167,9 +169,9 @@
             Label_MachineAppliedVoltage_UI.AutoSize = true;
             Label_MachineAppliedVoltage_UI.Dock = DockStyle.Fill;
             Label_MachineAppliedVoltage_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_MachineAppliedVoltage_UI.Location = new Point(135, 0);
+            Label_MachineAppliedVoltage_UI.Location = new Point(146, 0);
             Label_MachineAppliedVoltage_UI.Name = "Label_MachineAppliedVoltage_UI";
-            Label_MachineAppliedVoltage_UI.Size = new Size(127, 29);
+            Label_MachineAppliedVoltage_UI.Size = new Size(137, 26);
             Label_MachineAppliedVoltage_UI.TabIndex = 13;
             Label_MachineAppliedVoltage_UI.Text = "0 V";
             Label_MachineAppliedVoltage_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -181,7 +183,7 @@
             Label_Remote_CV_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Label_Remote_CV_UI.Location = new Point(3, 0);
             Label_Remote_CV_UI.Name = "Label_Remote_CV_UI";
-            Label_Remote_CV_UI.Size = new Size(126, 29);
+            Label_Remote_CV_UI.Size = new Size(137, 26);
             Label_Remote_CV_UI.TabIndex = 12;
             Label_Remote_CV_UI.Text = "Front";
             Label_Remote_CV_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -193,12 +195,12 @@
             tableLayoutPanel8.Controls.Add(InputField_StoredValueVoltage, 0, 0);
             tableLayoutPanel8.Controls.Add(Button_Toggle_ValueEditor, 0, 1);
             tableLayoutPanel8.Dock = DockStyle.Fill;
-            tableLayoutPanel8.Location = new Point(3, 112);
+            tableLayoutPanel8.Location = new Point(3, 104);
             tableLayoutPanel8.Name = "tableLayoutPanel8";
             tableLayoutPanel8.RowCount = 2;
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel8.Size = new Size(265, 68);
+            tableLayoutPanel8.Size = new Size(286, 63);
             tableLayoutPanel8.TabIndex = 12;
             // 
             // InputField_StoredValueVoltage
@@ -208,7 +210,7 @@
             InputField_StoredValueVoltage.Name = "InputField_StoredValueVoltage";
             InputField_StoredValueVoltage.PlaceholderText = "0 A";
             InputField_StoredValueVoltage.ReadOnly = true;
-            InputField_StoredValueVoltage.Size = new Size(259, 29);
+            InputField_StoredValueVoltage.Size = new Size(280, 29);
             InputField_StoredValueVoltage.TabIndex = 0;
             InputField_StoredValueVoltage.Tag = "";
             InputField_StoredValueVoltage.TextAlign = HorizontalAlignment.Center;
@@ -217,9 +219,9 @@
             // 
             Button_Toggle_ValueEditor.AutoSize = true;
             Button_Toggle_ValueEditor.Dock = DockStyle.Fill;
-            Button_Toggle_ValueEditor.Location = new Point(3, 37);
+            Button_Toggle_ValueEditor.Location = new Point(3, 34);
             Button_Toggle_ValueEditor.Name = "Button_Toggle_ValueEditor";
-            Button_Toggle_ValueEditor.Size = new Size(259, 28);
+            Button_Toggle_ValueEditor.Size = new Size(280, 26);
             Button_Toggle_ValueEditor.TabIndex = 1;
             Button_Toggle_ValueEditor.Text = "Edit values";
             Button_Toggle_ValueEditor.UseVisualStyleBackColor = true;
@@ -232,22 +234,22 @@
             tableLayoutPanel7.Controls.Add(InputField_StoredValuePowerMin, 0, 1);
             tableLayoutPanel7.Controls.Add(InputField_StoredValuePowerPlus, 0, 0);
             tableLayoutPanel7.Dock = DockStyle.Fill;
-            tableLayoutPanel7.Location = new Point(545, 112);
+            tableLayoutPanel7.Location = new Point(587, 104);
             tableLayoutPanel7.Name = "tableLayoutPanel7";
             tableLayoutPanel7.RowCount = 2;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel7.Size = new Size(267, 68);
+            tableLayoutPanel7.Size = new Size(287, 63);
             tableLayoutPanel7.TabIndex = 11;
             // 
             // InputField_StoredValuePowerMin
             // 
             InputField_StoredValuePowerMin.Dock = DockStyle.Fill;
-            InputField_StoredValuePowerMin.Location = new Point(3, 37);
+            InputField_StoredValuePowerMin.Location = new Point(3, 34);
             InputField_StoredValuePowerMin.Name = "InputField_StoredValuePowerMin";
             InputField_StoredValuePowerMin.PlaceholderText = "0 W";
             InputField_StoredValuePowerMin.ReadOnly = true;
-            InputField_StoredValuePowerMin.Size = new Size(261, 29);
+            InputField_StoredValuePowerMin.Size = new Size(281, 29);
             InputField_StoredValuePowerMin.TabIndex = 2;
             InputField_StoredValuePowerMin.Tag = "";
             InputField_StoredValuePowerMin.TextAlign = HorizontalAlignment.Center;
@@ -259,7 +261,7 @@
             InputField_StoredValuePowerPlus.Name = "InputField_StoredValuePowerPlus";
             InputField_StoredValuePowerPlus.PlaceholderText = "0 W";
             InputField_StoredValuePowerPlus.ReadOnly = true;
-            InputField_StoredValuePowerPlus.Size = new Size(261, 29);
+            InputField_StoredValuePowerPlus.Size = new Size(281, 29);
             InputField_StoredValuePowerPlus.TabIndex = 1;
             InputField_StoredValuePowerPlus.Tag = "";
             InputField_StoredValuePowerPlus.TextAlign = HorizontalAlignment.Center;
@@ -273,12 +275,12 @@
             tableLayoutPanel5.Controls.Add(Label_Remote_CP_UI, 0, 0);
             tableLayoutPanel5.Controls.Add(Label_MachineAppliedPowerMin_UI, 1, 1);
             tableLayoutPanel5.Dock = DockStyle.Fill;
-            tableLayoutPanel5.Location = new Point(545, 48);
+            tableLayoutPanel5.Location = new Point(587, 45);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 2;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel5.Size = new Size(267, 58);
+            tableLayoutPanel5.Size = new Size(287, 53);
             tableLayoutPanel5.TabIndex = 8;
             // 
             // Label_MachineAppliedPowerPlus_UI
@@ -286,9 +288,9 @@
             Label_MachineAppliedPowerPlus_UI.AutoSize = true;
             Label_MachineAppliedPowerPlus_UI.Dock = DockStyle.Fill;
             Label_MachineAppliedPowerPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_MachineAppliedPowerPlus_UI.Location = new Point(136, 0);
+            Label_MachineAppliedPowerPlus_UI.Location = new Point(146, 0);
             Label_MachineAppliedPowerPlus_UI.Name = "Label_MachineAppliedPowerPlus_UI";
-            Label_MachineAppliedPowerPlus_UI.Size = new Size(128, 29);
+            Label_MachineAppliedPowerPlus_UI.Size = new Size(138, 26);
             Label_MachineAppliedPowerPlus_UI.TabIndex = 11;
             Label_MachineAppliedPowerPlus_UI.Text = "0 W";
             Label_MachineAppliedPowerPlus_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -300,7 +302,7 @@
             Label_Remote_CP_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Label_Remote_CP_UI.Location = new Point(3, 0);
             Label_Remote_CP_UI.Name = "Label_Remote_CP_UI";
-            Label_Remote_CP_UI.Size = new Size(127, 29);
+            Label_Remote_CP_UI.Size = new Size(137, 26);
             Label_Remote_CP_UI.TabIndex = 10;
             Label_Remote_CP_UI.Text = "Front";
             Label_Remote_CP_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -310,9 +312,9 @@
             Label_MachineAppliedPowerMin_UI.AutoSize = true;
             Label_MachineAppliedPowerMin_UI.Dock = DockStyle.Fill;
             Label_MachineAppliedPowerMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_MachineAppliedPowerMin_UI.Location = new Point(136, 29);
+            Label_MachineAppliedPowerMin_UI.Location = new Point(146, 26);
             Label_MachineAppliedPowerMin_UI.Name = "Label_MachineAppliedPowerMin_UI";
-            Label_MachineAppliedPowerMin_UI.Size = new Size(128, 29);
+            Label_MachineAppliedPowerMin_UI.Size = new Size(138, 27);
             Label_MachineAppliedPowerMin_UI.TabIndex = 9;
             Label_MachineAppliedPowerMin_UI.Text = "-0 W";
             Label_MachineAppliedPowerMin_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -322,10 +324,10 @@
             WattageDisplay.AutoSize = true;
             WattageDisplay.Dock = DockStyle.Fill;
             WattageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
-            WattageDisplay.Location = new Point(546, 0);
+            WattageDisplay.Location = new Point(588, 0);
             WattageDisplay.Margin = new Padding(4, 0, 4, 0);
             WattageDisplay.Name = "WattageDisplay";
-            WattageDisplay.Size = new Size(265, 45);
+            WattageDisplay.Size = new Size(285, 42);
             WattageDisplay.TabIndex = 2;
             WattageDisplay.Text = "0.0 W";
             WattageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -338,7 +340,7 @@
             VoltageDisplay.Location = new Point(4, 0);
             VoltageDisplay.Margin = new Padding(4, 0, 4, 0);
             VoltageDisplay.Name = "VoltageDisplay";
-            VoltageDisplay.Size = new Size(263, 45);
+            VoltageDisplay.Size = new Size(284, 42);
             VoltageDisplay.TabIndex = 0;
             VoltageDisplay.Text = "0.0 V";
             VoltageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -348,10 +350,10 @@
             AmperageDisplay.AutoSize = true;
             AmperageDisplay.Dock = DockStyle.Fill;
             AmperageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
-            AmperageDisplay.Location = new Point(275, 0);
+            AmperageDisplay.Location = new Point(296, 0);
             AmperageDisplay.Margin = new Padding(4, 0, 4, 0);
             AmperageDisplay.Name = "AmperageDisplay";
-            AmperageDisplay.Size = new Size(263, 45);
+            AmperageDisplay.Size = new Size(284, 42);
             AmperageDisplay.TabIndex = 1;
             AmperageDisplay.Text = "0.0 A";
             AmperageDisplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -365,12 +367,12 @@
             tableLayoutPanel3.Controls.Add(Label_Remote_CC_UI, 0, 0);
             tableLayoutPanel3.Controls.Add(Label_MachineAppliedCurrentMin_UI, 1, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(274, 48);
+            tableLayoutPanel3.Location = new Point(295, 45);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(265, 58);
+            tableLayoutPanel3.Size = new Size(286, 53);
             tableLayoutPanel3.TabIndex = 7;
             // 
             // Label_MachineAppliedCurrentPlus_UI
@@ -378,9 +380,9 @@
             Label_MachineAppliedCurrentPlus_UI.AutoSize = true;
             Label_MachineAppliedCurrentPlus_UI.Dock = DockStyle.Fill;
             Label_MachineAppliedCurrentPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_MachineAppliedCurrentPlus_UI.Location = new Point(135, 0);
+            Label_MachineAppliedCurrentPlus_UI.Location = new Point(146, 0);
             Label_MachineAppliedCurrentPlus_UI.Name = "Label_MachineAppliedCurrentPlus_UI";
-            Label_MachineAppliedCurrentPlus_UI.Size = new Size(127, 29);
+            Label_MachineAppliedCurrentPlus_UI.Size = new Size(137, 26);
             Label_MachineAppliedCurrentPlus_UI.TabIndex = 10;
             Label_MachineAppliedCurrentPlus_UI.Text = "0 A";
             Label_MachineAppliedCurrentPlus_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -392,7 +394,7 @@
             Label_Remote_CC_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Label_Remote_CC_UI.Location = new Point(3, 0);
             Label_Remote_CC_UI.Name = "Label_Remote_CC_UI";
-            Label_Remote_CC_UI.Size = new Size(126, 29);
+            Label_Remote_CC_UI.Size = new Size(137, 26);
             Label_Remote_CC_UI.TabIndex = 9;
             Label_Remote_CC_UI.Text = "Front";
             Label_Remote_CC_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -402,9 +404,9 @@
             Label_MachineAppliedCurrentMin_UI.AutoSize = true;
             Label_MachineAppliedCurrentMin_UI.Dock = DockStyle.Fill;
             Label_MachineAppliedCurrentMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_MachineAppliedCurrentMin_UI.Location = new Point(135, 29);
+            Label_MachineAppliedCurrentMin_UI.Location = new Point(146, 26);
             Label_MachineAppliedCurrentMin_UI.Name = "Label_MachineAppliedCurrentMin_UI";
-            Label_MachineAppliedCurrentMin_UI.Size = new Size(127, 29);
+            Label_MachineAppliedCurrentMin_UI.Size = new Size(137, 27);
             Label_MachineAppliedCurrentMin_UI.TabIndex = 8;
             Label_MachineAppliedCurrentMin_UI.Text = "-0 A";
             Label_MachineAppliedCurrentMin_UI.TextAlign = ContentAlignment.MiddleCenter;
@@ -416,22 +418,22 @@
             tableLayoutPanel6.Controls.Add(InputField_StoredValueCurrentMin, 0, 1);
             tableLayoutPanel6.Controls.Add(InputField_StoredValueCurrentPlus, 0, 0);
             tableLayoutPanel6.Dock = DockStyle.Fill;
-            tableLayoutPanel6.Location = new Point(274, 112);
+            tableLayoutPanel6.Location = new Point(295, 104);
             tableLayoutPanel6.Name = "tableLayoutPanel6";
             tableLayoutPanel6.RowCount = 2;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel6.Size = new Size(265, 68);
+            tableLayoutPanel6.Size = new Size(286, 63);
             tableLayoutPanel6.TabIndex = 10;
             // 
             // InputField_StoredValueCurrentMin
             // 
             InputField_StoredValueCurrentMin.Dock = DockStyle.Fill;
-            InputField_StoredValueCurrentMin.Location = new Point(3, 37);
+            InputField_StoredValueCurrentMin.Location = new Point(3, 34);
             InputField_StoredValueCurrentMin.Name = "InputField_StoredValueCurrentMin";
             InputField_StoredValueCurrentMin.PlaceholderText = "0 A";
             InputField_StoredValueCurrentMin.ReadOnly = true;
-            InputField_StoredValueCurrentMin.Size = new Size(259, 29);
+            InputField_StoredValueCurrentMin.Size = new Size(280, 29);
             InputField_StoredValueCurrentMin.TabIndex = 1;
             InputField_StoredValueCurrentMin.Tag = "";
             InputField_StoredValueCurrentMin.TextAlign = HorizontalAlignment.Center;
@@ -443,17 +445,19 @@
             InputField_StoredValueCurrentPlus.Name = "InputField_StoredValueCurrentPlus";
             InputField_StoredValueCurrentPlus.PlaceholderText = "0 A";
             InputField_StoredValueCurrentPlus.ReadOnly = true;
-            InputField_StoredValueCurrentPlus.Size = new Size(259, 29);
+            InputField_StoredValueCurrentPlus.Size = new Size(280, 29);
             InputField_StoredValueCurrentPlus.TabIndex = 0;
             InputField_StoredValueCurrentPlus.Tag = "";
             InputField_StoredValueCurrentPlus.TextAlign = HorizontalAlignment.Center;
             // 
             // OperationsBox_UI
             // 
+            OperationsBox_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            OperationsBox_UI.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OperationsBox_UI.Controls.Add(tableLayoutPanel4);
-            OperationsBox_UI.Location = new Point(3, 195);
+            OperationsBox_UI.Location = new Point(3, 204);
             OperationsBox_UI.Name = "OperationsBox_UI";
-            OperationsBox_UI.Size = new Size(492, 225);
+            OperationsBox_UI.Size = new Size(436, 260);
             OperationsBox_UI.TabIndex = 8;
             OperationsBox_UI.TabStop = false;
             OperationsBox_UI.Text = "Operations";
@@ -476,16 +480,16 @@
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(486, 197);
+            tableLayoutPanel4.Size = new Size(430, 232);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // BatteryConnectButton
             // 
             BatteryConnectButton.BackColor = Color.White;
             BatteryConnectButton.Dock = DockStyle.Fill;
-            BatteryConnectButton.Location = new Point(3, 101);
+            BatteryConnectButton.Location = new Point(3, 119);
             BatteryConnectButton.Name = "BatteryConnectButton";
-            BatteryConnectButton.Size = new Size(155, 93);
+            BatteryConnectButton.Size = new Size(137, 110);
             BatteryConnectButton.TabIndex = 12;
             BatteryConnectButton.Text = "Connect Battery";
             BatteryConnectButton.UseVisualStyleBackColor = false;
@@ -496,9 +500,9 @@
             StartStopButton.AutoSize = true;
             StartStopButton.BackColor = Color.Chartreuse;
             StartStopButton.Dock = DockStyle.Fill;
-            StartStopButton.Location = new Point(326, 101);
+            StartStopButton.Location = new Point(289, 119);
             StartStopButton.Name = "StartStopButton";
-            StartStopButton.Size = new Size(157, 93);
+            StartStopButton.Size = new Size(138, 110);
             StartStopButton.TabIndex = 11;
             StartStopButton.Text = "Start";
             StartStopButton.UseVisualStyleBackColor = false;
@@ -509,9 +513,9 @@
             Charge30Button.BackColor = Color.White;
             Charge30Button.Dock = DockStyle.Fill;
             Charge30Button.Enabled = false;
-            Charge30Button.Location = new Point(326, 3);
+            Charge30Button.Location = new Point(289, 3);
             Charge30Button.Name = "Charge30Button";
-            Charge30Button.Size = new Size(157, 92);
+            Charge30Button.Size = new Size(138, 110);
             Charge30Button.TabIndex = 2;
             Charge30Button.Text = "Discharge to 30%";
             Charge30Button.UseVisualStyleBackColor = false;
@@ -523,7 +527,7 @@
             ChargeButton.Dock = DockStyle.Fill;
             ChargeButton.Location = new Point(3, 3);
             ChargeButton.Name = "ChargeButton";
-            ChargeButton.Size = new Size(155, 92);
+            ChargeButton.Size = new Size(137, 110);
             ChargeButton.TabIndex = 0;
             ChargeButton.Text = "Charge";
             ChargeButton.UseVisualStyleBackColor = false;
@@ -533,35 +537,226 @@
             // 
             DischargeButton.BackColor = Color.White;
             DischargeButton.Dock = DockStyle.Fill;
-            DischargeButton.Location = new Point(164, 3);
+            DischargeButton.Location = new Point(146, 3);
             DischargeButton.Name = "DischargeButton";
-            DischargeButton.Size = new Size(156, 92);
+            DischargeButton.Size = new Size(137, 110);
             DischargeButton.TabIndex = 1;
             DischargeButton.Text = "Discharge";
             DischargeButton.UseVisualStyleBackColor = false;
             DischargeButton.Click += DischargeButton_Click;
             // 
-            // groupBox2
+            // groupBox1
             // 
-            groupBox2.Controls.Add(ApplyBatteryDataButton);
-            groupBox2.Controls.Add(C_Rating_UI);
-            groupBox2.Controls.Add(RatedBatteryVoltageUI);
-            groupBox2.Controls.Add(label1);
-            groupBox2.Controls.Add(label6);
-            groupBox2.Controls.Add(label2);
-            groupBox2.Controls.Add(RatedBatteryAmperageUI);
-            groupBox2.Location = new Point(3, 3);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(492, 186);
-            groupBox2.TabIndex = 14;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Factory Information";
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            groupBox1.Controls.Add(ConsoleBox);
+            groupBox1.Controls.Add(Label_Time_UI);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(Name1);
+            groupBox1.Controls.Add(StatusCurrentOperation_UI);
+            groupBox1.Controls.Add(label7);
+            groupBox1.Controls.Add(Label_Elapsed_Time_UI);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Location = new Point(12, 231);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(421, 474);
+            groupBox1.TabIndex = 16;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Status";
+            // 
+            // ConsoleBox
+            // 
+            ConsoleBox.Controls.Add(Console_Simple_Textbox_UI);
+            ConsoleBox.Dock = DockStyle.Bottom;
+            ConsoleBox.Location = new Point(3, 298);
+            ConsoleBox.Name = "ConsoleBox";
+            ConsoleBox.Size = new Size(415, 173);
+            ConsoleBox.TabIndex = 22;
+            ConsoleBox.TabStop = false;
+            ConsoleBox.Text = "Console";
+            // 
+            // Console_Simple_Textbox_UI
+            // 
+            Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
+            Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
+            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
+            Console_Simple_Textbox_UI.Location = new Point(3, 25);
+            Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
+            Console_Simple_Textbox_UI.ReadOnly = true;
+            Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
+            Console_Simple_Textbox_UI.Size = new Size(409, 145);
+            Console_Simple_Textbox_UI.TabIndex = 5;
+            Console_Simple_Textbox_UI.Text = "";
+            // 
+            // Label_Time_UI
+            // 
+            Label_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Label_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Time_UI.Location = new Point(279, 71);
+            Label_Time_UI.Margin = new Padding(0);
+            Label_Time_UI.Name = "Label_Time_UI";
+            Label_Time_UI.ReadOnly = true;
+            Label_Time_UI.Size = new Size(136, 36);
+            Label_Time_UI.TabIndex = 20;
+            Label_Time_UI.Text = "Not connected";
+            Label_Time_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label3
+            // 
+            label3.Location = new Point(6, 73);
+            label3.Name = "label3";
+            label3.Size = new Size(151, 36);
+            label3.TabIndex = 19;
+            label3.Text = "Online:";
+            label3.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Name1
+            // 
+            Name1.AutoSize = true;
+            Name1.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point);
+            Name1.Location = new Point(3, 25);
+            Name1.Name = "Name1";
+            Name1.Size = new Size(184, 37);
+            Name1.TabIndex = 18;
+            Name1.Text = "SM70-CP-450";
+            // 
+            // StatusCurrentOperation_UI
+            // 
+            StatusCurrentOperation_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            StatusCurrentOperation_UI.Location = new Point(279, 113);
+            StatusCurrentOperation_UI.Margin = new Padding(0);
+            StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
+            StatusCurrentOperation_UI.ReadOnly = true;
+            StatusCurrentOperation_UI.Size = new Size(136, 36);
+            StatusCurrentOperation_UI.TabIndex = 17;
+            StatusCurrentOperation_UI.Text = "None";
+            StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label7
+            // 
+            label7.Location = new Point(6, 115);
+            label7.Name = "label7";
+            label7.Size = new Size(151, 36);
+            label7.TabIndex = 16;
+            label7.Text = "Current Operation:";
+            label7.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Label_Elapsed_Time_UI
+            // 
+            Label_Elapsed_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Label_Elapsed_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Elapsed_Time_UI.Location = new Point(279, 154);
+            Label_Elapsed_Time_UI.Margin = new Padding(0);
+            Label_Elapsed_Time_UI.Name = "Label_Elapsed_Time_UI";
+            Label_Elapsed_Time_UI.ReadOnly = true;
+            Label_Elapsed_Time_UI.Size = new Size(136, 36);
+            Label_Elapsed_Time_UI.TabIndex = 24;
+            Label_Elapsed_Time_UI.Text = "00:00:00";
+            Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label4
+            // 
+            label4.Location = new Point(6, 156);
+            label4.Name = "label4";
+            label4.Size = new Size(151, 36);
+            label4.TabIndex = 23;
+            label4.Text = "Time Elapsed:";
+            label4.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(61, 4);
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem5 });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(907, 24);
+            menuStrip1.TabIndex = 17;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_Export_DropDown, toolStripSeparator1, ToolStripMenu_SaveSettings, ToolStripMenu_LoadSettings });
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(37, 20);
+            toolStripMenuItem1.Text = "File";
+            // 
+            // ToolStripMenu_Export_DropDown
+            // 
+            ToolStripMenu_Export_DropDown.DropDownItems.AddRange(new ToolStripItem[] { RuntimeCSV_ToolstripItem, errorLogToolStripMenuItem });
+            ToolStripMenu_Export_DropDown.Name = "ToolStripMenu_Export_DropDown";
+            ToolStripMenu_Export_DropDown.Size = new Size(180, 22);
+            ToolStripMenu_Export_DropDown.Text = "Export";
+            // 
+            // RuntimeCSV_ToolstripItem
+            // 
+            RuntimeCSV_ToolstripItem.Name = "RuntimeCSV_ToolstripItem";
+            RuntimeCSV_ToolstripItem.Size = new Size(143, 22);
+            RuntimeCSV_ToolstripItem.Text = "Runtime CSV";
+            RuntimeCSV_ToolstripItem.Click += ExportToCsv;
+            // 
+            // errorLogToolStripMenuItem
+            // 
+            errorLogToolStripMenuItem.Name = "errorLogToolStripMenuItem";
+            errorLogToolStripMenuItem.Size = new Size(143, 22);
+            errorLogToolStripMenuItem.Text = "ErrorLog";
+            errorLogToolStripMenuItem.Click += ExportLogToFile;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(177, 6);
+            // 
+            // ToolStripMenu_SaveSettings
+            // 
+            ToolStripMenu_SaveSettings.Name = "ToolStripMenu_SaveSettings";
+            ToolStripMenu_SaveSettings.Size = new Size(180, 22);
+            ToolStripMenu_SaveSettings.Text = "Save Settings";
+            ToolStripMenu_SaveSettings.Click += SaveSettings;
+            // 
+            // ToolStripMenu_LoadSettings
+            // 
+            ToolStripMenu_LoadSettings.Name = "ToolStripMenu_LoadSettings";
+            ToolStripMenu_LoadSettings.Size = new Size(180, 22);
+            ToolStripMenu_LoadSettings.Text = "Load Settings";
+            ToolStripMenu_LoadSettings.Click += LoadSettings;
+            // 
+            // toolStripMenuItem5
+            // 
+            toolStripMenuItem5.ImageScaling = ToolStripItemImageScaling.None;
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new Size(44, 20);
+            toolStripMenuItem5.Text = "Help";
+            // 
+            // FactoryInformationBox
+            // 
+            FactoryInformationBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
+            FactoryInformationBox.Controls.Add(C_Rating_UI);
+            FactoryInformationBox.Controls.Add(RatedBatteryVoltageUI);
+            FactoryInformationBox.Controls.Add(label1);
+            FactoryInformationBox.Controls.Add(label6);
+            FactoryInformationBox.Controls.Add(label2);
+            FactoryInformationBox.Controls.Add(RatedBatteryAmperageUI);
+            FactoryInformationBox.Location = new Point(3, 3);
+            FactoryInformationBox.Name = "FactoryInformationBox";
+            FactoryInformationBox.Size = new Size(433, 195);
+            FactoryInformationBox.TabIndex = 18;
+            FactoryInformationBox.TabStop = false;
+            FactoryInformationBox.Text = "Factory Information";
             // 
             // ApplyBatteryDataButton
             // 
-            ApplyBatteryDataButton.Location = new Point(16, 140);
+            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ApplyBatteryDataButton.Location = new Point(6, 153);
             ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
-            ApplyBatteryDataButton.Size = new Size(470, 36);
+            ApplyBatteryDataButton.Size = new Size(421, 36);
             ApplyBatteryDataButton.TabIndex = 11;
             ApplyBatteryDataButton.Text = "Apply";
             ApplyBatteryDataButton.UseVisualStyleBackColor = true;
@@ -569,8 +764,8 @@
             // 
             // C_Rating_UI
             // 
-            C_Rating_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            C_Rating_UI.Location = new Point(366, 105);
+            C_Rating_UI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            C_Rating_UI.Location = new Point(307, 98);
             C_Rating_UI.Name = "C_Rating_UI";
             C_Rating_UI.PlaceholderText = "C1";
             C_Rating_UI.Size = new Size(120, 29);
@@ -578,8 +773,8 @@
             // 
             // RatedBatteryVoltageUI
             // 
-            RatedBatteryVoltageUI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            RatedBatteryVoltageUI.Location = new Point(366, 35);
+            RatedBatteryVoltageUI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            RatedBatteryVoltageUI.Location = new Point(307, 28);
             RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
             RatedBatteryVoltageUI.PlaceholderText = "Voltage";
             RatedBatteryVoltageUI.Size = new Size(120, 29);
@@ -617,211 +812,32 @@
             // 
             // RatedBatteryAmperageUI
             // 
-            RatedBatteryAmperageUI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            RatedBatteryAmperageUI.Location = new Point(366, 70);
+            RatedBatteryAmperageUI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            RatedBatteryAmperageUI.Location = new Point(307, 63);
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
             RatedBatteryAmperageUI.Size = new Size(120, 29);
             RatedBatteryAmperageUI.TabIndex = 7;
             // 
-            // settingsBox_UI
-            // 
-            settingsBox_UI.Controls.Add(flowLayoutPanel1);
-            settingsBox_UI.Dock = DockStyle.Right;
-            settingsBox_UI.Location = new Point(317, 211);
-            settingsBox_UI.Name = "settingsBox_UI";
-            settingsBox_UI.Size = new Size(504, 457);
-            settingsBox_UI.TabIndex = 9;
-            settingsBox_UI.TabStop = false;
-            settingsBox_UI.Text = "Settings";
-            // 
             // flowLayoutPanel1
             // 
-            flowLayoutPanel1.Controls.Add(groupBox2);
+            flowLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            flowLayoutPanel1.Controls.Add(FactoryInformationBox);
             flowLayoutPanel1.Controls.Add(OperationsBox_UI);
-            flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel1.Location = new Point(3, 25);
+            flowLayoutPanel1.Location = new Point(456, 231);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(498, 429);
-            flowLayoutPanel1.TabIndex = 0;
-            // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(Label_Elapsed_Time_UI);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Controls.Add(ConsoleBox);
-            groupBox1.Controls.Add(Label_Time_UI);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(Name1);
-            groupBox1.Controls.Add(StatusCurrentOperation_UI);
-            groupBox1.Controls.Add(label7);
-            groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(0, 211);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(317, 457);
-            groupBox1.TabIndex = 16;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Status";
-            // 
-            // Label_Elapsed_Time_UI
-            // 
-            Label_Elapsed_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Elapsed_Time_UI.Location = new Point(172, 166);
-            Label_Elapsed_Time_UI.Margin = new Padding(0);
-            Label_Elapsed_Time_UI.Name = "Label_Elapsed_Time_UI";
-            Label_Elapsed_Time_UI.ReadOnly = true;
-            Label_Elapsed_Time_UI.Size = new Size(136, 36);
-            Label_Elapsed_Time_UI.TabIndex = 24;
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label4
-            // 
-            label4.Location = new Point(6, 166);
-            label4.Name = "label4";
-            label4.Size = new Size(151, 36);
-            label4.TabIndex = 23;
-            label4.Text = "Time Elapsed:";
-            label4.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // ConsoleBox
-            // 
-            ConsoleBox.Controls.Add(tabControl1);
-            ConsoleBox.Dock = DockStyle.Bottom;
-            ConsoleBox.Location = new Point(3, 245);
-            ConsoleBox.Name = "ConsoleBox";
-            ConsoleBox.Size = new Size(311, 209);
-            ConsoleBox.TabIndex = 22;
-            ConsoleBox.TabStop = false;
-            ConsoleBox.Text = "Console";
-            // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(Simple);
-            tabControl1.Controls.Add(Advanced);
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.Location = new Point(3, 25);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(305, 181);
-            tabControl1.TabIndex = 0;
-            // 
-            // Simple
-            // 
-            Simple.Controls.Add(Console_Simple_Textbox_UI);
-            Simple.Location = new Point(4, 30);
-            Simple.Margin = new Padding(0);
-            Simple.Name = "Simple";
-            Simple.Size = new Size(297, 147);
-            Simple.TabIndex = 0;
-            Simple.Text = "Simple / only errors";
-            Simple.UseVisualStyleBackColor = true;
-            // 
-            // Console_Simple_Textbox_UI
-            // 
-            Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
-            Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
-            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
-            Console_Simple_Textbox_UI.Location = new Point(0, 0);
-            Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
-            Console_Simple_Textbox_UI.ReadOnly = true;
-            Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Simple_Textbox_UI.Size = new Size(297, 147);
-            Console_Simple_Textbox_UI.TabIndex = 4;
-            Console_Simple_Textbox_UI.Text = "";
-            // 
-            // Advanced
-            // 
-            Advanced.Controls.Add(Console_Advanced_Textbox_UI);
-            Advanced.Location = new Point(4, 24);
-            Advanced.Margin = new Padding(0);
-            Advanced.Name = "Advanced";
-            Advanced.Size = new Size(297, 159);
-            Advanced.TabIndex = 1;
-            Advanced.Text = "Advanced / Debug";
-            Advanced.UseVisualStyleBackColor = true;
-            // 
-            // Console_Advanced_Textbox_UI
-            // 
-            Console_Advanced_Textbox_UI.BackColor = SystemColors.ControlLight;
-            Console_Advanced_Textbox_UI.Dock = DockStyle.Fill;
-            Console_Advanced_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            Console_Advanced_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
-            Console_Advanced_Textbox_UI.Location = new Point(0, 0);
-            Console_Advanced_Textbox_UI.Name = "Console_Advanced_Textbox_UI";
-            Console_Advanced_Textbox_UI.ReadOnly = true;
-            Console_Advanced_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Advanced_Textbox_UI.Size = new Size(297, 159);
-            Console_Advanced_Textbox_UI.TabIndex = 5;
-            Console_Advanced_Textbox_UI.Text = "";
-            // 
-            // Label_Time_UI
-            // 
-            Label_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Time_UI.Location = new Point(172, 73);
-            Label_Time_UI.Margin = new Padding(0);
-            Label_Time_UI.Name = "Label_Time_UI";
-            Label_Time_UI.ReadOnly = true;
-            Label_Time_UI.Size = new Size(136, 36);
-            Label_Time_UI.TabIndex = 20;
-            Label_Time_UI.Text = "Not connected";
-            Label_Time_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label3
-            // 
-            label3.Location = new Point(6, 73);
-            label3.Name = "label3";
-            label3.Size = new Size(151, 36);
-            label3.TabIndex = 19;
-            label3.Text = "Online:";
-            label3.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // Name1
-            // 
-            Name1.AutoSize = true;
-            Name1.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point);
-            Name1.Location = new Point(3, 25);
-            Name1.Name = "Name1";
-            Name1.Size = new Size(184, 37);
-            Name1.TabIndex = 18;
-            Name1.Text = "SM70-CP-450";
-            // 
-            // StatusCurrentOperation_UI
-            // 
-            StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            StatusCurrentOperation_UI.Location = new Point(172, 115);
-            StatusCurrentOperation_UI.Margin = new Padding(0);
-            StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
-            StatusCurrentOperation_UI.ReadOnly = true;
-            StatusCurrentOperation_UI.Size = new Size(136, 36);
-            StatusCurrentOperation_UI.TabIndex = 17;
-            StatusCurrentOperation_UI.Text = "None";
-            StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            label7.Location = new Point(6, 115);
-            label7.Name = "label7";
-            label7.Size = new Size(151, 36);
-            label7.TabIndex = 16;
-            label7.Text = "Current Operation:";
-            label7.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // contextMenuStrip1
-            // 
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(61, 4);
+            flowLayoutPanel1.Size = new Size(439, 468);
+            flowLayoutPanel1.TabIndex = 19;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(821, 668);
+            ClientSize = new Size(907, 714);
+            Controls.Add(flowLayoutPanel1);
             Controls.Add(groupBox1);
-            Controls.Add(settingsBox_UI);
             Controls.Add(LiveInfoData);
+            Controls.Add(menuStrip1);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
@@ -847,17 +863,16 @@
             OperationsBox_UI.PerformLayout();
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel4.PerformLayout();
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
-            settingsBox_UI.ResumeLayout(false);
-            flowLayoutPanel1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ConsoleBox.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
-            Simple.ResumeLayout(false);
-            Advanced.ResumeLayout(false);
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            FactoryInformationBox.ResumeLayout(false);
+            FactoryInformationBox.PerformLayout();
+            flowLayoutPanel1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -869,17 +884,7 @@
         private Button DischargeButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Button StartStopButton;
-        private GroupBox groupBox2;
-        private Button ApplyBatteryDataButton;
-        private TextBox C_Rating_UI;
-        private TextBox RatedBatteryVoltageUI;
-        private Label label1;
-        private Label label6;
-        private Label label2;
-        private TextBox RatedBatteryAmperageUI;
         private Button BatteryConnectButton;
-        private GroupBox settingsBox_UI;
-        private FlowLayoutPanel flowLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel2;
         private Label WattageDisplay;
         private Label VoltageDisplay;
@@ -912,12 +917,26 @@
         private Label label7;
         private ContextMenuStrip contextMenuStrip1;
         private GroupBox ConsoleBox;
-        private TabControl tabControl1;
-        private TabPage Simple;
-        private RichTextBox Console_Simple_Textbox_UI;
-        private TabPage Advanced;
-        private RichTextBox Console_Advanced_Textbox_UI;
         private TextBox Label_Elapsed_Time_UI;
         private Label label4;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private GroupBox FactoryInformationBox;
+        private Button ApplyBatteryDataButton;
+        private TextBox C_Rating_UI;
+        private TextBox RatedBatteryVoltageUI;
+        private Label label1;
+        private Label label6;
+        private Label label2;
+        private TextBox RatedBatteryAmperageUI;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private RichTextBox Console_Simple_Textbox_UI;
+        private ToolStripMenuItem ToolStripMenu_Export_DropDown;
+        private ToolStripMenuItem RuntimeCSV_ToolstripItem;
+        private ToolStripMenuItem errorLogToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem ToolStripMenu_SaveSettings;
+        private ToolStripMenuItem ToolStripMenu_LoadSettings;
+        private ToolStripMenuItem toolStripMenuItem5;
     }
 }

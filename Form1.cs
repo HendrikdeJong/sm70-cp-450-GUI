@@ -1,21 +1,15 @@
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
     {
-        private TcpClient _tcpClient;
-        private NetworkStream _networkStream;
         private const string ServerIp = "169.254.0.102";
         private const int ServerPort = 8462;
-        private bool _tcpInitialized = false;
+        private TcpConnectionHandler _tcpConnectionHandler;
         private bool _started = false;
         private bool _discharged = false;
         private bool _EditingValues = false;
@@ -32,8 +26,22 @@ namespace sm70_cp_450_GUI
         private double _cRating = 0;
         private double _ratedPower = 0;
 
+        List<BatteryMetrics> batteryData = new List<BatteryMetrics>();
         private TimeSpan _timeToDischarge30Percent;
+        double currentVoltage = 0;
+        double currentCurrent = 0;
+        double currentPower = 0;
 
+
+        public class BatteryMetrics
+        {
+            public DateTime Time { get; set; }
+            public double Voltage { get; set; }
+            public double Current { get; set; }
+            public double Power { get; set; }
+        }
+
+        private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
         private Stopwatch _stopwatch = new Stopwatch();
         private TimeSpan _maxChargingTime;
 
@@ -73,9 +81,9 @@ namespace sm70_cp_450_GUI
             // UI actions associated with commands
             _commandToUIActions = new Dictionary<string, Action<string>>
             {
-                { "MEASure:VOLtage?", (response) => VoltageDisplay.Text = response + " V" },
-                { "MEASure:CURrent?", (response) => AmperageDisplay.Text = response + " A" },
-                { "MEASure:POWer?", (response) => WattageDisplay.Text = response + " W" },
+                { "MEASure:VOLtage?", (response) => {VoltageDisplay.Text = response + " V";     currentVoltage = double.Parse(response);}},
+                { "MEASure:CURrent?", (response) => {AmperageDisplay.Text = response + " A";    currentCurrent = double.Parse(response);}},
+                { "MEASure:POWer?", (response) => {WattageDisplay.Text = response + " W";    currentPower = double.Parse(response);}},
 
                 { "SOURce:VOLtage?", (response) => Label_MachineAppliedVoltage_UI.Text = response + " V" },
                 { "SOURce:CURrent?", (response) => Label_MachineAppliedCurrentPlus_UI.Text = response + " A" },
@@ -96,8 +104,10 @@ namespace sm70_cp_450_GUI
         private async void MainForm_Load(object sender, EventArgs e)
         {
             Show();
+            _tcpConnectionHandler = new TcpConnectionHandler(ServerIp, ServerPort);
+
             MessageBox.Show("Attempting to establish TCP connection. Please wait...");
-            bool connectionEstablished = await InitializeTcpClient();
+            bool connectionEstablished = await _tcpConnectionHandler.InitializeTcpClient();
 
             if (connectionEstablished)
             {
@@ -106,7 +116,7 @@ namespace sm70_cp_450_GUI
             }
             else
             {
-                MessageBox.Show("TCP connection failed.");
+                MessageBox.Show("Failed to establish TCP connection.");
             }
         }
 
@@ -118,6 +128,7 @@ namespace sm70_cp_450_GUI
             };
             updateTimer.Tick += (sender, e) =>
             {
+                AddConsoleError("[INFO] update timer tick: ");
                 Request_Measure_Voltage();
                 Request_Measure_Current();
                 Request_Measure_Power();
@@ -133,12 +144,18 @@ namespace sm70_cp_450_GUI
                 RequestRemoteSetting_CP();
 
                 RequestTime();
-
                 LockButtons();
 
                 // Always update the elapsed time display
                 if (_stopwatch.IsRunning)
                 {
+                    _timeSinceLastSave = _timeSinceLastSave.Add(TimeSpan.FromSeconds(1)); // Increment by 1 second
+
+                    if (_timeSinceLastSave.TotalSeconds >= 5)  // Check if 5 seconds have passed
+                    {
+                        CollectBatteryMetrics();  // Save data
+                        _timeSinceLastSave = TimeSpan.Zero;  // Reset the timer
+                    }
                     TimeSpan elapsed = _stopwatch.Elapsed;
                     Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
                 }
@@ -167,7 +184,7 @@ namespace sm70_cp_450_GUI
                     ToggleStartStopButton(null, EventArgs.Empty);
 
                     // Notify the user that discharging has completed
-                    MessageBox.Show("Battery has been discharged to approximately 30% capacity.");
+                    MessageBox.Show("Battery has been discharged to approximately 30% capacity, please export csv for the datasheet");
                 }
             }
         }
@@ -182,34 +199,12 @@ namespace sm70_cp_450_GUI
 
         #region Socket
 
-
-        private async Task<bool> InitializeTcpClient()
-        {
-            _tcpClient = new TcpClient();
-            try
-            {
-                await _tcpClient.ConnectAsync(ServerIp, ServerPort);
-                _networkStream = _tcpClient.GetStream();
-                _tcpInitialized = true;
-                MessageBox.Show("TCP connection established.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("TCP connection failed: " + ex.Message);
-                _tcpInitialized = false;
-                return false;
-            }
-        }
-
-
-
         // Enqueue a query (response expected)
         private void EnqueueQuery(string query)
         {
-            if (!_tcpInitialized)
+            if (!_tcpConnectionHandler.IsConnected)
             {
-                AddConsoleError("[ERROR] Cannot enqueue query: TCP connection is not initialized.");
+                AddConsoleError($"[ERROR] Cannot enqueue query: TCP connection is not initialized, query: {query}");
                 return; // Prevent adding to the queue if TCP is not initialized
             }
             if (!_pendingQueries.Contains(query))
@@ -220,8 +215,6 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        // Process the query queue
-        // Process the query queue
         private async void ProcessQueryQueue()
         {
             if (_isProcessingQueryQueue) return;
@@ -233,8 +226,7 @@ namespace sm70_cp_450_GUI
                 AddConsoleError($"[INFO] Processing query: {query}");
                 _pendingQueries.Remove(query);
 
-                string response = await SendQueryAsync(query);
-                AddConsoleError("[INFO] Trying to get query response");
+                string response = await _tcpConnectionHandler.SendQueryAsync(query);
 
                 if (response != null)
                 {
@@ -251,7 +243,7 @@ namespace sm70_cp_450_GUI
                 }
                 else
                 {
-                    AddConsoleError($"[ERROR] No response for query: {query}");
+                    AddConsoleError("[ERROR] No response for query.");
                 }
             }
 
@@ -260,68 +252,13 @@ namespace sm70_cp_450_GUI
         }
 
 
-        // Send query to the device (expects a response)
-        private async Task<string> SendQueryAsync(string query, int timeoutMilliseconds = 10000)
-        {
-            if (!_tcpInitialized)
-            {
-                AddConsoleError($"[ERROR] TCP connection is not yet established.");
-                return null;
-            }
-
-            try
-            {
-                if (_networkStream == null || !_tcpClient.Connected)
-                {
-                    AddConsoleError("[ERROR] TCP connection is not open or network stream is invalid.");
-                    return null;
-                }
-
-                using (var cts = new CancellationTokenSource(timeoutMilliseconds))
-                {
-                    byte[] messageBuffer = Encoding.UTF8.GetBytes(query + "\n");
-                    //AddConsoleError($"[INFO] Sending query: {query}");
-                    await _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length, cts.Token);
-                    await _networkStream.FlushAsync(cts.Token);
-
-                    var buffer = new byte[1024];
-                    var stringBuilder = new StringBuilder();
-                    int bytesRead;
-                    AddConsoleError($"[INFO] Waiting for response to query: {query}");
-
-                    do
-                    {
-                        bytesRead = await _networkStream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-                        if (bytesRead > 0)
-                        {
-                            stringBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                            AddConsoleError($"[INFO] Received {bytesRead} bytes of data.");
-                        }
-                        else
-                        {
-                            AddConsoleError("[INFO] No more data available.");
-                        }
-                    } while (_networkStream.DataAvailable && !cts.Token.IsCancellationRequested);
-
-                    string response = stringBuilder.ToString().Trim();
-                    AddConsoleError($"[INFO] Complete response received: {response}");
-
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                AddConsoleError($"[ERROR] Error sending query: {ex.Message}");
-                return null;
-            }
-        }
 
 
 
         // Enqueue a command (no response expected)
         private void EnqueueCommand(string command)
         {
-            if (!_tcpInitialized)
+            if (!_tcpConnectionHandler.IsConnected)
             {
                 AddConsoleError("[ERROR] Cannot enqueue command: TCP connection is not initialized.");
                 return; // Prevent adding to the queue if TCP is not initialized
@@ -337,45 +274,36 @@ namespace sm70_cp_450_GUI
         // Process the command queue
         private async void ProcessCommandQueue()
         {
-            if (_isProcessingCommandQueue) return;
+            if (_isProcessingCommandQueue) return;  // Prevent reentry if already processing
             _isProcessingCommandQueue = true;
 
             while (_commandQueue.TryDequeue(out string command))
             {
-                _pendingCommands.Remove(command);
-                await SendCommandAsync(command);
+                try
+                {
+                    bool commandSent = await SendCommandAsync(command);  // Directly call SendCommandAsync
+                    if (commandSent)
+                    {
+                        _pendingCommands.Remove(command);
+                    }
+                    else
+                    {
+                        AddConsoleError($"[ERROR] Failed to process command: {command}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddConsoleError($"[ERROR] Exception while processing command: {ex.Message}");
+                }
             }
-
-            _isProcessingCommandQueue = false;
+            
+            _isProcessingCommandQueue = false;  // Mark the end of processing
         }
 
-       
-
-        // Send command to the device (no response expected)
         private async Task<bool> SendCommandAsync(string command)
         {
-            if (!_tcpInitialized)
-            {
-                AddConsoleError($"TCP connection is not yet established.");
-                return false;
-            }
-
-            try
-            {
-                byte[] messageBuffer = Encoding.UTF8.GetBytes(command + "\n");
-                await _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length);
-                await _networkStream.FlushAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AddConsoleError($"Error sending command: {ex.Message}");
-                return false;
-            }
+            return await _tcpConnectionHandler.SendCommandAsync(command);
         }
-
-
 
 
 
@@ -383,19 +311,14 @@ namespace sm70_cp_450_GUI
         private void Request_Measure_Voltage() => EnqueueQuery("MEASure:VOLtage?");
         private void Request_Measure_Current() => EnqueueQuery("MEASure:CURrent?");
         private void Request_Measure_Power() => EnqueueQuery("MEASure:POWer?");
-
-
         private void Request_Source_Voltage() => EnqueueQuery("SOURce:VOLtage?");
         private void Request_Source_Current() => EnqueueQuery("SOURce:CURrent?");
         private void Request_Source_Current_Negative() => EnqueueQuery("SOURce:CURrent:NEGative?");
         private void Request_Source_Power() => EnqueueQuery("SOURce:POWer?");
         private void Request_Source_Power_Negative() => EnqueueQuery("SOURce:POWer:NEGative?");
-
-
         private void RequestRemoteSetting_CV() => EnqueueQuery("SYSTem:REMote:CV?");
         private void RequestRemoteSetting_CC() => EnqueueQuery("SYSTem:REMote:CC?");
         private void RequestRemoteSetting_CP() => EnqueueQuery("SYSTem:REMote:CP?");
-
         private void RequestTime() => EnqueueQuery("SYSTem:TIMe?");
 
 
@@ -404,17 +327,17 @@ namespace sm70_cp_450_GUI
 
 
 
-        private  void SetSystemRemoteSetting_CV(string state)
+        private void SetSystemRemoteSetting_CV(string state)
         {
             EnqueueCommand($"SYSTem:REMote:CV {state}");
         }
 
-        private  void SetSystemRemoteSetting_CC(string state)
+        private void SetSystemRemoteSetting_CC(string state)
         {
             EnqueueCommand($"SYSTem:REMote:CC {state}");
         }
 
-        private  void SetSystemRemoteSetting_CP(string state)
+        private void SetSystemRemoteSetting_CP(string state)
         {
             EnqueueCommand($"SYSTem:REMote:CP {state}");
         }
@@ -429,7 +352,7 @@ namespace sm70_cp_450_GUI
             EnqueueCommand($"SOURce:CURrent {outputCurrent}");
         }
 
-        private  void SetOutputCurrentNegative(double outputCurrentNegative)
+        private void SetOutputCurrentNegative(double outputCurrentNegative)
         {
             EnqueueCommand($"SOURce:CURrent:NEGative {outputCurrentNegative}");
         }
@@ -439,7 +362,7 @@ namespace sm70_cp_450_GUI
             EnqueueCommand($"SOURce:POWer {outputPower}");
         }
 
-        private  void SetOutputPowerNegative(double outputPowerNegative)
+        private void SetOutputPowerNegative(double outputPowerNegative)
         {
             EnqueueCommand($"SOURce:POWer:NEGative {outputPowerNegative}");
         }
@@ -463,7 +386,6 @@ namespace sm70_cp_450_GUI
 
 
 
-
         private void AddConsoleError(string errorMessage)
         {
             DateTime currentTime = DateTime.Now;
@@ -480,24 +402,21 @@ namespace sm70_cp_450_GUI
                 {
                     _errorMessages[errorMessage] = (1, currentTime);
                 }
-                UpdateErrorTab();
+                UpdateErrorTab();  // Only show errors in the console
+            }
+
+            // Always log all messages (errors, info, warnings) for exporting
+            if (_infoMessages.ContainsKey(errorMessage))
+            {
+                _infoMessages[errorMessage] = (_infoMessages[errorMessage].Count + 1, currentTime);
             }
             else
             {
-                // Update info or warning messages
-                if (_infoMessages.ContainsKey(errorMessage))
-                {
-                    _infoMessages[errorMessage] = (_infoMessages[errorMessage].Count + 1, currentTime);
-                }
-                else
-                {
-                    _infoMessages[errorMessage] = (1, currentTime);
-                }
-                UpdateInfoTab();
+                _infoMessages[errorMessage] = (1, currentTime);
             }
         }
 
-        // Update the error messages in the Error Tab
+        // Update the error messages in the Error Tab (Console)
         private void UpdateErrorTab()
         {
             var sb = new StringBuilder();
@@ -509,28 +428,21 @@ namespace sm70_cp_450_GUI
                 sb.AppendLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
             }
 
-            // Assume ErrorTab_TextBox is the textbox in the Error Tab
+            // Display only errors in the Console (Error Tab)
             Console_Simple_Textbox_UI.Text = sb.ToString();
         }
 
-        // Update the info/warning messages in the Info Tab
-        private void UpdateInfoTab()
+        void CollectBatteryMetrics()
         {
-            var sb = new StringBuilder();
-            var sortedInfos = _infoMessages.OrderByDescending(e => e.Value.LastOccurred);
-
-            foreach (var info in sortedInfos)
+            var metrics = new BatteryMetrics
             {
-                string formattedTime = info.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                sb.AppendLine($"{formattedTime} - {info.Key} (Count: {info.Value.Count})");
-            }
-
-            // Assume InfoTab_TextBox is the textbox in the Info Tab
-            Console_Advanced_Textbox_UI.Text = sb.ToString();
+                Time = DateTime.Now,
+                Voltage = currentVoltage,
+                Current = currentCurrent,
+                Power = currentPower
+            };
+            batteryData.Add(metrics);
         }
-
-
-
 
 
 
@@ -697,12 +609,157 @@ namespace sm70_cp_450_GUI
 
 
 
-
-        // Button Handling
+        #region buttons
 
         private void LockButtons()
         {
             ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = BatteryConnectButton.Enabled = !_started;
+        }
+
+        private void SaveSettings(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
+                Title = "Save Factory Settings",
+                FileName = "factory_settings.txt"
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+
+                using (var writer = new StreamWriter(filePath))
+                {
+                    // Save the settings in comma-separated format (CSV-like)
+                    writer.WriteLine($"{_StoredVoltageSetting},{_StoredCurrent},{_StoredPower},{_StoredNegativeCurrent},{_StoredNegativePower}");
+                }
+
+                MessageBox.Show("Settings successfully saved to " + filePath);
+            }
+            else
+            {
+                MessageBox.Show("Save operation was canceled.");
+            }
+        }
+        private void LoadSettings(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
+                Title = "Load Factory Settings"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+
+                using (var reader = new StreamReader(filePath))
+                {
+                    string line = reader.ReadLine();
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        // Split the values by comma
+                        var values = line.Split(',');
+
+                        if (values.Length == 5)
+                        {
+                            _StoredVoltageSetting = double.Parse(values[0]);
+                            _StoredCurrent = double.Parse(values[1]);
+                            _StoredPower = double.Parse(values[2]);
+                            _StoredNegativeCurrent = double.Parse(values[3]);
+                            _StoredNegativePower = double.Parse(values[4]);
+
+                            // Populate the UI fields with the loaded values
+                            InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
+                            InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
+                            InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
+                            InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
+                            InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
+
+                            MessageBox.Show("Settings successfully loaded from " + filePath);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error: Incorrect format in the settings file.");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Load operation was canceled.");
+            }
+        }
+        private void ExportToCsv(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                Title = "Save Battery Data",
+                FileName = "battery_data.csv"
+            };
+
+            // Show the dialog and check if the user clicks OK
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Get the path selected by the user
+                string filePath = saveFileDialog.FileName;
+
+                // Write the CSV file
+                using (var writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
+                    foreach (var data in batteryData)
+                    {
+                        writer.WriteLine($"{data.Time},{data.Voltage},{data.Current},{data.Power}");  // Data rows
+                    }
+                }
+
+                //MessageBox.Show("Data successfully saved to " + filePath);
+            }
+            else
+            {
+                MessageBox.Show("Save operation was canceled.");
+            }
+        }
+
+        private void ExportLogToFile(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Log file format
+                Title = "Save Log File",
+                FileName = "log.txt"  // Default file name
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+
+                using (var writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine("Error Log:");
+                    foreach (var error in _errorMessages.OrderByDescending(e => e.Value.LastOccurred))
+                    {
+                        string formattedTime = error.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
+                        writer.WriteLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
+                    }
+
+                    writer.WriteLine("\nInfo/Warning Log:");
+                    foreach (var info in _infoMessages.OrderByDescending(i => i.Value.LastOccurred))
+                    {
+                        string formattedTime = info.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
+                        writer.WriteLine($"{formattedTime} - {info.Key} (Count: {info.Value.Count})");
+                    }
+                }
+
+                //MessageBox.Show("Log file successfully saved to " + filePath);
+            }
+            else
+            {
+                MessageBox.Show("Save operation was canceled.");
+            }
         }
 
         private void ToggleStartStopButton(object? sender, EventArgs? e)
@@ -712,12 +769,7 @@ namespace sm70_cp_450_GUI
             StartStopButton.Text = _started ? "Stop" : "Start";
             toggleOutput();
             SetSettings();
-        }
 
-        private void ToggleShowAllMessages(object sender, EventArgs e)
-        {
-            _showAll = !_showAll;  // Toggle between showing all messages and showing only errors
-            AddConsoleError("");    // Refresh the error log display
         }
 
         private void ChargeButton_Click(object sender, EventArgs e)
@@ -726,6 +778,7 @@ namespace sm70_cp_450_GUI
             _SelectedProgram = AvailablePrograms.Charging;
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
+            batteryData.Clear();
         }
 
         private void DischargeButton_Click(object sender, EventArgs e)
@@ -734,16 +787,9 @@ namespace sm70_cp_450_GUI
             _SelectedProgram = AvailablePrograms.Discharging;
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
+            batteryData.Clear();
+
         }
-
-        //private void Charge30Button_Click(object sender, EventArgs e)
-        //{
-        //    UpdateButtonColors(Charge30Button);
-        //    _SelectedProgram = AvailablePrograms.DischargeTo30Percent;
-        //    _stopwatch.Reset();
-        //    Label_Elapsed_Time_UI.Text = "00:00:00";
-        //}
-
 
         private void Charge30Button_Click(object sender, EventArgs e)
         {
@@ -753,6 +799,8 @@ namespace sm70_cp_450_GUI
             // Reset the stopwatch
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
+            batteryData.Clear();
+
 
             // Calculate the time to discharge to 30%
             CalculateDischargeTimeTo30Percent();
@@ -774,5 +822,8 @@ namespace sm70_cp_450_GUI
 
             clickedButton.BackColor = Color.Yellow;
         }
+
+        #endregion
+
     }
 }
