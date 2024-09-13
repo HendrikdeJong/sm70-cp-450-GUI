@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -9,17 +10,49 @@ namespace sm70_cp_450_GUI
 {
     public class TcpConnectionHandler
     {
-        private readonly string _serverIp;
-        private readonly int _serverPort;
+        private static TcpConnectionHandler _instance;
+
+        //private string _serverIp;
+        //private int _serverPort;
+
+        private readonly string _DefaultserverIp = Properties.Settings.Default._IpAddres;
+        private readonly int _DefaultserverPort = int.Parse(Properties.Settings.Default._Port);
+
         private TcpClient _tcpClient;
         private NetworkStream _networkStream;
 
+        private readonly ConcurrentQueue<string> _commandQueue = new();
+        private readonly ConcurrentQueue<string> _queryQueue = new();
+        private readonly HashSet<string> _pendingQueries = new();
+        private readonly HashSet<string> _pendingCommands = new();
+        private bool _isProcessingQueryQueue = false;
+        private bool _isProcessingCommandQueue = false;
+
         public bool IsConnected => _tcpClient?.Connected ?? false;
 
-        public TcpConnectionHandler(string serverIp, int serverPort)
+
+        //private TcpConnectionHandler(string serverIp, int serverPort)
+        //{
+        //    _serverIp = serverIp;
+        //    _serverPort = serverPort;
+        //}
+
+
+        private TcpConnectionHandler()
         {
-            _serverIp = serverIp;
-            _serverPort = serverPort;
+
+        }
+        public static TcpConnectionHandler Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    //_instance = new TcpConnectionHandler(_DefaultserverIp, _DefaultserverPort);
+                    _instance = new TcpConnectionHandler();
+                }
+                return _instance;
+            }
         }
 
         public async Task<bool> InitializeTcpClient()
@@ -28,13 +61,17 @@ namespace sm70_cp_450_GUI
             _tcpClient = new TcpClient();
             try
             {
-                await _tcpClient.ConnectAsync(_serverIp, _serverPort);
+                await _tcpClient.ConnectAsync(_DefaultserverIp, _DefaultserverPort);
                 _networkStream = _tcpClient.GetStream();
+                EnqueueCommand("SYSTem:REMote:CV: Remote");
+                EnqueueCommand("SYSTem:REMote:CC: Remote");
+                EnqueueCommand("SYSTem:REMote:CP: Remote");
+                MessageBox.Show("established TCP connection.");
                 return true;  // Successfully connected
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Failed to connect: {ex.Message}");
+                MessageBox.Show($"[ERROR] Failed to connect: {ex.Message}");
                 return false;  // Connection failed
             }
         }
@@ -106,6 +143,61 @@ namespace sm70_cp_450_GUI
         {
             _networkStream?.Close();
             _tcpClient?.Close();
+        }
+
+
+        public void EnqueueQuery(string query)
+        {
+            if (!_pendingQueries.Contains(query))
+            {
+                _queryQueue.Enqueue(query);
+                _ = _pendingQueries.Add(query);
+                ProcessQueryQueue();
+            }
+        }
+
+        // Process the query queue
+        private async void ProcessQueryQueue()
+        {
+            if (_isProcessingQueryQueue) return;
+
+            _isProcessingQueryQueue = true;
+
+            while (_queryQueue.TryDequeue(out string query))
+            {
+                string response = await SendQueryAsync(query);  // Implement your actual TCP query method
+                _ = _pendingQueries.Remove(query);
+                // Handle response if needed
+            }
+
+            _isProcessingQueryQueue = false;
+        }
+
+        // Enqueue a command (no response expected)
+        public void EnqueueCommand(string command)
+        {
+            if (!_pendingCommands.Contains(command))
+            {
+                _commandQueue.Enqueue(command);
+                _ = _pendingCommands.Add(command);
+                ProcessCommandQueue();
+            }
+        }
+
+        // Process the command queue
+        private async void ProcessCommandQueue()
+        {
+            if (_isProcessingCommandQueue) return;
+
+            _isProcessingCommandQueue = true;
+
+            while (_commandQueue.TryDequeue(out string command))
+            {
+                await SendCommandAsync(command);  // Implement your actual TCP command method
+                _ = _pendingCommands.Remove(command);
+            }
+
+            _isProcessingCommandQueue = false;
         }
     }
 }
