@@ -30,25 +30,18 @@ namespace sm70_cp_450_GUI
 
         public bool IsConnected => _tcpClient?.Connected ?? false;
 
-
-        //private TcpConnectionHandler(string serverIp, int serverPort)
-        //{
-        //    _serverIp = serverIp;
-        //    _serverPort = serverPort;
-        //}
-
-
         private TcpConnectionHandler()
         {
-
+            // Automatically initialize on startup
+            Task.Run(() => InitializeTcpClient());
         }
+
         public static TcpConnectionHandler Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    //_instance = new TcpConnectionHandler(_DefaultserverIp, _DefaultserverPort);
                     _instance = new TcpConnectionHandler();
                 }
                 return _instance;
@@ -57,7 +50,8 @@ namespace sm70_cp_450_GUI
 
         public async Task<bool> InitializeTcpClient()
         {
-            MessageBox.Show("Attempting to establish TCP connection. Please wait...");
+            if (IsConnected) return false;
+
             _tcpClient = new TcpClient();
             try
             {
@@ -66,15 +60,20 @@ namespace sm70_cp_450_GUI
                 EnqueueCommand("SYSTem:REMote:CV: Remote");
                 EnqueueCommand("SYSTem:REMote:CC: Remote");
                 EnqueueCommand("SYSTem:REMote:CP: Remote");
-                MessageBox.Show("established TCP connection.");
-                return true;  // Successfully connected
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show($"[ERROR] Failed to connect: {ex.Message}");
-                return false;  // Connection failed
+                return false;
             }
         }
+
+
+
+
+
+
+
 
         public async Task<string?> SendQueryAsync(string query, int timeoutMilliseconds = 10000)
         {

@@ -88,7 +88,6 @@ namespace sm70_cp_450_GUI
             logManager = LogManager.Instance;
             _tcpHandler = TcpConnectionHandler.Instance;
             _batteryManager = BatteryManager.Instance;
-
             logManager.OnLogUpdate += LogManager_OnLogUpdate;
 
 
@@ -97,29 +96,18 @@ namespace sm70_cp_450_GUI
             {
                 UpdateUIFromSettings();
             }
-
-
             toolStripMenuSetting_keepSesionData.Checked = Properties.Settings.Default._KeepMemory;
-      
 
-
-            bool connectionEstablished = await _tcpHandler.InitializeTcpClient();
             if (_tcpHandler.IsConnected)
             {
-                MessageBox.Show("TCP connection is established wawawaw.");
+                MessageBox.Show("TCP connection is established.");
             }
             else
             {
-                MessageBox.Show("TCP connection is NOT established nenenenene.");
+                MessageBox.Show("Failed to establish initial TCP connection.");
             }
-            if (connectionEstablished)
-            {
-                Timers();
-            }
-            //else
-            //{
-            //    _ = MessageBox.Show("Failed to establish TCP connection.");
-            //}
+
+            Timers();
             Show();
         }
 
