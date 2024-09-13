@@ -80,11 +80,26 @@
             RuntimeCSV_ToolstripItem = new ToolStripMenuItem();
             errorLogToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            ToolStripMenu_SaveSettings = new ToolStripMenuItem();
-            ToolStripMenu_LoadSettings = new ToolStripMenuItem();
-            toolStripMenuItem5 = new ToolStripMenuItem();
+            ToolStripMenu_ImportSettings = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            toolsToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuISettings = new ToolStripMenuItem();
             toolStripMenuSetting_keepmemory = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            toolStripMenuItem4 = new ToolStripMenuItem();
+            toolStripTextBox2 = new ToolStripTextBox();
+            toolStripTextBox3 = new ToolStripTextBox();
+            toolStripSeparator4 = new ToolStripSeparator();
+            toolStripMenuItem6 = new ToolStripMenuItem();
+            toolStripMenuItem7 = new ToolStripMenuItem();
+            Menu_SocketTab = new ToolStripMenuItem();
+            SocketTab_Connect_Btn = new ToolStripMenuItem();
+            SocketTab_Disconnect_Btn = new ToolStripMenuItem();
+            toolStripMenuItem5 = new ToolStripMenuItem();
+            MenuItem_Documentation = new ToolStripMenuItem();
+            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
+            toolStripTextBox1 = new ToolStripMenuItem();
             FactoryInformationBox = new GroupBox();
             ApplyBatteryDataButton = new Button();
             C_Rating_UI = new TextBox();
@@ -674,7 +689,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem5, toolStripMenuISettings });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5 });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(907, 24);
@@ -683,17 +698,17 @@
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_Export_DropDown, toolStripSeparator1, ToolStripMenu_SaveSettings, ToolStripMenu_LoadSettings });
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_Export_DropDown, toolStripSeparator1, ToolStripMenu_ImportSettings, toolStripMenuItem3 });
             toolStripMenuItem1.Name = "toolStripMenuItem1";
             toolStripMenuItem1.Size = new Size(37, 20);
-            toolStripMenuItem1.Text = "File";
+            toolStripMenuItem1.Text = "&File";
             // 
             // ToolStripMenu_Export_DropDown
             // 
             ToolStripMenu_Export_DropDown.DropDownItems.AddRange(new ToolStripItem[] { RuntimeCSV_ToolstripItem, errorLogToolStripMenuItem });
             ToolStripMenu_Export_DropDown.Name = "ToolStripMenu_Export_DropDown";
-            ToolStripMenu_Export_DropDown.Size = new Size(145, 22);
-            ToolStripMenu_Export_DropDown.Text = "Export";
+            ToolStripMenu_Export_DropDown.Size = new Size(155, 22);
+            ToolStripMenu_Export_DropDown.Text = "Download";
             // 
             // RuntimeCSV_ToolstripItem
             // 
@@ -712,43 +727,137 @@
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(142, 6);
+            toolStripSeparator1.Size = new Size(152, 6);
             // 
-            // ToolStripMenu_SaveSettings
+            // ToolStripMenu_ImportSettings
             // 
-            ToolStripMenu_SaveSettings.Name = "ToolStripMenu_SaveSettings";
-            ToolStripMenu_SaveSettings.Size = new Size(145, 22);
-            ToolStripMenu_SaveSettings.Text = "Save Settings";
-            ToolStripMenu_SaveSettings.Click += SaveSettings;
+            ToolStripMenu_ImportSettings.Name = "ToolStripMenu_ImportSettings";
+            ToolStripMenu_ImportSettings.Size = new Size(155, 22);
+            ToolStripMenu_ImportSettings.Text = "Import Settings";
+            ToolStripMenu_ImportSettings.Click += LoadSettings;
             // 
-            // ToolStripMenu_LoadSettings
+            // toolStripMenuItem3
             // 
-            ToolStripMenu_LoadSettings.Name = "ToolStripMenu_LoadSettings";
-            ToolStripMenu_LoadSettings.Size = new Size(145, 22);
-            ToolStripMenu_LoadSettings.Text = "Load Settings";
-            ToolStripMenu_LoadSettings.Click += LoadSettings;
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(155, 22);
+            toolStripMenuItem3.Text = "Export Settings";
             // 
-            // toolStripMenuItem5
+            // toolsToolStripMenuItem
             // 
-            toolStripMenuItem5.ImageScaling = ToolStripItemImageScaling.None;
-            toolStripMenuItem5.Name = "toolStripMenuItem5";
-            toolStripMenuItem5.Size = new Size(44, 20);
-            toolStripMenuItem5.Text = "Help";
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuISettings, Menu_SocketTab });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new Size(46, 20);
+            toolsToolStripMenuItem.Text = "&Tools";
             // 
             // toolStripMenuISettings
             // 
-            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepmemory });
+            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepmemory, toolStripSeparator3, toolStripMenuItem4 });
             toolStripMenuISettings.Name = "toolStripMenuISettings";
-            toolStripMenuISettings.Size = new Size(61, 20);
+            toolStripMenuISettings.Size = new Size(174, 22);
             toolStripMenuISettings.Text = "Settings";
             // 
             // toolStripMenuSetting_keepmemory
             // 
             toolStripMenuSetting_keepmemory.CheckOnClick = true;
             toolStripMenuSetting_keepmemory.Name = "toolStripMenuSetting_keepmemory";
-            toolStripMenuSetting_keepmemory.Size = new Size(148, 22);
-            toolStripMenuSetting_keepmemory.Text = "Keep memory";
-            toolStripMenuSetting_keepmemory.CheckedChanged += toolStripMenuSetting_keepmemory_CheckedChanged;
+            toolStripMenuSetting_keepmemory.Size = new Size(196, 22);
+            toolStripMenuSetting_keepmemory.Text = "Keep Sesion data saved";
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(193, 6);
+            // 
+            // toolStripMenuItem4
+            // 
+            toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { toolStripTextBox2, toolStripTextBox3, toolStripSeparator4, toolStripMenuItem6, toolStripMenuItem7 });
+            toolStripMenuItem4.Name = "toolStripMenuItem4";
+            toolStripMenuItem4.Size = new Size(196, 22);
+            toolStripMenuItem4.Text = "Ip Configuration";
+            // 
+            // toolStripTextBox2
+            // 
+            toolStripTextBox2.Name = "toolStripTextBox2";
+            toolStripTextBox2.ReadOnly = true;
+            toolStripTextBox2.Size = new Size(100, 23);
+            toolStripTextBox2.Text = "IP: 169.254.0.102";
+            // 
+            // toolStripTextBox3
+            // 
+            toolStripTextBox3.Name = "toolStripTextBox3";
+            toolStripTextBox3.ReadOnly = true;
+            toolStripTextBox3.Size = new Size(100, 23);
+            toolStripTextBox3.Text = "Port: 8462";
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(172, 6);
+            // 
+            // toolStripMenuItem6
+            // 
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new Size(175, 22);
+            toolStripMenuItem6.Text = "Save Configuration";
+            // 
+            // toolStripMenuItem7
+            // 
+            toolStripMenuItem7.Name = "toolStripMenuItem7";
+            toolStripMenuItem7.Size = new Size(175, 22);
+            toolStripMenuItem7.Text = "Reset to default";
+            // 
+            // Menu_SocketTab
+            // 
+            Menu_SocketTab.DropDownItems.AddRange(new ToolStripItem[] { SocketTab_Connect_Btn, SocketTab_Disconnect_Btn });
+            Menu_SocketTab.Name = "Menu_SocketTab";
+            Menu_SocketTab.Size = new Size(174, 22);
+            Menu_SocketTab.Text = "Socket Connection";
+            // 
+            // SocketTab_Connect_Btn
+            // 
+            SocketTab_Connect_Btn.Name = "SocketTab_Connect_Btn";
+            SocketTab_Connect_Btn.Size = new Size(168, 22);
+            SocketTab_Connect_Btn.Text = "connect to sm15k";
+            SocketTab_Connect_Btn.Click += SocketTab_Connect_Btn_click;
+            // 
+            // SocketTab_Disconnect_Btn
+            // 
+            SocketTab_Disconnect_Btn.Name = "SocketTab_Disconnect_Btn";
+            SocketTab_Disconnect_Btn.Size = new Size(168, 22);
+            SocketTab_Disconnect_Btn.Text = "Close Connection";
+            SocketTab_Disconnect_Btn.Click += SocketTab_Disconnect_Btn_Click;
+            // 
+            // toolStripMenuItem5
+            // 
+            toolStripMenuItem5.DropDownItems.AddRange(new ToolStripItem[] { MenuItem_Documentation });
+            toolStripMenuItem5.ImageScaling = ToolStripItemImageScaling.None;
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new Size(44, 20);
+            toolStripMenuItem5.Text = "&Help";
+            // 
+            // MenuItem_Documentation
+            // 
+            MenuItem_Documentation.DropDownItems.AddRange(new ToolStripItem[] { httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem, toolStripSeparator2, toolStripTextBox1 });
+            MenuItem_Documentation.Name = "MenuItem_Documentation";
+            MenuItem_Documentation.Size = new Size(157, 22);
+            MenuItem_Documentation.Text = "Documentation";
+            // 
+            // httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem
+            // 
+            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Name = "httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem";
+            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Size = new Size(371, 22);
+            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Text = "https://www.delta-elektronika.nl/products/sm15k-series";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(368, 6);
+            // 
+            // toolStripTextBox1
+            // 
+            toolStripTextBox1.Name = "toolStripTextBox1";
+            toolStripTextBox1.Size = new Size(371, 22);
+            toolStripTextBox1.Text = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
             // 
             // FactoryInformationBox
             // 
@@ -954,9 +1063,25 @@
         private ToolStripMenuItem errorLogToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem ToolStripMenu_SaveSettings;
-        private ToolStripMenuItem ToolStripMenu_LoadSettings;
+        private ToolStripMenuItem ToolStripMenu_ImportSettings;
         private ToolStripMenuItem toolStripMenuItem5;
+        private ToolStripMenuItem MenuItem_Documentation;
+        private ToolStripMenuItem httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem toolsToolStripMenuItem;
         private ToolStripMenuItem toolStripMenuISettings;
         private ToolStripMenuItem toolStripMenuSetting_keepmemory;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem toolStripMenuItem4;
+        private ToolStripTextBox toolStripTextBox2;
+        private ToolStripTextBox toolStripTextBox3;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem toolStripMenuItem6;
+        private ToolStripMenuItem toolStripMenuItem7;
+        private ToolStripMenuItem Menu_SocketTab;
+        private ToolStripMenuItem SocketTab_Connect_Btn;
+        private ToolStripMenuItem SocketTab_Disconnect_Btn;
+        private ToolStripMenuItem toolStripTextBox1;
+        private ToolStripMenuItem toolStripMenuItem3;
     }
 }

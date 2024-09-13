@@ -24,6 +24,7 @@ namespace sm70_cp_450_GUI
 
         public async Task<bool> InitializeTcpClient()
         {
+            MessageBox.Show("Attempting to establish TCP connection. Please wait...");
             _tcpClient = new TcpClient();
             try
             {
