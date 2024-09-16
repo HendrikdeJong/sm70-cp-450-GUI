@@ -11,6 +11,7 @@ namespace sm70_cp_450_GUI
         private TcpConnectionHandler _tcpHandler;
         private BatteryManager _batteryManager;
         private CommandManager _commandManager;
+        public static MainForm Instance { get; private set; }
 
         private Timer errorCleanupTimer;
         private bool _started = false;
@@ -42,7 +43,7 @@ namespace sm70_cp_450_GUI
 
         // UI dictionary
 
-        private readonly Dictionary<string, Action<string>> _commandToUIActions;
+        public Dictionary<string, Action<string>> _commandToUIActions;
 
         private enum AvailablePrograms
         {
@@ -55,6 +56,7 @@ namespace sm70_cp_450_GUI
         public MainForm()
         {
             InitializeComponent();
+            Instance = this;
             Load += MainForm_Load;
 
             // UI actions associated with commands
@@ -97,15 +99,6 @@ namespace sm70_cp_450_GUI
                 UpdateUIFromSettings();
             }
             toolStripMenuSetting_keepSesionData.Checked = Properties.Settings.Default._KeepMemory;
-
-            if (_tcpHandler.IsConnected)
-            {
-                MessageBox.Show("TCP connection is established.");
-            }
-            else
-            {
-                MessageBox.Show("Failed to establish initial TCP connection.");
-            }
 
             Timers();
             Show();
@@ -177,6 +170,8 @@ namespace sm70_cp_450_GUI
 
                 _commandManager.RequestTime();
                 LockButtons();
+
+
 
                 // Always update the elapsed time display
                 if (_stopwatch.IsRunning)

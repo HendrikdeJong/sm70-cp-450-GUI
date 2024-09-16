@@ -704,7 +704,7 @@
             // 
             ToolStripMenu_Export_DropDown.DropDownItems.AddRange(new ToolStripItem[] { RuntimeCSV_ToolstripItem, errorLogToolStripMenuItem });
             ToolStripMenu_Export_DropDown.Name = "ToolStripMenu_Export_DropDown";
-            ToolStripMenu_Export_DropDown.Size = new Size(180, 22);
+            ToolStripMenu_Export_DropDown.Size = new Size(155, 22);
             ToolStripMenu_Export_DropDown.Text = "Download";
             // 
             // RuntimeCSV_ToolstripItem
@@ -724,19 +724,19 @@
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(152, 6);
             // 
             // ToolStripMenu_ImportSettings
             // 
             ToolStripMenu_ImportSettings.Name = "ToolStripMenu_ImportSettings";
-            ToolStripMenu_ImportSettings.Size = new Size(180, 22);
+            ToolStripMenu_ImportSettings.Size = new Size(155, 22);
             ToolStripMenu_ImportSettings.Text = "Import Settings";
             ToolStripMenu_ImportSettings.Click += LoadSettings;
             // 
             // toolStripMenuItem3
             // 
             toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new Size(180, 22);
+            toolStripMenuItem3.Size = new Size(155, 22);
             toolStripMenuItem3.Text = "Export Settings";
             toolStripMenuItem3.Click += SaveSettings;
             // 

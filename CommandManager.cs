@@ -13,7 +13,6 @@ namespace sm70_cp_450_GUI
         private TcpConnectionHandler _tcpHandler;
         private LogManager _logManager;
 
-        // Private constructor
         private CommandManager()
         {
             _logManager = LogManager.Instance;
@@ -21,7 +20,6 @@ namespace sm70_cp_450_GUI
         }
 
 
-        // Access the CommandManager instance
         public static CommandManager Instance
         {
             get
