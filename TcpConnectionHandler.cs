@@ -10,15 +10,15 @@ namespace sm70_cp_450_GUI
 {
     public class TcpConnectionHandler
     {
-        private static TcpConnectionHandler _instance;
-        private LogManager _logManager;
+        private static TcpConnectionHandler? _instance;
+        private readonly LogManager _logManager;
 
 
         //private string _serverIp;
         //private int _serverPort;
 
-        private readonly string _DefaultserverIp = Properties.Settings.Default._IpAddres;
-        private readonly int _DefaultserverPort = int.Parse(Properties.Settings.Default._Port);
+        private readonly string _DefaultServerIp = Properties.Settings.Default._IpAddres;
+        private readonly int _DefaultServerPort = int.Parse(Properties.Settings.Default._Port);
 
         private TcpClient _tcpClient;
         private NetworkStream _networkStream;
@@ -43,10 +43,7 @@ namespace sm70_cp_450_GUI
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new TcpConnectionHandler();
-                }
+                _instance ??= new TcpConnectionHandler();
                 return _instance;
             }
         }
@@ -58,7 +55,7 @@ namespace sm70_cp_450_GUI
             _tcpClient = new TcpClient();
             try
             {
-                await _tcpClient.ConnectAsync(_DefaultserverIp, _DefaultserverPort);
+                await _tcpClient.ConnectAsync(_DefaultServerIp, _DefaultServerPort);
                 _networkStream = _tcpClient.GetStream();
                 EnqueueCommand("SYSTem:REMote:CV: Remote");
                 EnqueueCommand("SYSTem:REMote:CC: Remote");

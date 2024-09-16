@@ -9,6 +9,8 @@ namespace sm70_cp_450_GUI
 {
     public class CommandManager
     {
+        //public static MainForm? Instance { get; private set; }
+
         private static CommandManager _instance;
         private TcpConnectionHandler _tcpHandler;
         private LogManager _logManager;
@@ -24,10 +26,7 @@ namespace sm70_cp_450_GUI
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new CommandManager();
-                }
+                _instance ??= new CommandManager();
                 return _instance;
             }
         }

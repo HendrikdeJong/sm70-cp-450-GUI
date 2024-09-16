@@ -8,7 +8,7 @@ namespace sm70_cp_450_GUI
 {
     public class BatteryManager
     {
-        private static BatteryManager _instance;
+        private static BatteryManager? _instance;
         private CommandManager _commandManager;
 
         // Private constructor

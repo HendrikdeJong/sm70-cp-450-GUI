@@ -10,7 +10,7 @@ namespace sm70_cp_450_GUI
 {
     public class LogManager
     {
-        private static LogManager _instance;
+        private static LogManager? _instance;
 
         // Private constructor to prevent direct instantiation
         private LogManager() { }
@@ -112,14 +112,14 @@ namespace sm70_cp_450_GUI
                 writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
                 foreach (BatteryMetrics data in batteryData)
                 {
-                    writer.WriteLine($"{data.Time},{data.Voltage / 100},{data.Current},{data.Power}");  // Data rows
+                    writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000),3)} V,{Math.Round((data.Current / 1000),3)} A,{data.Power} W");  // Data rows
                 }
 
                 //MessageBox.Show("Data successfully saved to " + filePath);
             }
             else
             {
-                _ = MessageBox.Show("Save operation was canceled.");
+                //_ = MessageBox.Show("Save operation was canceled.");
             }
         }
 
@@ -156,7 +156,7 @@ namespace sm70_cp_450_GUI
             }
             else
             {
-                _ = MessageBox.Show("Save operation was canceled.");
+                //_ = MessageBox.Show("Save operation was canceled.");
             }
         }
 

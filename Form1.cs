@@ -1,6 +1,4 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Text;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
@@ -11,20 +9,18 @@ namespace sm70_cp_450_GUI
         private TcpConnectionHandler _tcpHandler;
         private BatteryManager _batteryManager;
         private CommandManager _commandManager;
-        public static MainForm Instance { get; private set; }
+        public static MainForm? Instance { get; private set; }
 
-        private Timer errorCleanupTimer;
+        private Timer? errorCleanupTimer;
         private bool _started = false;
         private bool DischargeTo30Bool = false;
         private bool _EditingValues = false;
-        private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
+        private AvailablePrograms? _SelectedProgram = AvailablePrograms.None;
 
         private double _ratedVoltage = 0;
         private double _ratedCapacity = 0;
         private double _ratedPower = 0;
         private double _cRating = 0;
-
-        private TimeSpan _timeToDischarge30Percent;
 
         public double currentVoltage = 0;
         public double currentCurrent = 0;
@@ -33,7 +29,7 @@ namespace sm70_cp_450_GUI
 
         private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
         private readonly Stopwatch _stopwatch = new();
-        private TimeSpan _maxChargingTime;
+        private TimeSpan? _maxChargingTime;
 
         private double _StoredVoltageSetting = 0;
         private double _StoredCurrent = 0;
@@ -84,7 +80,7 @@ namespace sm70_cp_450_GUI
             Timers();
         }
 
-        private async void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             _commandManager = CommandManager.Instance;
             logManager = LogManager.Instance;
@@ -146,7 +142,7 @@ namespace sm70_cp_450_GUI
 
         private void Timers()
         {
-            Timer updateTimer = new()
+            Timer? updateTimer = new()
             {
                 Interval = 1000
             };
@@ -328,7 +324,7 @@ namespace sm70_cp_450_GUI
 
                 try
                 {
-                    TimeSpan timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
+                    TimeSpan? timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
                     if (elapsed >= timeToDischarge30)
                     {
                         ToggleStartStopButton(null, EventArgs.Empty);
@@ -337,7 +333,7 @@ namespace sm70_cp_450_GUI
                 }
                 catch (InvalidOperationException ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    _ = MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -383,7 +379,7 @@ namespace sm70_cp_450_GUI
 
         private void SaveSettings(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new()
+            SaveFileDialog? saveFileDialog = new()
             {
                 Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
                 Title = "Save Factory Settings",
@@ -394,7 +390,7 @@ namespace sm70_cp_450_GUI
             {
                 string filePath = saveFileDialog.FileName;
 
-                using (StreamWriter writer = new(filePath))
+                using (StreamWriter? writer = new(filePath))
                 {
                     // Save the settings in comma-separated format (CSV-like)
                     writer.WriteLine($"{_StoredVoltageSetting},{_StoredCurrent},{_StoredPower},{_StoredNegativeCurrent},{_StoredNegativePower}");
@@ -405,7 +401,7 @@ namespace sm70_cp_450_GUI
         }
         private void LoadSettings(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new()
+            OpenFileDialog? openFileDialog = new()
             {
                 Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
                 Title = "Load Factory Settings"
@@ -415,7 +411,7 @@ namespace sm70_cp_450_GUI
             {
                 string filePath = openFileDialog.FileName;
 
-                using StreamReader reader = new(filePath);
+                using StreamReader? reader = new(filePath);
                 string line = reader.ReadLine();
                 if (!string.IsNullOrEmpty(line))
                 {
@@ -493,11 +489,11 @@ namespace sm70_cp_450_GUI
             // Call the method from BatteryManager
             try
             {
-                TimeSpan timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
+                TimeSpan? timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
             }
             catch (InvalidOperationException ex)
             {
-                MessageBox.Show(ex.Message);
+                _ = MessageBox.Show(ex.Message);
             }
         }
 
@@ -531,7 +527,7 @@ namespace sm70_cp_450_GUI
                     // Open the browser with the URL
                     try
                     {
-                        Process.Start(new ProcessStartInfo
+                        _ = Process.Start(new ProcessStartInfo
                         {
                             FileName = url,
                             UseShellExecute = true // Open in default browser
@@ -539,13 +535,13 @@ namespace sm70_cp_450_GUI
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Unable to open the browser. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _ = MessageBox.Show($"Unable to open the browser. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-        private void toolStripMenuSetting_keepSesionData_CheckedChanged(object sender, EventArgs e)
+        private void ToolStripMenuSetting_keepSessionData_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSesionData.Checked;
             Properties.Settings.Default.Save();

@@ -760,7 +760,7 @@
             toolStripMenuSetting_keepSesionData.Name = "toolStripMenuSetting_keepSesionData";
             toolStripMenuSetting_keepSesionData.Size = new Size(196, 22);
             toolStripMenuSetting_keepSesionData.Text = "Keep Sesion data saved";
-            toolStripMenuSetting_keepSesionData.Click += toolStripMenuSetting_keepSesionData_CheckedChanged;
+            toolStripMenuSetting_keepSesionData.Click += ToolStripMenuSetting_keepSessionData_CheckedChanged;
             // 
             // toolStripSeparator3
             // 
