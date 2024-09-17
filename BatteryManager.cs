@@ -46,7 +46,7 @@ namespace sm70_cp_450_GUI
         public double RatedCapacity { get; private set; }
         public double CRating { get; private set; }
         public double RatedPower { get; private set; }
-        public TimeSpan TimeToDischarge30Percent { get; private set; }
+        public TimeSpan EstimateTime { get; private set; }
 
         public List<BatteryMetrics> BatteryData { get; private set; }
 
@@ -91,30 +91,33 @@ namespace sm70_cp_450_GUI
         }
 
         // Function to calculate time to discharge to 30%
-        public TimeSpan CalculateDischargeTimeTo30Percent()
+        public TimeSpan CalculateTimeEstimate(double Percentage)
         {
             if (RatedCapacity <= 0 || CRating <= 0)
             {
-                throw new InvalidOperationException("Invalid rated capacity or C-rating. Please check your battery settings.");
+                MessageBox.Show("Invalid rated capacity or C-rating. Please check your battery settings.");
+                return TimeSpan.Zero;
             }
 
-            double dischargeCurrent = RatedCapacity * CRating;
+            double Current = RatedCapacity * CRating;
 
-            if (dischargeCurrent <= 0)
+            if (Current <= 0)
             {
-                throw new InvalidOperationException("Discharge current is zero or invalid.");
+                MessageBox.Show("Current is zero or invalid.");
+                return TimeSpan.Zero;
             }
 
-            double fullDischargeTimeHours = RatedCapacity / dischargeCurrent;
+            double fullDischargeTimeHours = RatedCapacity / Current;
 
             if (double.IsNaN(fullDischargeTimeHours) || fullDischargeTimeHours <= 0)
             {
-                throw new InvalidOperationException("Calculated discharge time is invalid.");
+                MessageBox.Show("Calculated time is invalid.");
+                return TimeSpan.Zero;
             }
 
-            // Time to discharge to 30% (70% of the full discharge time)
-            TimeToDischarge30Percent = TimeSpan.FromHours(fullDischargeTimeHours * 0.70);
-            return TimeToDischarge30Percent;
+
+            EstimateTime = TimeSpan.FromHours(fullDischargeTimeHours * 0.70);
+            return EstimateTime;
         }
     }
 }

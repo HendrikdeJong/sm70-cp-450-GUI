@@ -16,9 +16,8 @@ namespace sm70_cp_450_GUI
         private Timer? errorCleanupTimer;
         private bool _started = false;
         public bool _ConsoleState = false;
-        private bool DischargeTo30Bool = false;
         private bool _EditingValues = false;
-        private AvailablePrograms? _SelectedProgram = AvailablePrograms.None;
+        private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
 
         private double _ratedVoltage = 0;
         private double _ratedCapacity = 0;
@@ -38,7 +37,8 @@ namespace sm70_cp_450_GUI
 
         private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
         private readonly Stopwatch _stopwatch = new();
-        private TimeSpan? _maxChargingTime;
+        private TimeSpan? EstimateTotalTime;
+
 
         private double _StoredVoltageSetting = 0;
         private double _StoredCurrent = 0;
@@ -53,9 +53,9 @@ namespace sm70_cp_450_GUI
         private enum AvailablePrograms
         {
             None,
-            Connecting_Battery,
             Charging,
             Discharging,
+            DischargingTo30,
         }
 
         public MainForm()
@@ -80,8 +80,6 @@ namespace sm70_cp_450_GUI
                 { "SYSTem:REMote:CV?", (response) => Label_Remote_CV_UI.Text = response},
                 { "SYSTem:REMote:CC?", (response) => Label_Remote_CC_UI.Text = response},
                 { "SYSTem:REMote:CP?", (response) => Label_Remote_CP_UI.Text = response},
-
-                { "SYSTem:TIMe?", (response) => Label_Time_UI.Text = response},
 
                 { "SYSTem:LIMits:VOLtage?", (response) => VoltageLimit = Double.Parse(response)},
                 { "SYSTem:LIMits:CURrent?", (response) => CurrentLimit = Double.Parse(response)},
@@ -176,7 +174,7 @@ namespace sm70_cp_450_GUI
                 _commandManager?.RequestTime();
                 StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
 
-                LockButtons();
+                //LockButtons();
 
 
 
@@ -190,26 +188,24 @@ namespace sm70_cp_450_GUI
                         logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
                         _timeSinceLastSave = TimeSpan.Zero;  // Reset the timer
                     }
-
+                     
 
                     TimeSpan elapsed = _stopwatch.Elapsed;
-                    Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-                }
 
-                // Monitor the battery during discharging
-                if (DischargeTo30Bool)
-                {
-                    MonitorDischargeTo30Percent();
+                    TimeSpan _TimeRemaining = ((EstimateTotalTime ?? TimeSpan.Zero) - elapsed);
+
+                    Label_Total_Time_UI.Text = $"{_TimeRemaining.Hours:D2}:{_TimeRemaining.Minutes:D2}:{_TimeRemaining.Seconds:D2}";
+                    Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
                 }
             };
 
             Timer? LateUpdate = new()
             {
-                Interval = 5000
+                Interval = 5000 // 5 second interval
             };
             LateUpdate.Tick += (sender, e) =>
             {
-
+                LiveInfoData.Text = $"SM70-CP-450 Controller Status:{(_tcpHandler == null ? "Not initialized" : (_tcpHandler.IsConnected ? "Connected" : "Not Connected"))}";
                 _commandManager?.RequestRemoteSetting_CV();
                 _commandManager?.RequestRemoteSetting_CC();
                 _commandManager?.RequestRemoteSetting_CP();
@@ -271,7 +267,6 @@ namespace sm70_cp_450_GUI
             SaveSettings(_StoredVoltageSetting, _StoredCurrent, _StoredPower, _StoredNegativeCurrent, _StoredNegativePower);
         }
 
-        // Save settings
         private void SaveSettings(double V, double A, double W, double N_A, double N_W)
         {
             _StoredVoltageSetting = V;
@@ -289,35 +284,7 @@ namespace sm70_cp_450_GUI
             InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
         }
 
-        private void SetSettings()
-        {
-            // These are your stored voltage, current, and power settings
-            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
-            _commandManager?.SetOutputCurrent(0);  // Set initial current
-            _commandManager?.SetOutputPower(0);    // Set initial power
-            _commandManager?.SetOutputCurrentNegative(0);  // Set negative current if necessary
-            _commandManager?.SetOutputPowerNegative(0);    // Set negative power if necessary
 
-            // Apply program-specific settings if started
-            if (_started)
-            {
-                switch (_SelectedProgram)
-                {
-                    case AvailablePrograms.Connecting_Battery:
-                        _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
-                        _commandManager?.SetOutputCurrent(2);  // Set a specific current for connecting battery
-                        break;
-                    case AvailablePrograms.Charging:
-                        _commandManager?.SetOutputCurrent(_StoredCurrent);
-                        _commandManager?.SetOutputPower(_StoredPower);
-                        break;
-                    case AvailablePrograms.Discharging:
-                        _commandManager?.SetOutputCurrentNegative(_StoredNegativeCurrent);
-                        _commandManager?.SetOutputPowerNegative(_StoredNegativePower);
-                        break;
-                }
-            }
-        }
 
         private void UpdateFromBatteryLabelData(object sender, EventArgs e)
         {
@@ -337,55 +304,10 @@ namespace sm70_cp_450_GUI
             _ratedPower = watts;
 
             SaveSettings(_ratedVoltage, amps, watts, -amps, -watts);
-
-            // Calculate max charging time in hours, then convert to TimeSpan
-            double maxChargingHours = _ratedCapacity / amps;
-            _maxChargingTime = TimeSpan.FromHours(maxChargingHours);
         }
 
 
-        // Monitor battery discharge
-        private void MonitorDischargeTo30Percent()
-        {
-            if (_started && _stopwatch.IsRunning)
-            {
-                TimeSpan elapsed = _stopwatch.Elapsed;
-                Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-
-                try
-                {
-                    TimeSpan? timeToDischarge30 = _batteryManager?.CalculateDischargeTimeTo30Percent();
-                    if (elapsed >= timeToDischarge30)
-                    {
-                        ToggleStartStopButton(null, EventArgs.Empty);
-                        _ = MessageBox.Show("Battery has been discharged to approximately 30% capacity, please export CSV for the datasheet.");
-                    }
-                }
-                catch (InvalidOperationException ex)
-                {
-                    _ = MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
-
-        private void toggleOutput()
-        {
-            if (_started)
-            {
-                _tcpHandler?.EnqueueCommand("OUTPut ON\n");
-                _stopwatch.Start();  // Start the stopwatch
-            }
-            else
-            {
-                _tcpHandler?.EnqueueCommand("OUTPut OFF\n");
-                _stopwatch.Stop();   // Stop the stopwatch
-            }
-        }
-
-
-
-
+     
         private static string RemoveNonNumeric(string input)
         {
             return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
@@ -396,16 +318,103 @@ namespace sm70_cp_450_GUI
             return double.TryParse(RemoveNonNumeric(input), out double result) ? result : 0;
         }
 
+        private void SelectOperation(Object sender, EventArgs e)
+        {
+            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
 
+            if (sender is CheckBox _CheckBox)
+            {
+                if (_CheckBox.Name == "Operation_ConnectBattery_Override")
+                {
+                    AvailablePrograms storedProgram = _SelectedProgram;
+                    Operation_Output_Switch.Visible = !_CheckBox.Checked;
+                    Operation_Output_Switch.BackColor = _started ? Color.Red : Color.Green;
+                    Operation_Output_Switch.Text = _started ? "Stop" : "Start";
 
+                    if (_CheckBox.Checked) _SelectedProgram = storedProgram; else {
+                        _SelectedProgram = AvailablePrograms.None;
+                        _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
+                        _commandManager?.SetOutputCurrent(1.5);
+                    }
+                }
 
+            }
+
+            if (sender is Button button)
+            {
+                switch (button.Name)
+                {
+                    case "Operation_Output_Switch":
+                        if(_SelectedProgram != AvailablePrograms.None)
+                        {
+                            ToggleOutput();
+                            //MessageBox.Show($"selected switch {_started}, {Operation_Output_Switch.Location}");
+                        }
+                        break;
+                    case "Operation_Charge_selection":
+                        if (!_started)
+                        {
+                            _SelectedProgram = AvailablePrograms.Charging;
+                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Charge_selection.Location.Y);
+                            ChargeMethod(1);
+                        }
+                        break;
+                    case "Operation_Discharge_selection":
+                        if(!_started){
+                            _SelectedProgram = AvailablePrograms.Discharging;
+                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Discharge_selection.Location.Y);
+                            DischargeMethod(1);
+                        }
+                        break;
+                    case "Operation_DischargeTo30_selection":
+                        if(!_started)
+                        {
+                            _SelectedProgram = AvailablePrograms.DischargingTo30;
+                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_DischargeTo30_selection.Location.Y);
+                            DischargeMethod(0.7);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void ToggleOutput()
+        {
+            _started = !_started;
+            _tcpHandler?.EnqueueCommand(_started ? "OUTPut ON" : "OUTPut OFF");
+            if (_started) _stopwatch.Start(); else _stopwatch.Stop();
+        }
+
+        private void ChargeMethod(double Percentage)
+        {
+            SetTimer(Percentage);
+            _commandManager?.SetOutputCurrent(_StoredCurrent);
+            _commandManager?.SetOutputPower(_StoredPower);
+            _commandManager?.SetOutputCurrentNegative(0);
+            _commandManager?.SetOutputPowerNegative(0);
+        }
+
+        private void DischargeMethod(double Percentage)
+        {
+            SetTimer(Percentage);
+            _commandManager?.SetOutputCurrent(0);
+            _commandManager?.SetOutputPower(0);
+            _commandManager?.SetOutputCurrentNegative(_StoredNegativeCurrent);
+            _commandManager?.SetOutputPowerNegative(_StoredNegativePower);
+        }
+
+        private void SetTimer(double Percentage)
+        {
+            Label_Elapsed_Time_UI.Text = "00:00:00";
+            _stopwatch.Reset();
+            logManager?.batteryData.Clear();
+
+            EstimateTotalTime = _batteryManager?.CalculateTimeEstimate(Percentage);
+        }
 
         #region buttons
 
-        private void LockButtons()
-        {
-            ChargeButton.Enabled = Charge30Button.Enabled = DischargeButton.Enabled = BatteryConnectButton.Enabled = !_started;
-        }
+
 
         private void SaveSettings(object sender, EventArgs e)
         {
@@ -471,78 +480,6 @@ namespace sm70_cp_450_GUI
                     }
                 }
             }
-        }
-
-
-        private void ToggleStartStopButton(object? sender, EventArgs? e)
-        {
-            _started = !_started;
-            StartStopButton.BackColor = _started ? Color.Red : Color.Green;
-            StartStopButton.Text = _started ? "Stop" : "Start";
-            toggleOutput();
-            SetSettings();
-
-        }
-
-        private void ChargeButton_Click(object sender, EventArgs e)
-        {
-            UpdateButtonColors(ChargeButton);
-            _SelectedProgram = AvailablePrograms.Charging;
-            _stopwatch.Reset();
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager?.batteryData.Clear();
-            DischargeTo30Bool = false;
-        }
-
-        private void DischargeButton_Click(object sender, EventArgs e)
-        {
-            UpdateButtonColors(DischargeButton);
-            _SelectedProgram = AvailablePrograms.Discharging;
-            _stopwatch.Reset();
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager?.batteryData.Clear();
-            DischargeTo30Bool = false;
-        }
-
-        private void DischargeTo30Button_Click(object sender, EventArgs e)
-        {
-            UpdateButtonColors(Charge30Button);
-            DischargeTo30Bool = true;
-            _SelectedProgram = AvailablePrograms.Discharging;
-            // Reset the stopwatch
-            _stopwatch.Reset();
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager?.batteryData.Clear();
-
-
-
-            // Call the method from BatteryManager
-            try
-            {
-                TimeSpan? timeToDischarge30 = _batteryManager?.CalculateDischargeTimeTo30Percent();
-            }
-            catch (InvalidOperationException ex)
-            {
-                _ = MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void BatteryConnectButton_Click(object sender, EventArgs e)
-        {
-            UpdateButtonColors(BatteryConnectButton);
-            _SelectedProgram = AvailablePrograms.Connecting_Battery;
-            DischargeTo30Bool = false;
-            ToggleStartStopButton(sender, e);
-        }
-
-        private void UpdateButtonColors(System.Windows.Forms.Button clickedButton)
-        {
-            BatteryConnectButton.BackColor = SystemColors.Control;
-            ChargeButton.BackColor = SystemColors.Control;
-            DischargeButton.BackColor = SystemColors.Control;
-            Charge30Button.BackColor = SystemColors.Control;
-
-            clickedButton.BackColor = Color.Yellow;
         }
 
         private void MenuItem_Click(object? sender, EventArgs e)
