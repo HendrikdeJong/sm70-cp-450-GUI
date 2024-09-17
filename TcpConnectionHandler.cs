@@ -85,7 +85,7 @@ namespace sm70_cp_450_GUI
             {
                 _queryQueue.Enqueue(query);
                 _ = _pendingQueries.Add(query);
-                _logManager.AddDebugLogMessage($"[INFO] Enqueued query: {query}");
+                _logManager.AddDebugLogMessage($"⚠️ Enqueued query: {query}");
                 ProcessQueryQueue();
             }
         }
@@ -103,12 +103,12 @@ namespace sm70_cp_450_GUI
                 _ = _pendingQueries.Remove(query);
 
                 // Log the query and response
-                _logManager.AddDebugLogMessage($"[INFO] Processing query: {query}, Response: {response}");
+                _logManager.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
 
                 if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out Action<string> uiAction))
                 {
                     // Log that we found the matching action
-                    _logManager.AddDebugLogMessage($"[INFO] Found action for query: {query}");
+                    _logManager.AddDebugLogMessage($"⚠️ Found action for query: {query}");
 
                     // Invoke the corresponding UI action
                     MainForm.Instance.Invoke(new Action(() => uiAction(response)));
@@ -116,7 +116,7 @@ namespace sm70_cp_450_GUI
                 else
                 {
                     // Log if there was no matching action
-                    _logManager.AddDebugLogMessage($"[ERROR] No matching action for query: {query}");
+                    _logManager.AddDebugLogMessage($"❌ No matching action for query: {query}");
                 }
             }
 
@@ -128,7 +128,7 @@ namespace sm70_cp_450_GUI
         {
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager.AddDebugLogMessage("[ERROR] TCP connection is not open.");
+                _logManager.AddDebugLogMessage("❌ TCP connection is not open.");
                 return null;
             }
 
@@ -160,7 +160,7 @@ namespace sm70_cp_450_GUI
             }
             catch (Exception ex)
             {
-                _logManager.AddDebugLogMessage($"[ERROR] Failed to send query: {ex.Message}");
+                _logManager.AddDebugLogMessage($"❌ Failed to send query: {ex.Message}");
                 return null;
             }
         }
@@ -172,7 +172,7 @@ namespace sm70_cp_450_GUI
         {
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager.AddDebugLogMessage("[ERROR] TCP connection is not open.");
+                _logManager.AddDebugLogMessage("❌ TCP connection is not open.");
                 return false;
             }
 
@@ -185,7 +185,7 @@ namespace sm70_cp_450_GUI
             }
             catch (Exception ex)
             {
-                _logManager.AddDebugLogMessage($"[ERROR] Failed to send command: {ex.Message}");
+                _logManager.AddDebugLogMessage($"❌ Failed to send command: {ex.Message}");
                 return false;
             }
         }

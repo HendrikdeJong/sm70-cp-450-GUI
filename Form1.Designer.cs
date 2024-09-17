@@ -65,6 +65,12 @@
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             groupBox1 = new GroupBox();
             ConsoleBox = new GroupBox();
+            toolStrip1 = new ToolStrip();
+            ToggleConsole_Btn = new ToolStripButton();
+            ConsoleClear_Btn = new ToolStripButton();
+            Console_DownloadBtn = new ToolStripButton();
+            toolStripSeparator4 = new ToolStripSeparator();
+            Console_Short_ErrorLabel = new ToolStripLabel();
             Console_Simple_Textbox_UI = new RichTextBox();
             Label_Time_UI = new TextBox();
             label3 = new Label();
@@ -118,6 +124,7 @@
             tableLayoutPanel4.SuspendLayout();
             groupBox1.SuspendLayout();
             ConsoleBox.SuspendLayout();
+            toolStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             FactoryInformationBox.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -580,14 +587,70 @@
             // 
             // ConsoleBox
             // 
+            ConsoleBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ConsoleBox.Controls.Add(toolStrip1);
             ConsoleBox.Controls.Add(Console_Simple_Textbox_UI);
             ConsoleBox.Dock = DockStyle.Bottom;
-            ConsoleBox.Location = new Point(3, 298);
+            ConsoleBox.Location = new Point(3, 421);
+            ConsoleBox.MaximumSize = new Size(450, 267);
+            ConsoleBox.MinimumSize = new Size(300, 50);
             ConsoleBox.Name = "ConsoleBox";
-            ConsoleBox.Size = new Size(432, 173);
+            ConsoleBox.Size = new Size(432, 50);
             ConsoleBox.TabIndex = 22;
             ConsoleBox.TabStop = false;
             ConsoleBox.Text = "Console";
+            // 
+            // toolStrip1
+            // 
+            toolStrip1.Dock = DockStyle.Bottom;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { ToggleConsole_Btn, ConsoleClear_Btn, Console_DownloadBtn, toolStripSeparator4, Console_Short_ErrorLabel });
+            toolStrip1.Location = new Point(3, 22);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(426, 25);
+            toolStrip1.TabIndex = 27;
+            toolStrip1.Text = "toolStrip1";
+            // 
+            // ToggleConsole_Btn
+            // 
+            ToggleConsole_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ToggleConsole_Btn.Image = Properties.Resources.Console;
+            ToggleConsole_Btn.ImageTransparentColor = Color.Magenta;
+            ToggleConsole_Btn.Name = "ToggleConsole_Btn";
+            ToggleConsole_Btn.Size = new Size(23, 22);
+            ToggleConsole_Btn.Text = "Close Console";
+            ToggleConsole_Btn.Click += ToggleConsole_Btn_Click;
+            // 
+            // ConsoleClear_Btn
+            // 
+            ConsoleClear_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ConsoleClear_Btn.Image = Properties.Resources.CleanData;
+            ConsoleClear_Btn.ImageTransparentColor = Color.Magenta;
+            ConsoleClear_Btn.Name = "ConsoleClear_Btn";
+            ConsoleClear_Btn.Size = new Size(23, 22);
+            ConsoleClear_Btn.Text = "Clear console";
+            ConsoleClear_Btn.Click += ConsoleClear_Btn_Click;
+            // 
+            // Console_DownloadBtn
+            // 
+            Console_DownloadBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            Console_DownloadBtn.Image = (Image)resources.GetObject("Console_DownloadBtn.Image");
+            Console_DownloadBtn.ImageTransparentColor = Color.Magenta;
+            Console_DownloadBtn.Name = "Console_DownloadBtn";
+            Console_DownloadBtn.Size = new Size(23, 22);
+            Console_DownloadBtn.Text = "Download Log";
+            Console_DownloadBtn.Click += errorLogToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 25);
+            // 
+            // Console_Short_ErrorLabel
+            // 
+            Console_Short_ErrorLabel.Name = "Console_Short_ErrorLabel";
+            Console_Short_ErrorLabel.Overflow = ToolStripItemOverflow.Never;
+            Console_Short_ErrorLabel.Size = new Size(259, 22);
+            Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
             // 
             // Console_Simple_Textbox_UI
             // 
@@ -599,8 +662,9 @@
             Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
             Console_Simple_Textbox_UI.ReadOnly = true;
             Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Simple_Textbox_UI.Size = new Size(426, 145);
+            Console_Simple_Textbox_UI.Size = new Size(426, 22);
             Console_Simple_Textbox_UI.TabIndex = 5;
+            Console_Simple_Textbox_UI.TabStop = false;
             Console_Simple_Textbox_UI.Text = "";
             // 
             // Label_Time_UI
@@ -983,6 +1047,9 @@
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ConsoleBox.ResumeLayout(false);
+            ConsoleBox.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             FactoryInformationBox.ResumeLayout(false);
@@ -1070,5 +1137,11 @@
         private ToolStripMenuItem toolStripMenuItem4;
         private ToolStripTextBox toolStripTextBox2;
         private ToolStripTextBox toolStripTextBox3;
+        private ToolStrip toolStrip1;
+        private ToolStripButton ToggleConsole_Btn;
+        private ToolStripButton ConsoleClear_Btn;
+        private ToolStripButton Console_DownloadBtn;
+        private ToolStripSeparator toolStripSeparator4;
+        public ToolStripLabel Console_Short_ErrorLabel;
     }
 }

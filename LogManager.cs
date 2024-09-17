@@ -12,6 +12,10 @@ namespace sm70_cp_450_GUI
     {
         private static LogManager? _instance;
 
+        private int _currentErrorIndex = 0;  // Index to cycle through errors
+        private int _errorDisplayCounter = 0;  // Counter for slower error display
+        private int _errorDisplayInterval = 10;  // Change this to set slower rate (e.g., 10 ticks = 10 seconds)
+
         // Private constructor to prevent direct instantiation
         private LogManager() { }
 
@@ -41,12 +45,12 @@ namespace sm70_cp_450_GUI
         {
             DateTime currentTime = DateTime.Now;
 
-            if (LogMessage.Contains("[ERROR]"))
+            if (LogMessage.Contains("❌"))
             {
                 _errorMessages[LogMessage] = _errorMessages.ContainsKey(LogMessage)
                     ? (_errorMessages[LogMessage].Count + 1, currentTime)
                     : (1, currentTime);
-                UpdateConsole();  // Call the method to update the console log
+                LogErrorBasedOnConsoleState();  // Updated to conditionally update based on console state
             }
 
             _infoMessages[LogMessage] = _infoMessages.ContainsKey(LogMessage)
@@ -54,11 +58,28 @@ namespace sm70_cp_450_GUI
                 : (1, currentTime);
         }
 
+        public void LogErrorBasedOnConsoleState()
+        {
+            if(MainForm.Instance != null)
+            {
+                if (MainForm.Instance._ConsoleState)  // Console is open
+                {
+                    UpdateConsole();  // Send detailed, multiline errors to the console textbox.
+                }
+                else  // Console is closed
+                {
+                    DisplaySingleErrorInLabel();  // Show one error every 2 seconds on a label.
+                }
+            }
+        }
+
+        // Update multiline error messages in the console
         public void UpdateConsole()
         {
             StringBuilder sb = new();
             DateTime now = DateTime.Now;
 
+            // Remove errors that have expired
             List<string> expiredErrors = _errorMessages
                 .Where(e => (now - e.Value.LastOccurred).TotalSeconds > 10)
                 .Select(e => e.Key)
@@ -69,6 +90,7 @@ namespace sm70_cp_450_GUI
                 _errorMessages.Remove(errorKey);
             }
 
+            // Show all remaining errors sorted by last occurrence
             var sortedErrors = _errorMessages.OrderByDescending(e => e.Value.LastOccurred);
             foreach (var error in sortedErrors)
             {
@@ -76,10 +98,40 @@ namespace sm70_cp_450_GUI
                 sb.AppendLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
             }
 
-            // Raise the event to notify listeners (MainForm) to update the UI
+            // Trigger an update to the UI with the log messages
             OnLogUpdate?.Invoke(sb.ToString());
         }
 
+        // Show a single error on the label (simplified for closed console)
+        public void DisplaySingleErrorInLabel()
+        {
+            if (MainForm.Instance != null)
+            {
+                _errorDisplayCounter++;
+                if (_errorDisplayCounter >= _errorDisplayInterval)
+                {
+                    if (_errorMessages.Count > 0)
+                    {
+                        // Ensure the index wraps around if it exceeds the number of errors
+                        if (_currentErrorIndex >= _errorMessages.Count)
+                        {
+                            _currentErrorIndex = 0;  // Reset the index to loop back to the start
+                        }
+
+                        // Get the error at the current index
+                        var error = _errorMessages.ElementAt(_currentErrorIndex);
+
+                        // Truncate the error message if it's too long
+                        string truncatedError = TruncateMessage(error.Key, 40);
+                        MainForm.Instance.Console_Short_ErrorLabel.Text = $"{truncatedError}";  // Update the label
+
+                        // Move to the next error for the next update
+                        _currentErrorIndex++;
+                    }
+                    _errorDisplayCounter = 0;
+                }
+            }
+        }
         public void CollectBatteryMetrics(double V, double C, double P)
         {
             BatteryMetrics metrics = new()
@@ -160,6 +212,15 @@ namespace sm70_cp_450_GUI
             }
         }
 
+
+        private string TruncateMessage(string errorMessage, int TruncateLength)
+        {
+            if (errorMessage.Length > TruncateLength)
+            {
+                return errorMessage.Substring(0, TruncateLength) + "...";
+            }
+            return errorMessage;
+        }
     }
 
 }

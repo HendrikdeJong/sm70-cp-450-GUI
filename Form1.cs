@@ -13,6 +13,7 @@ namespace sm70_cp_450_GUI
 
         private Timer? errorCleanupTimer;
         private bool _started = false;
+        public bool _ConsoleState = false;
         private bool DischargeTo30Bool = false;
         private bool _EditingValues = false;
         private AvailablePrograms? _SelectedProgram = AvailablePrograms.None;
@@ -576,6 +577,19 @@ namespace sm70_cp_450_GUI
         private void errorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             logManager.ExportLogToFile(sender, e);
+        }
+
+        private void ToggleConsole_Btn_Click(object sender, EventArgs e)
+        {
+            _ConsoleState = !_ConsoleState;
+            ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "close button";
+            ConsoleBox.Height = _ConsoleState ? ConsoleBox.MaximumSize.Height : ConsoleBox.MinimumSize.Height;
+            Console_Simple_Textbox_UI.Visible = _ConsoleState;
+        }
+        private void ConsoleClear_Btn_Click(object sender, EventArgs e)
+        {
+            Console_Simple_Textbox_UI.Text = "";
+            Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
         }
         #endregion
     }
