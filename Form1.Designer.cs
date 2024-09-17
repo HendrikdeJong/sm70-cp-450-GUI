@@ -82,15 +82,16 @@
             contextMenuStrip1 = new ContextMenuStrip(components);
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
-            ToolStripMenu_Export_DropDown = new ToolStripMenuItem();
-            RuntimeCSV_ToolstripItem = new ToolStripMenuItem();
-            errorLogToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator1 = new ToolStripSeparator();
             ToolStripMenu_ImportSettings = new ToolStripMenuItem();
             toolStripMenuItem3 = new ToolStripMenuItem();
+            toolStripSeparator6 = new ToolStripSeparator();
+            toolStripMenuItem8 = new ToolStripMenuItem();
+            RuntimeCSV_ToolstripItem = new ToolStripMenuItem();
+            toolStripSeparator5 = new ToolStripSeparator();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            errorLogToolStripMenuItem = new ToolStripMenuItem();
             toolsToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuISettings = new ToolStripMenuItem();
-            toolStripMenuSetting_keepSesionData = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripMenuItem4 = new ToolStripMenuItem();
             toolStripTextBox2 = new ToolStripTextBox();
@@ -100,7 +101,7 @@
             SocketTab_Disconnect_Btn = new ToolStripMenuItem();
             toolStripMenuItem5 = new ToolStripMenuItem();
             MenuItem_Documentation = new ToolStripMenuItem();
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem = new ToolStripMenuItem();
+            LinkToDeltaElectronica = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripTextBox1 = new ToolStripMenuItem();
             FactoryInformationBox = new GroupBox();
@@ -112,6 +113,7 @@
             label2 = new Label();
             RatedBatteryAmperageUI = new TextBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
+            toolStripMenuSetting_keepSessionData = new ToolStripMenuItem();
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -633,7 +635,7 @@
             // Console_DownloadBtn
             // 
             Console_DownloadBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            Console_DownloadBtn.Image = (Image)resources.GetObject("Console_DownloadBtn.Image");
+            Console_DownloadBtn.Image = Properties.Resources.Save;
             Console_DownloadBtn.ImageTransparentColor = Color.Magenta;
             Console_DownloadBtn.Name = "Console_DownloadBtn";
             Console_DownloadBtn.Size = new Size(23, 22);
@@ -647,8 +649,10 @@
             // 
             // Console_Short_ErrorLabel
             // 
+            Console_Short_ErrorLabel.ForeColor = Color.DarkRed;
             Console_Short_ErrorLabel.Name = "Console_Short_ErrorLabel";
             Console_Short_ErrorLabel.Overflow = ToolStripItemOverflow.Never;
+            Console_Short_ErrorLabel.RightToLeft = RightToLeft.No;
             Console_Short_ErrorLabel.Size = new Size(259, 22);
             Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
             // 
@@ -759,83 +763,91 @@
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_Export_DropDown, toolStripSeparator1, ToolStripMenu_ImportSettings, toolStripMenuItem3 });
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_ImportSettings, toolStripMenuItem3, toolStripSeparator6, toolStripMenuItem8, RuntimeCSV_ToolstripItem, toolStripSeparator5, toolStripMenuItem2, errorLogToolStripMenuItem });
             toolStripMenuItem1.Name = "toolStripMenuItem1";
             toolStripMenuItem1.Size = new Size(37, 20);
             toolStripMenuItem1.Text = "&File";
             // 
-            // ToolStripMenu_Export_DropDown
-            // 
-            ToolStripMenu_Export_DropDown.DropDownItems.AddRange(new ToolStripItem[] { RuntimeCSV_ToolstripItem, errorLogToolStripMenuItem });
-            ToolStripMenu_Export_DropDown.Name = "ToolStripMenu_Export_DropDown";
-            ToolStripMenu_Export_DropDown.Size = new Size(155, 22);
-            ToolStripMenu_Export_DropDown.Text = "Download";
-            // 
-            // RuntimeCSV_ToolstripItem
-            // 
-            RuntimeCSV_ToolstripItem.Name = "RuntimeCSV_ToolstripItem";
-            RuntimeCSV_ToolstripItem.Size = new Size(143, 22);
-            RuntimeCSV_ToolstripItem.Text = "Runtime CSV";
-            RuntimeCSV_ToolstripItem.Click += RuntimeCSV_ToolstripItem_Click;
-            // 
-            // errorLogToolStripMenuItem
-            // 
-            errorLogToolStripMenuItem.Name = "errorLogToolStripMenuItem";
-            errorLogToolStripMenuItem.Size = new Size(143, 22);
-            errorLogToolStripMenuItem.Text = "ErrorLog";
-            errorLogToolStripMenuItem.Click += errorLogToolStripMenuItem_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(152, 6);
-            // 
             // ToolStripMenu_ImportSettings
             // 
+            ToolStripMenu_ImportSettings.Image = Properties.Resources.ImportSettings;
             ToolStripMenu_ImportSettings.Name = "ToolStripMenu_ImportSettings";
-            ToolStripMenu_ImportSettings.Size = new Size(155, 22);
+            ToolStripMenu_ImportSettings.Size = new Size(186, 22);
             ToolStripMenu_ImportSettings.Text = "Import Settings";
             ToolStripMenu_ImportSettings.Click += LoadSettings;
             // 
             // toolStripMenuItem3
             // 
+            toolStripMenuItem3.Image = Properties.Resources.ExportSettings;
             toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new Size(155, 22);
+            toolStripMenuItem3.Size = new Size(186, 22);
             toolStripMenuItem3.Text = "Export Settings";
             toolStripMenuItem3.Click += SaveSettings;
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(183, 6);
+            // 
+            // toolStripMenuItem8
+            // 
+            toolStripMenuItem8.Image = Properties.Resources.Save;
+            toolStripMenuItem8.Name = "toolStripMenuItem8";
+            toolStripMenuItem8.Size = new Size(186, 22);
+            toolStripMenuItem8.Text = "Save Runtime CSV";
+            // 
+            // RuntimeCSV_ToolstripItem
+            // 
+            RuntimeCSV_ToolstripItem.Image = Properties.Resources.SaveAs;
+            RuntimeCSV_ToolstripItem.Name = "RuntimeCSV_ToolstripItem";
+            RuntimeCSV_ToolstripItem.Size = new Size(186, 22);
+            RuntimeCSV_ToolstripItem.Text = "Save Runtime CSV As";
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(183, 6);
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Image = Properties.Resources.Save;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(186, 22);
+            toolStripMenuItem2.Text = "Save ErrorLog";
+            // 
+            // errorLogToolStripMenuItem
+            // 
+            errorLogToolStripMenuItem.Image = Properties.Resources.SaveAs;
+            errorLogToolStripMenuItem.Name = "errorLogToolStripMenuItem";
+            errorLogToolStripMenuItem.Size = new Size(186, 22);
+            errorLogToolStripMenuItem.Text = "Save ErrorLog As";
             // 
             // toolsToolStripMenuItem
             // 
             toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuISettings, Menu_SocketTab });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            toolsToolStripMenuItem.Size = new Size(46, 20);
-            toolsToolStripMenuItem.Text = "&Tools";
+            toolsToolStripMenuItem.Size = new Size(44, 20);
+            toolsToolStripMenuItem.Text = "&View";
             // 
             // toolStripMenuISettings
             // 
-            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepSesionData, toolStripSeparator3, toolStripMenuItem4 });
+            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepSessionData, toolStripSeparator3, toolStripMenuItem4 });
+            toolStripMenuISettings.Image = Properties.Resources.SettingsGroup;
             toolStripMenuISettings.Name = "toolStripMenuISettings";
             toolStripMenuISettings.Size = new Size(174, 22);
             toolStripMenuISettings.Text = "Settings";
             // 
-            // toolStripMenuSetting_keepSesionData
-            // 
-            toolStripMenuSetting_keepSesionData.CheckOnClick = true;
-            toolStripMenuSetting_keepSesionData.Name = "toolStripMenuSetting_keepSesionData";
-            toolStripMenuSetting_keepSesionData.Size = new Size(196, 22);
-            toolStripMenuSetting_keepSesionData.Text = "Keep Sesion data saved";
-            toolStripMenuSetting_keepSesionData.Click += ToolStripMenuSetting_keepSessionData_CheckedChanged;
-            // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(193, 6);
+            toolStripSeparator3.Size = new Size(180, 6);
             // 
             // toolStripMenuItem4
             // 
             toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { toolStripTextBox2, toolStripTextBox3 });
+            toolStripMenuItem4.Image = Properties.Resources.Key;
             toolStripMenuItem4.Name = "toolStripMenuItem4";
-            toolStripMenuItem4.Size = new Size(196, 22);
+            toolStripMenuItem4.Size = new Size(183, 22);
             toolStripMenuItem4.Text = "Ip Configuration";
             // 
             // toolStripTextBox2
@@ -855,21 +867,24 @@
             // Menu_SocketTab
             // 
             Menu_SocketTab.DropDownItems.AddRange(new ToolStripItem[] { SocketTab_Connect_Btn, SocketTab_Disconnect_Btn });
+            Menu_SocketTab.Image = Properties.Resources.RemoteServer;
             Menu_SocketTab.Name = "Menu_SocketTab";
             Menu_SocketTab.Size = new Size(174, 22);
             Menu_SocketTab.Text = "Socket Connection";
             // 
             // SocketTab_Connect_Btn
             // 
+            SocketTab_Connect_Btn.Image = Properties.Resources.ConnectToRemoteServer;
             SocketTab_Connect_Btn.Name = "SocketTab_Connect_Btn";
-            SocketTab_Connect_Btn.Size = new Size(168, 22);
+            SocketTab_Connect_Btn.Size = new Size(180, 22);
             SocketTab_Connect_Btn.Text = "connect to sm15k";
             SocketTab_Connect_Btn.Click += SocketTab_Connect_Btn_click;
             // 
             // SocketTab_Disconnect_Btn
             // 
+            SocketTab_Disconnect_Btn.Image = Properties.Resources.Disconnect;
             SocketTab_Disconnect_Btn.Name = "SocketTab_Disconnect_Btn";
-            SocketTab_Disconnect_Btn.Size = new Size(168, 22);
+            SocketTab_Disconnect_Btn.Size = new Size(180, 22);
             SocketTab_Disconnect_Btn.Text = "Close Connection";
             SocketTab_Disconnect_Btn.Click += SocketTab_Disconnect_Btn_Click;
             // 
@@ -883,20 +898,21 @@
             // 
             // MenuItem_Documentation
             // 
-            MenuItem_Documentation.DropDownItems.AddRange(new ToolStripItem[] { httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem, toolStripSeparator2, toolStripTextBox1 });
+            MenuItem_Documentation.DropDownItems.AddRange(new ToolStripItem[] { LinkToDeltaElectronica, toolStripSeparator2, toolStripTextBox1 });
             MenuItem_Documentation.Name = "MenuItem_Documentation";
-            MenuItem_Documentation.Size = new Size(157, 22);
+            MenuItem_Documentation.Size = new Size(180, 22);
             MenuItem_Documentation.Text = "Documentation";
             // 
-            // httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem
+            // LinkToDeltaElectronica
             // 
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.ForeColor = Color.Blue;
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Name = "httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem";
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Size = new Size(235, 22);
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Tag = "https://www.delta-elektronika.nl/products/sm15k-series";
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Text = "Delta elektronica Sm15k series ";
-            httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem.Click += MenuItem_Click;
+            LinkToDeltaElectronica.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
+            LinkToDeltaElectronica.ForeColor = Color.Blue;
+            LinkToDeltaElectronica.Image = Properties.Resources.QuestionMark;
+            LinkToDeltaElectronica.Name = "LinkToDeltaElectronica";
+            LinkToDeltaElectronica.Size = new Size(235, 22);
+            LinkToDeltaElectronica.Tag = "https://www.delta-elektronika.nl/products/sm15k-series";
+            LinkToDeltaElectronica.Text = "Delta elektronica Sm15k series ";
+            LinkToDeltaElectronica.Click += MenuItem_Click;
             // 
             // toolStripSeparator2
             // 
@@ -907,6 +923,7 @@
             // 
             toolStripTextBox1.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
             toolStripTextBox1.ForeColor = Color.Blue;
+            toolStripTextBox1.Image = Properties.Resources.SourceControlSites;
             toolStripTextBox1.Name = "toolStripTextBox1";
             toolStripTextBox1.Size = new Size(235, 22);
             toolStripTextBox1.Tag = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
@@ -1008,6 +1025,14 @@
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(439, 468);
             flowLayoutPanel1.TabIndex = 19;
+            // 
+            // toolStripMenuSetting_keepSessionData
+            // 
+            toolStripMenuSetting_keepSessionData.CheckOnClick = true;
+            toolStripMenuSetting_keepSessionData.Image = Properties.Resources.Settings;
+            toolStripMenuSetting_keepSessionData.Name = "toolStripMenuSetting_keepSessionData";
+            toolStripMenuSetting_keepSessionData.Size = new Size(183, 22);
+            toolStripMenuSetting_keepSessionData.Text = "Auto save input data";
             // 
             // MainForm
             // 
@@ -1115,19 +1140,14 @@
         private TextBox RatedBatteryAmperageUI;
         private FlowLayoutPanel flowLayoutPanel1;
         private RichTextBox Console_Simple_Textbox_UI;
-        private ToolStripMenuItem ToolStripMenu_Export_DropDown;
-        private ToolStripMenuItem RuntimeCSV_ToolstripItem;
-        private ToolStripMenuItem errorLogToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem ToolStripMenu_SaveSettings;
         private ToolStripMenuItem ToolStripMenu_ImportSettings;
         private ToolStripMenuItem toolStripMenuItem5;
         private ToolStripMenuItem MenuItem_Documentation;
-        private ToolStripMenuItem httpswwwdeltaelektronikanlproductssm15kseriesToolStripMenuItem;
+        private ToolStripMenuItem LinkToDeltaElectronica;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem toolsToolStripMenuItem;
         private ToolStripMenuItem toolStripMenuISettings;
-        private ToolStripMenuItem toolStripMenuSetting_keepSesionData;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem Menu_SocketTab;
         private ToolStripMenuItem SocketTab_Connect_Btn;
@@ -1143,5 +1163,12 @@
         private ToolStripButton Console_DownloadBtn;
         private ToolStripSeparator toolStripSeparator4;
         public ToolStripLabel Console_Short_ErrorLabel;
+        private ToolStripSeparator toolStripSeparator6;
+        private ToolStripMenuItem RuntimeCSV_ToolstripItem;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripMenuItem errorLogToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItem8;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem toolStripMenuSetting_keepSessionData;
     }
 }

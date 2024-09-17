@@ -14,7 +14,7 @@ namespace sm70_cp_450_GUI
         // Private constructor
         private BatteryManager()
         {
-            _commandManager = CommandManager.Instance; // Access the CommandManager Singleton
+            _commandManager = CommandManager.Instance;
             BatteryData = new List<BatteryMetrics>();
 
         }

@@ -11,7 +11,7 @@ namespace sm70_cp_450_GUI
     public class TcpConnectionHandler
     {
         private static TcpConnectionHandler? _instance;
-        private readonly LogManager _logManager;
+        private readonly LogManager? _logManager;
 
 
         //private string _serverIp;
@@ -20,8 +20,8 @@ namespace sm70_cp_450_GUI
         private readonly string _DefaultServerIp = Properties.Settings.Default._IpAddres;
         private readonly int _DefaultServerPort = int.Parse(Properties.Settings.Default._Port);
 
-        private TcpClient _tcpClient;
-        private NetworkStream _networkStream;
+        private TcpClient? _tcpClient;
+        private NetworkStream? _networkStream;
 
         private readonly ConcurrentQueue<string> _commandQueue = new();
         private readonly ConcurrentQueue<string> _queryQueue = new();
@@ -83,9 +83,9 @@ namespace sm70_cp_450_GUI
         {
             if (!_pendingQueries.Contains(query))
             {
-                _queryQueue.Enqueue(query);
-                _ = _pendingQueries.Add(query);
-                _logManager.AddDebugLogMessage($"⚠️ Enqueued query: {query}");
+                _queryQueue?.Enqueue(query);
+                _ = _pendingQueries?.Add(query);
+                _logManager?.AddDebugLogMessage($"⚠️ Enqueued query: {query}");
                 ProcessQueryQueue();
             }
         }
@@ -97,26 +97,28 @@ namespace sm70_cp_450_GUI
 
             _isProcessingQueryQueue = true;
 
-            while (_queryQueue.TryDequeue(out string query))
+            while (_queryQueue.TryDequeue(out var query))
             {
-                string response = await SendQueryAsync(query);
-                _ = _pendingQueries.Remove(query);
+                string? response = await SendQueryAsync(query);
+                _ = _pendingQueries?.Remove(query);
 
                 // Log the query and response
-                _logManager.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
-
-                if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out Action<string> uiAction))
+                _logManager?.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
+                if(MainForm.Instance != null)
                 {
-                    // Log that we found the matching action
-                    _logManager.AddDebugLogMessage($"⚠️ Found action for query: {query}");
+                    if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out var uiAction))
+                    {
+                        // Log that we found the matching action
+                        _logManager?.AddDebugLogMessage($"⚠️ Found action for query: {query}");
 
-                    // Invoke the corresponding UI action
-                    MainForm.Instance.Invoke(new Action(() => uiAction(response)));
-                }
-                else
-                {
-                    // Log if there was no matching action
-                    _logManager.AddDebugLogMessage($"❌ No matching action for query: {query}");
+                        // Invoke the corresponding UI action
+                        MainForm.Instance.Invoke(new Action(() => uiAction(response)));
+                    }
+                    else
+                    {
+                        // Log if there was no matching action
+                        _logManager?.AddDebugLogMessage($"❌ No matching action for query: {query}");
+                    }
                 }
             }
 
@@ -124,11 +126,15 @@ namespace sm70_cp_450_GUI
         }
 
 
-        public async Task<string?> SendQueryAsync(string query, int timeoutMilliseconds = 10000)
+        public async Task<string?> SendQueryAsync(string? query, int timeoutMilliseconds = 10000)
         {
+            if (_tcpClient == null)
+            {
+                return null;
+            }
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager.AddDebugLogMessage("❌ TCP connection is not open.");
+                _logManager?.AddDebugLogMessage("❌ TCP connection is not open.");
                 return null;
             }
 
@@ -151,16 +157,16 @@ namespace sm70_cp_450_GUI
                         bytesRead = await _networkStream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
                         if (bytesRead > 0)
                         {
-                            stringBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                            stringBuilder?.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
                         }
                     } while (_networkStream.DataAvailable && !cts.Token.IsCancellationRequested);
 
-                    return stringBuilder.ToString().Trim();
+                    return stringBuilder?.ToString().Trim();
                 }
             }
             catch (Exception ex)
             {
-                _logManager.AddDebugLogMessage($"❌ Failed to send query: {ex.Message}");
+                _logManager?.AddDebugLogMessage($"❌ Failed to send query: {ex.Message}");
                 return null;
             }
         }
@@ -168,11 +174,15 @@ namespace sm70_cp_450_GUI
         #endregion
 
         #region Commands
-        public async Task<bool> SendCommandAsync(string command)
+        public async Task<bool> SendCommandAsync(string? command)
         {
+            if(_tcpClient  == null)
+            {
+                return false;
+            }
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager.AddDebugLogMessage("❌ TCP connection is not open.");
+                _logManager?.AddDebugLogMessage("❌ TCP connection is not open.");
                 return false;
             }
 
@@ -185,7 +195,7 @@ namespace sm70_cp_450_GUI
             }
             catch (Exception ex)
             {
-                _logManager.AddDebugLogMessage($"❌ Failed to send command: {ex.Message}");
+                _logManager?.AddDebugLogMessage($"❌ Failed to send command: {ex.Message}");
                 return false;
             }
         }
@@ -195,8 +205,8 @@ namespace sm70_cp_450_GUI
         {
             if (!_pendingCommands.Contains(command))
             {
-                _commandQueue.Enqueue(command);
-                _ = _pendingCommands.Add(command);
+                _commandQueue?.Enqueue(command);
+                _ = _pendingCommands?.Add(command);
                 ProcessCommandQueue();
             }
         }
@@ -208,10 +218,10 @@ namespace sm70_cp_450_GUI
 
             _isProcessingCommandQueue = true;
 
-            while (_commandQueue.TryDequeue(out string command))
+            while (_commandQueue.TryDequeue(out var command))
             {
                 await SendCommandAsync(command);
-                _ = _pendingCommands.Remove(command);
+                _ = _pendingCommands?.Remove(command);
             }
 
             _isProcessingCommandQueue = false;

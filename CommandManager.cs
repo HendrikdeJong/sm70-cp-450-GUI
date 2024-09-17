@@ -9,9 +9,8 @@ namespace sm70_cp_450_GUI
 {
     public class CommandManager
     {
-        //public static MainForm? Instance { get; private set; }
 
-        private static CommandManager _instance;
+        private static CommandManager? _instance;
         private TcpConnectionHandler _tcpHandler;
         private LogManager _logManager;
 
@@ -40,6 +39,8 @@ namespace sm70_cp_450_GUI
             }
             return true;
         }
+
+        #region queries
 
         public void Request_Measure_Voltage()
         {
@@ -126,6 +127,41 @@ namespace sm70_cp_450_GUI
             _tcpHandler.EnqueueQuery("SYSTem:TIMe?");
         }
 
+
+        internal void RequestSystemVoltageLimit()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: SYSTem:LIMits:VOLtage?");
+            _tcpHandler.EnqueueQuery("SYSTem:LIMits:VOLtage?");
+        }
+
+        internal void RequestSystemCurrentLimit()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: SYSTem:LIMits:CURrent?");
+            _tcpHandler.EnqueueQuery("SYSTem:LIMits:CURrent?");
+        }
+
+        internal void RequestSystemPowerLimit()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: SYSTem:LIMits:POWer?");
+            _tcpHandler.EnqueueQuery("SYSTem:LIMits:POWer?");
+        }
+
+        internal void RequestSystemNegCurrentLimit()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: SYSTem:LIMits:CURrent:NEGative?");
+            _tcpHandler.EnqueueQuery("SYSTem:LIMits:CURrent:NEGative?");
+        }
+
+        internal void RequestSystemNegPowerLimit()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: SYSTem:LIMits:POWer:NEGative?");
+            _tcpHandler.EnqueueQuery("SYSTem:LIMits:POWer:NEGative?");
+        }
+
+        #endregion
+
+        #region commands
+
         public void SetSystemRemoteSetting_CV(string state)
         {
             //if (!IsConnectionEstablished()) return;
@@ -181,6 +217,7 @@ namespace sm70_cp_450_GUI
             _logManager.AddDebugLogMessage($"⚠️ trying to enqueue command: SOURce:POWer:NEGative {outputPowerNegative}");
             _tcpHandler.EnqueueCommand($"SOURce:POWer:NEGative {outputPowerNegative}");
         }
+        #endregion
 
     }
 }

@@ -5,10 +5,12 @@ namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
     {
-        private LogManager logManager;
-        private TcpConnectionHandler _tcpHandler;
-        private BatteryManager _batteryManager;
-        private CommandManager _commandManager;
+        private LogManager? logManager;
+        private TcpConnectionHandler? _tcpHandler;
+        private BatteryManager? _batteryManager;
+        private CommandManager? _commandManager;
+
+
         public static MainForm? Instance { get; private set; }
 
         private Timer? errorCleanupTimer;
@@ -26,6 +28,12 @@ namespace sm70_cp_450_GUI
         public double currentVoltage = 0;
         public double currentCurrent = 0;
         public double currentPower = 0;
+
+        private double VoltageLimit = 0;
+        private double CurrentLimit = 0;
+        private double PowerLimit = 0;
+        private double NegativeCurrentLimit = 0;
+        private double NegativePowerLimit = 0;
 
 
         private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
@@ -74,6 +82,12 @@ namespace sm70_cp_450_GUI
                 { "SYSTem:REMote:CP?", (response) => Label_Remote_CP_UI.Text = response},
 
                 { "SYSTem:TIMe?", (response) => Label_Time_UI.Text = response},
+
+                { "SYSTem:LIMits:VOLtage?", (response) => VoltageLimit = Double.Parse(response)},
+                { "SYSTem:LIMits:CURrent?", (response) => CurrentLimit = Double.Parse(response)},
+                { "SYSTem:LIMits:POWEr?", (response) => PowerLimit = Double.Parse(response)},
+                { "SYSTem:LIMits:CURrent:NEGative?", (response) => NegativeCurrentLimit = Double.Parse(response)},
+                { "SYSTem:LIMits:POWer:NEGative?", (response) => NegativePowerLimit = Double.Parse(response)},
             };
 
 
@@ -81,7 +95,7 @@ namespace sm70_cp_450_GUI
             Timers();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object? sender, EventArgs? e)
         {
             _commandManager = CommandManager.Instance;
             logManager = LogManager.Instance;
@@ -95,7 +109,7 @@ namespace sm70_cp_450_GUI
             {
                 UpdateUIFromSettings();
             }
-            toolStripMenuSetting_keepSesionData.Checked = Properties.Settings.Default._KeepMemory;
+            toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
 
             Timers();
             Show();
@@ -149,23 +163,19 @@ namespace sm70_cp_450_GUI
             };
             updateTimer.Tick += (sender, e) =>
             {
-                _commandManager.Request_Measure_Voltage();
-                _commandManager.Request_Measure_Current();
-                _commandManager.Request_Measure_Power();
+                _commandManager?.Request_Measure_Voltage();
+                _commandManager?.Request_Measure_Current();
+                _commandManager?.Request_Measure_Power();
 
-                _commandManager.Request_Source_Voltage();
-                _commandManager.Request_Source_Current();
-                _commandManager.Request_Source_Power();
-                _commandManager.Request_Source_Current_Negative();
-                _commandManager.Request_Source_Power_Negative();
+                _commandManager?.Request_Source_Voltage();
+                _commandManager?.Request_Source_Current();
+                _commandManager?.Request_Source_Power();
+                _commandManager?.Request_Source_Current_Negative();
+                _commandManager?.Request_Source_Power_Negative();
 
-                _commandManager.RequestRemoteSetting_CV();
-                _commandManager.RequestRemoteSetting_CC();
-                _commandManager.RequestRemoteSetting_CP();
-
+                _commandManager?.RequestTime();
                 StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
 
-                _commandManager.RequestTime();
                 LockButtons();
 
 
@@ -177,7 +187,7 @@ namespace sm70_cp_450_GUI
 
                     if (_timeSinceLastSave.TotalSeconds >= 5)  // Check if 5 seconds have passed
                     {
-                        logManager.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
+                        logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
                         _timeSinceLastSave = TimeSpan.Zero;  // Reset the timer
                     }
 
@@ -192,18 +202,37 @@ namespace sm70_cp_450_GUI
                     MonitorDischargeTo30Percent();
                 }
             };
-            updateTimer.Start();
 
-
-
-
-
-            errorCleanupTimer = new Timer
+            Timer? LateUpdate = new()
             {
-                Interval = 1000 // 1 second interval
+                Interval = 5000
             };
-            errorCleanupTimer.Tick += (sender, e) => logManager.UpdateConsole();
-            errorCleanupTimer.Start();
+            LateUpdate.Tick += (sender, e) =>
+            {
+
+                _commandManager?.RequestRemoteSetting_CV();
+                _commandManager?.RequestRemoteSetting_CC();
+                _commandManager?.RequestRemoteSetting_CP();
+
+                _commandManager?.RequestSystemVoltageLimit();
+                _commandManager?.RequestSystemCurrentLimit();
+                _commandManager?.RequestSystemPowerLimit();
+                _commandManager?.RequestSystemNegCurrentLimit();
+                _commandManager?.RequestSystemNegPowerLimit();
+            };
+
+
+
+            updateTimer.Start();
+            if (logManager != null)
+            {
+                errorCleanupTimer = new Timer
+                {
+                    Interval = 1000 // 1 second interval
+                };
+                errorCleanupTimer.Tick += (sender, e) => logManager.UpdateConsole();
+                errorCleanupTimer.Start();
+            }
         }
 
         private void ToggleManualEditing(object sender, EventArgs e)
@@ -251,7 +280,7 @@ namespace sm70_cp_450_GUI
             _StoredNegativeCurrent = N_A;
             _StoredNegativePower = N_W;
 
-            _batteryManager.SaveSettings(V, A, W, N_A, N_W);
+            _batteryManager?.SaveSettings(V, A, W, N_A, N_W);
 
             InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
             InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
@@ -263,11 +292,11 @@ namespace sm70_cp_450_GUI
         private void SetSettings()
         {
             // These are your stored voltage, current, and power settings
-            _commandManager.SetOutputVoltage(_StoredVoltageSetting);
-            _commandManager.SetOutputCurrent(0);  // Set initial current
-            _commandManager.SetOutputPower(0);    // Set initial power
-            _commandManager.SetOutputCurrentNegative(0);  // Set negative current if necessary
-            _commandManager.SetOutputPowerNegative(0);    // Set negative power if necessary
+            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
+            _commandManager?.SetOutputCurrent(0);  // Set initial current
+            _commandManager?.SetOutputPower(0);    // Set initial power
+            _commandManager?.SetOutputCurrentNegative(0);  // Set negative current if necessary
+            _commandManager?.SetOutputPowerNegative(0);    // Set negative power if necessary
 
             // Apply program-specific settings if started
             if (_started)
@@ -275,16 +304,16 @@ namespace sm70_cp_450_GUI
                 switch (_SelectedProgram)
                 {
                     case AvailablePrograms.Connecting_Battery:
-                        _commandManager.SetOutputVoltage(_StoredVoltageSetting);
-                        _commandManager.SetOutputCurrent(2);  // Set a specific current for connecting battery
+                        _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
+                        _commandManager?.SetOutputCurrent(2);  // Set a specific current for connecting battery
                         break;
                     case AvailablePrograms.Charging:
-                        _commandManager.SetOutputCurrent(_StoredCurrent);
-                        _commandManager.SetOutputPower(_StoredPower);
+                        _commandManager?.SetOutputCurrent(_StoredCurrent);
+                        _commandManager?.SetOutputPower(_StoredPower);
                         break;
                     case AvailablePrograms.Discharging:
-                        _commandManager.SetOutputCurrentNegative(_StoredNegativeCurrent);
-                        _commandManager.SetOutputPowerNegative(_StoredNegativePower);
+                        _commandManager?.SetOutputCurrentNegative(_StoredNegativeCurrent);
+                        _commandManager?.SetOutputPowerNegative(_StoredNegativePower);
                         break;
                 }
             }
@@ -296,7 +325,7 @@ namespace sm70_cp_450_GUI
             _ratedCapacity = ParseInput(RatedBatteryAmperageUI.Text);
             _cRating = ParseInput(C_Rating_UI.Text);
 
-            _batteryManager.SetBatterySettings(_ratedVoltage, _ratedCapacity, _cRating);
+            _batteryManager?.SetBatterySettings(_ratedVoltage, _ratedCapacity, _cRating);
             CalculateWithCRating();
         }
 
@@ -325,7 +354,7 @@ namespace sm70_cp_450_GUI
 
                 try
                 {
-                    TimeSpan? timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
+                    TimeSpan? timeToDischarge30 = _batteryManager?.CalculateDischargeTimeTo30Percent();
                     if (elapsed >= timeToDischarge30)
                     {
                         ToggleStartStopButton(null, EventArgs.Empty);
@@ -344,12 +373,12 @@ namespace sm70_cp_450_GUI
         {
             if (_started)
             {
-                _tcpHandler.EnqueueCommand("OUTPut ON\n");
+                _tcpHandler?.EnqueueCommand("OUTPut ON\n");
                 _stopwatch.Start();  // Start the stopwatch
             }
             else
             {
-                _tcpHandler.EnqueueCommand("OUTPut OFF\n");
+                _tcpHandler?.EnqueueCommand("OUTPut OFF\n");
                 _stopwatch.Stop();   // Stop the stopwatch
             }
         }
@@ -413,7 +442,7 @@ namespace sm70_cp_450_GUI
                 string filePath = openFileDialog.FileName;
 
                 using StreamReader? reader = new(filePath);
-                string line = reader.ReadLine();
+                string? line = reader.ReadLine();
                 if (!string.IsNullOrEmpty(line))
                 {
                     // Split the values by comma
@@ -461,7 +490,7 @@ namespace sm70_cp_450_GUI
             _SelectedProgram = AvailablePrograms.Charging;
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager.batteryData.Clear();
+            logManager?.batteryData.Clear();
             DischargeTo30Bool = false;
         }
 
@@ -471,7 +500,7 @@ namespace sm70_cp_450_GUI
             _SelectedProgram = AvailablePrograms.Discharging;
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager.batteryData.Clear();
+            logManager?.batteryData.Clear();
             DischargeTo30Bool = false;
         }
 
@@ -483,14 +512,14 @@ namespace sm70_cp_450_GUI
             // Reset the stopwatch
             _stopwatch.Reset();
             Label_Elapsed_Time_UI.Text = "00:00:00";
-            logManager.batteryData.Clear();
+            logManager?.batteryData.Clear();
 
 
 
             // Call the method from BatteryManager
             try
             {
-                TimeSpan? timeToDischarge30 = _batteryManager.CalculateDischargeTimeTo30Percent();
+                TimeSpan? timeToDischarge30 = _batteryManager?.CalculateDischargeTimeTo30Percent();
             }
             catch (InvalidOperationException ex)
             {
@@ -544,7 +573,7 @@ namespace sm70_cp_450_GUI
 
         private void ToolStripMenuSetting_keepSessionData_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSesionData.Checked;
+            Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSessionData.Checked;
             Properties.Settings.Default.Save();
 
         }
@@ -555,28 +584,36 @@ namespace sm70_cp_450_GUI
 
         private async void SocketTab_Connect_Btn_click(object sender, EventArgs e)
         {
-            if (!_tcpHandler.IsConnected)
+            if (_tcpHandler != null)
             {
-                _ = await _tcpHandler.InitializeTcpClient();
+                if (!_tcpHandler.IsConnected)
+                {
+                    _ = await _tcpHandler.InitializeTcpClient();
+                }
             }
+
         }
 
         private void SocketTab_Disconnect_Btn_Click(object sender, EventArgs e)
         {
-            if (_tcpHandler.IsConnected)
+            if (_tcpHandler != null)
             {
-                _tcpHandler.CloseConnection();
+                if (_tcpHandler.IsConnected)
+                {
+                    _tcpHandler?.CloseConnection();
+                }
             }
+
         }
 
         private void RuntimeCSV_ToolstripItem_Click(object sender, EventArgs e)
         {
-            logManager.ExportToCsv(sender, e);
+            logManager?.ExportToCsv(sender, e);
         }
 
         private void errorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            logManager.ExportLogToFile(sender, e);
+            logManager?.ExportLogToFile(sender, e);
         }
 
         private void ToggleConsole_Btn_Click(object sender, EventArgs e)
