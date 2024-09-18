@@ -32,11 +32,17 @@
     <Setting Name="_KeepMemory" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="_IpAddres" Type="System.String" Scope="User">
+    <Setting Name="_IpAddres" Type="System.String" Scope="Application">
       <Value Profile="(Default)">169.254.0.102</Value>
     </Setting>
-    <Setting Name="_Port" Type="System.String" Scope="User">
+    <Setting Name="_Port" Type="System.String" Scope="Application">
       <Value Profile="(Default)">8462</Value>
+    </Setting>
+    <Setting Name="SaveLocationCSV" Type="System.String" Scope="User">
+      <Value Profile="(Default)">CSV</Value>
+    </Setting>
+    <Setting Name="SaveLocationLOG" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LOGS</Value>
     </Setting>
   </Settings>
 </SettingsFile>

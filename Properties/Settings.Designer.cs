@@ -143,27 +143,45 @@ namespace sm70_cp_450_GUI.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("169.254.0.102")]
         public string _IpAddres {
             get {
                 return ((string)(this["_IpAddres"]));
             }
-            set {
-                this["_IpAddres"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("8462")]
         public string _Port {
             get {
                 return ((string)(this["_Port"]));
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("CSV")]
+        public string SaveLocationCSV {
+            get {
+                return ((string)(this["SaveLocationCSV"]));
+            }
             set {
-                this["_Port"] = value;
+                this["SaveLocationCSV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LOGS")]
+        public string SaveLocationLOG {
+            get {
+                return ((string)(this["SaveLocationLOG"]));
+            }
+            set {
+                this["SaveLocationLOG"] = value;
             }
         }
     }

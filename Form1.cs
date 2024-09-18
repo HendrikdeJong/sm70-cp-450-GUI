@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Xml.Linq;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
@@ -9,12 +10,15 @@ namespace sm70_cp_450_GUI
         private TcpConnectionHandler? _tcpHandler;
         private BatteryManager? _batteryManager;
         private CommandManager? _commandManager;
+        private string? _SaveLocationCSV;
+        private string? _SaveLocationLOG;
 
 
         public static MainForm? Instance { get; private set; }
 
         private Timer? errorCleanupTimer;
-        private bool _started = false;
+
+
         public bool _ConsoleState = false;
         private bool _EditingValues = false;
         private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
@@ -28,17 +32,9 @@ namespace sm70_cp_450_GUI
         public double currentCurrent = 0;
         public double currentPower = 0;
 
-        private double VoltageLimit = 0;
-        private double CurrentLimit = 0;
-        private double PowerLimit = 0;
-        private double NegativeCurrentLimit = 0;
-        private double NegativePowerLimit = 0;
-
-
         private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
         private readonly Stopwatch _stopwatch = new();
         private TimeSpan? EstimateTotalTime;
-
 
         private double _StoredVoltageSetting = 0;
         private double _StoredCurrent = 0;
@@ -46,10 +42,15 @@ namespace sm70_cp_450_GUI
         private double _StoredNegativeCurrent = 0;
         private double _StoredNegativePower = 0;
 
-        // UI dictionary
+        private double _TEMPCurrent = 0;
+        private double _TEMPPower = 0;
+        private double _TEMPNegativeCurrent = 0;
+        private double _TEMPNegativePower = 0;
 
         public Dictionary<string, Action<string>> _commandToUIActions;
 
+        private bool _started = false;
+        private bool _OngoingOperation = false;
         private enum AvailablePrograms
         {
             None,
@@ -81,15 +82,12 @@ namespace sm70_cp_450_GUI
                 { "SYSTem:REMote:CC?", (response) => Label_Remote_CC_UI.Text = response},
                 { "SYSTem:REMote:CP?", (response) => Label_Remote_CP_UI.Text = response},
 
-                { "SYSTem:LIMits:VOLtage?", (response) => VoltageLimit = Double.Parse(response)},
-                { "SYSTem:LIMits:CURrent?", (response) => CurrentLimit = Double.Parse(response)},
-                { "SYSTem:LIMits:POWEr?", (response) => PowerLimit = Double.Parse(response)},
-                { "SYSTem:LIMits:CURrent:NEGative?", (response) => NegativeCurrentLimit = Double.Parse(response)},
-                { "SYSTem:LIMits:POWer:NEGative?", (response) => NegativePowerLimit = Double.Parse(response)},
+                { "SYSTem:LIMits:VOLtage?", (response) => LimitLabel_01.Text = response  + " V" },
+                { "SYSTem:LIMits:CURrent?", (response) => LimitLabel_02.Text = response  + " A" },
+                { "SYSTem:LIMits:POWEr?", (response) => LimitLabel_03.Text = response  + " W" },
+                { "SYSTem:LIMits:CURrent:NEGative?", (response) => LimitLabel_04.Text = "-" + response  + " A" },
+                { "SYSTem:LIMits:POWer:NEGative?", (response) => LimitLabel_05.Text = "-" + response + " W"},
             };
-
-
-
             Timers();
         }
 
@@ -103,11 +101,14 @@ namespace sm70_cp_450_GUI
 
 
 
+
             if (Properties.Settings.Default._KeepMemory == true)
             {
                 UpdateUIFromSettings();
             }
             toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
+            _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
+            _SaveLocationLOG = Properties.Settings.Default.SaveLocationLOG;
 
             Timers();
             Show();
@@ -171,16 +172,13 @@ namespace sm70_cp_450_GUI
                 _commandManager?.Request_Source_Current_Negative();
                 _commandManager?.Request_Source_Power_Negative();
 
-                _commandManager?.RequestTime();
+                //_commandManager?.RequestTime();
                 StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
-
-                //LockButtons();
-
-
 
                 // Always update the elapsed time display
                 if (_stopwatch.IsRunning)
                 {
+                    _OngoingOperation = true;
                     _timeSinceLastSave = _timeSinceLastSave.Add(TimeSpan.FromSeconds(1)); // Increment by 1 second
 
                     if (_timeSinceLastSave.TotalSeconds >= 5)  // Check if 5 seconds have passed
@@ -188,7 +186,7 @@ namespace sm70_cp_450_GUI
                         logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
                         _timeSinceLastSave = TimeSpan.Zero;  // Reset the timer
                     }
-                     
+
 
                     TimeSpan elapsed = _stopwatch.Elapsed;
 
@@ -196,16 +194,26 @@ namespace sm70_cp_450_GUI
 
                     Label_Total_Time_UI.Text = $"{_TimeRemaining.Hours:D2}:{_TimeRemaining.Minutes:D2}:{_TimeRemaining.Seconds:D2}";
                     Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-                }
+
+                    // Check if the remaining time is less than or equal to zero
+                    if (_TimeRemaining <= TimeSpan.Zero)
+                    {
+                        _OngoingOperation = false;
+                        _stopwatch.Stop();  // Stop the stopwatch
+                        //ToggleOutput();
+                        _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
+                        MessageBox.Show("Time is up! The machine has been stopped.");
+                    }
+                } else _OngoingOperation = false;
             };
 
             Timer? LateUpdate = new()
             {
-                Interval = 5000 // 5 second interval
+                Interval = 10000 // 10 second interval
             };
             LateUpdate.Tick += (sender, e) =>
             {
-                LiveInfoData.Text = $"SM70-CP-450 Controller Status:{(_tcpHandler == null ? "Not initialized" : (_tcpHandler.IsConnected ? "Connected" : "Not Connected"))}";
+                LiveInfoData.Text = $"SM70-CP-450 Controller Status:{(_tcpHandler == null ? " Not initialized" : (_tcpHandler.IsConnected ? " Connected" : " Not Connected"))}";
                 _commandManager?.RequestRemoteSetting_CV();
                 _commandManager?.RequestRemoteSetting_CC();
                 _commandManager?.RequestRemoteSetting_CP();
@@ -218,7 +226,7 @@ namespace sm70_cp_450_GUI
             };
 
 
-
+            LateUpdate.Start();
             updateTimer.Start();
             if (logManager != null)
             {
@@ -251,7 +259,6 @@ namespace sm70_cp_450_GUI
                 UpdateFromManualOverride();
             }
         }
-
         private void UpdateFromManualOverride()
         {
             InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
@@ -266,7 +273,6 @@ namespace sm70_cp_450_GUI
             _StoredNegativePower = ParseInput(InputField_StoredValuePowerMin.Text);
             SaveSettings(_StoredVoltageSetting, _StoredCurrent, _StoredPower, _StoredNegativeCurrent, _StoredNegativePower);
         }
-
         private void SaveSettings(double V, double A, double W, double N_A, double N_W)
         {
             _StoredVoltageSetting = V;
@@ -283,9 +289,6 @@ namespace sm70_cp_450_GUI
             InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
             InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
         }
-
-
-
         private void UpdateFromBatteryLabelData(object sender, EventArgs e)
         {
             _ratedVoltage = ParseInput(RatedBatteryVoltageUI.Text);
@@ -295,7 +298,6 @@ namespace sm70_cp_450_GUI
             _batteryManager?.SetBatterySettings(_ratedVoltage, _ratedCapacity, _cRating);
             CalculateWithCRating();
         }
-
         private void CalculateWithCRating()
 
         {
@@ -305,14 +307,10 @@ namespace sm70_cp_450_GUI
 
             SaveSettings(_ratedVoltage, amps, watts, -amps, -watts);
         }
-
-
-     
         private static string RemoveNonNumeric(string input)
         {
             return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
         }
-
         private double ParseInput(string input)
         {
             return double.TryParse(RemoveNonNumeric(input), out double result) ? result : 0;
@@ -326,15 +324,32 @@ namespace sm70_cp_450_GUI
             {
                 if (_CheckBox.Name == "Operation_ConnectBattery_Override")
                 {
-                    AvailablePrograms storedProgram = _SelectedProgram;
-                    Operation_Output_Switch.Visible = !_CheckBox.Checked;
-                    Operation_Output_Switch.BackColor = _started ? Color.Red : Color.Green;
-                    Operation_Output_Switch.Text = _started ? "Stop" : "Start";
+                    if (!_started || _OngoingOperation)
+                    {
+                        AvailablePrograms storedProgram = _SelectedProgram;
 
-                    if (_CheckBox.Checked) _SelectedProgram = storedProgram; else {
-                        _SelectedProgram = AvailablePrograms.None;
-                        _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
-                        _commandManager?.SetOutputCurrent(1.5);
+
+                        Operation_Output_Switch.Visible = !_CheckBox.Checked;
+                        Operation_Output_Switch.Enabled = !_CheckBox.Checked;
+                        _tcpHandler?.EnqueueCommand(_CheckBox.Checked ? "OUTPut ON" : "OUTPut OFF");
+
+
+                        if (_CheckBox.Checked)
+                        {
+                            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
+                            _commandManager?.SetOutputCurrent(_TEMPCurrent);
+                            _commandManager?.SetOutputPower(_TEMPPower);
+                            _commandManager?.SetOutputCurrentNegative(_TEMPNegativeCurrent);
+                            _commandManager?.SetOutputPowerNegative(_TEMPNegativePower);
+                        }
+                        else
+                        {
+                            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
+                            _commandManager?.SetOutputCurrent(1.5);
+                            _commandManager?.SetOutputPower(0);
+                            _commandManager?.SetOutputCurrentNegative(0);
+                            _commandManager?.SetOutputPowerNegative(0);
+                        }
                     }
                 }
 
@@ -345,14 +360,26 @@ namespace sm70_cp_450_GUI
                 switch (button.Name)
                 {
                     case "Operation_Output_Switch":
-                        if(_SelectedProgram != AvailablePrograms.None)
+                        if (_SelectedProgram != AvailablePrograms.None)
                         {
                             ToggleOutput();
                             //MessageBox.Show($"selected switch {_started}, {Operation_Output_Switch.Location}");
                         }
                         break;
-                    case "Operation_Charge_selection":
+                    case "Operation_NoneORStop_Selection":
                         if (!_started)
+                        {
+                            SetTimer(00);
+                            _SelectedProgram = AvailablePrograms.None;
+                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_NoneORStop_Selection.Location.Y);
+                            _TEMPCurrent = 0;
+                            _TEMPPower = 0;
+                            _TEMPNegativeCurrent = 0;
+                            _TEMPNegativePower = 0;
+                        }
+                        break;
+                    case "Operation_Charge_selection":
+                        if (!_started && !_OngoingOperation)
                         {
                             _SelectedProgram = AvailablePrograms.Charging;
                             Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Charge_selection.Location.Y);
@@ -360,14 +387,15 @@ namespace sm70_cp_450_GUI
                         }
                         break;
                     case "Operation_Discharge_selection":
-                        if(!_started){
+                        if (!_started && !_OngoingOperation)
+                        {
                             _SelectedProgram = AvailablePrograms.Discharging;
                             Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Discharge_selection.Location.Y);
                             DischargeMethod(1);
                         }
                         break;
                     case "Operation_DischargeTo30_selection":
-                        if(!_started)
+                        if (!_started && !_OngoingOperation)
                         {
                             _SelectedProgram = AvailablePrograms.DischargingTo30;
                             Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_DischargeTo30_selection.Location.Y);
@@ -382,6 +410,8 @@ namespace sm70_cp_450_GUI
         {
             _started = !_started;
             _tcpHandler?.EnqueueCommand(_started ? "OUTPut ON" : "OUTPut OFF");
+            Operation_Output_Switch.BackColor = _started ? Color.Red : Color.Green;
+            Operation_Output_Switch.Text = _started ? "pause" : "start";
             if (_started) _stopwatch.Start(); else _stopwatch.Stop();
         }
 
@@ -392,6 +422,12 @@ namespace sm70_cp_450_GUI
             _commandManager?.SetOutputPower(_StoredPower);
             _commandManager?.SetOutputCurrentNegative(0);
             _commandManager?.SetOutputPowerNegative(0);
+
+            _TEMPCurrent = _StoredCurrent;
+            _TEMPPower = _StoredPower;
+            _TEMPNegativeCurrent = 0;
+            _TEMPNegativePower = 0;
+
         }
 
         private void DischargeMethod(double Percentage)
@@ -401,19 +437,43 @@ namespace sm70_cp_450_GUI
             _commandManager?.SetOutputPower(0);
             _commandManager?.SetOutputCurrentNegative(_StoredNegativeCurrent);
             _commandManager?.SetOutputPowerNegative(_StoredNegativePower);
+
+            _TEMPCurrent = 0;
+            _TEMPPower = 0;
+            _TEMPNegativeCurrent = _StoredNegativeCurrent;
+            _TEMPNegativePower = _StoredNegativePower;
+
         }
 
-        private void SetTimer(double Percentage)
+        private void SetTimer(double Percentage, bool? CancelOperation = false)
         {
             Label_Elapsed_Time_UI.Text = "00:00:00";
             _stopwatch.Reset();
             logManager?.batteryData.Clear();
 
-            EstimateTotalTime = _batteryManager?.CalculateTimeEstimate(Percentage);
+            if (CancelOperation == false) EstimateTotalTime = _batteryManager?.CalculateTimeEstimate(Percentage);
         }
 
-        #region buttons
 
+        private static void OpenURL(string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                // Open the browser with the URL
+                try
+                {
+                    _ = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true // Open in default browser
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _ = MessageBox.Show($"Unable to open the browser. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
 
 
         private void SaveSettings(object sender, EventArgs e)
@@ -482,89 +542,91 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void MenuItem_Click(object? sender, EventArgs e)
-        {
-            if (sender is ToolStripMenuItem menuItem)
-            {
-                // Retrieve the URL from the Tag property
-                string? url = menuItem.Tag as string;
-
-                if (!string.IsNullOrEmpty(url))
-                {
-                    // Open the browser with the URL
-                    try
-                    {
-                        _ = Process.Start(new ProcessStartInfo
-                        {
-                            FileName = url,
-                            UseShellExecute = true // Open in default browser
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        _ = MessageBox.Show($"Unable to open the browser. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void ToolStripMenuSetting_keepSessionData_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSessionData.Checked;
-            Properties.Settings.Default.Save();
-
-        }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
         }
 
-        private async void SocketTab_Connect_Btn_click(object sender, EventArgs e)
+        private async void ButtonHandler(object sender, EventArgs e)
         {
-            if (_tcpHandler != null)
+            // Try to extract the Tag from both Control and ToolStripItem
+            string? tag = null;
+            string? name = null;
+
+            if (sender is Control control)
             {
-                if (!_tcpHandler.IsConnected)
+                tag = control.Tag as string;
+                name = control.Name;
+            }
+            else if (sender is ToolStripItem toolStripItem)
+            {
+                tag = toolStripItem.Tag as string;
+                name = toolStripItem.Name;
+            }
+
+            // If we found a valid tag, process it
+            if (tag != null)
+            {
+                //logManager?.AddDebugLogMessage($"Tag found: {tag}");
+
+                switch (tag)
                 {
-                    _ = await _tcpHandler.InitializeTcpClient();
+                    case "Start":
+                        
+                        break;
+                    case "TogglePause":
+                        
+                        break;
+                    case "Stop":
+                        
+                        break;
+                    case "SaveCSV":
+                        logManager?.ExportToCsv(sender, e, false, _SaveLocationCSV);
+                        break;
+                    case "SaveAsCSV":
+                        logManager?.ExportToCsv(sender, e, true, null);
+                        break;
+                    case "SaveLOG":
+                        logManager?.ExportLogToFile(sender, e, false, _SaveLocationLOG);
+                        break;
+                    case "SaveAsLOG":
+                        logManager?.ExportLogToFile(sender, e, true, null);
+                        break;
+                    case "ToggleConsole":
+                        _ConsoleState = !_ConsoleState;
+                        ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "close button";
+                        ConsoleBox.Height = _ConsoleState ? ConsoleBox.MaximumSize.Height : ConsoleBox.MinimumSize.Height;
+                        Console_Simple_Textbox_UI.Visible = _ConsoleState;
+                        break;
+                    case "ClearConsole":
+                        Console_Simple_Textbox_UI.Text = "";
+                        Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
+                        break;
+                    case "TryConnectSocket":
+                        if (_tcpHandler != null && !_tcpHandler.IsConnected) _ = await _tcpHandler.InitializeTcpClient();
+                        break;
+                    case "DisconnectSocket":
+                        if (_tcpHandler != null && _tcpHandler.IsConnected) _tcpHandler?.CloseConnection();
+                        break;
+                    case "ToggleSessionData":
+                        Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSessionData.Checked;
+                        Properties.Settings.Default.Save();
+                        break;
+                    case "OpenDeltaURL":
+                        if (name != null) OpenURL(name);
+                        break;
+                    case "OpenGitURL":
+                        if (name != null) OpenURL(name);
+                        break;
+                    default:
+                        MessageBox.Show($"Tag: {tag},  not recognized");
+                        break;
                 }
+            }
+            else
+            {
+                //logManager?.AddDebugLogMessage("No valid tag found for the control or item.");
             }
 
         }
-
-        private void SocketTab_Disconnect_Btn_Click(object sender, EventArgs e)
-        {
-            if (_tcpHandler != null)
-            {
-                if (_tcpHandler.IsConnected)
-                {
-                    _tcpHandler?.CloseConnection();
-                }
-            }
-
-        }
-
-        private void RuntimeCSV_ToolstripItem_Click(object sender, EventArgs e)
-        {
-            logManager?.ExportToCsv(sender, e);
-        }
-
-        private void errorLogToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            logManager?.ExportLogToFile(sender, e);
-        }
-
-        private void ToggleConsole_Btn_Click(object sender, EventArgs e)
-        {
-            _ConsoleState = !_ConsoleState;
-            ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "close button";
-            ConsoleBox.Height = _ConsoleState ? ConsoleBox.MaximumSize.Height : ConsoleBox.MinimumSize.Height;
-            Console_Simple_Textbox_UI.Visible = _ConsoleState;
-        }
-        private void ConsoleClear_Btn_Click(object sender, EventArgs e)
-        {
-            Console_Simple_Textbox_UI.Text = "";
-            Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
-        }
-        #endregion
     }
 }

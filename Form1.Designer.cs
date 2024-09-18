@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             LiveInfoData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
@@ -77,7 +76,6 @@
             label4 = new Label();
             StatusCurrentOperation_UI = new TextBox();
             label7 = new Label();
-            contextMenuStrip1 = new ContextMenuStrip(components);
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             ToolStripMenu_ImportSettings = new ToolStripMenuItem();
@@ -93,11 +91,21 @@
             toolStripMenuSetting_keepSessionData = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripMenuItem4 = new ToolStripMenuItem();
-            toolStripTextBox2 = new ToolStripTextBox();
-            toolStripTextBox3 = new ToolStripTextBox();
+            toolStripMenuItem9 = new ToolStripMenuItem();
             Menu_SocketTab = new ToolStripMenuItem();
             SocketTab_Connect_Btn = new ToolStripMenuItem();
             SocketTab_Disconnect_Btn = new ToolStripMenuItem();
+            toolStripSeparator7 = new ToolStripSeparator();
+            toolStripMenuItem7 = new ToolStripMenuItem();
+            LimitLabel_01 = new ToolStripTextBox();
+            LimitLabel_02 = new ToolStripTextBox();
+            LimitLabel_03 = new ToolStripTextBox();
+            toolStripSeparator1 = new ToolStripSeparator();
+            LimitLabel_04 = new ToolStripTextBox();
+            LimitLabel_05 = new ToolStripTextBox();
+            toolStripMenuItem6 = new ToolStripMenuItem();
+            toolStripTextBox2 = new ToolStripTextBox();
+            toolStripTextBox3 = new ToolStripTextBox();
             toolStripMenuItem5 = new ToolStripMenuItem();
             MenuItem_Documentation = new ToolStripMenuItem();
             LinkToDeltaElectronica = new ToolStripMenuItem();
@@ -106,11 +114,12 @@
             OperationsBox_UI = new GroupBox();
             Label_Total_Time_UI = new TextBox();
             label5 = new Label();
-            Operation_ConnectBattery_Override = new CheckBox();
-            Operation_DischargeTo30_selection = new Button();
-            Operation_Discharge_selection = new Button();
-            Operation_Charge_selection = new Button();
             Operation_Output_Switch = new Button();
+            Operation_NoneORStop_Selection = new Button();
+            Operation_Charge_selection = new Button();
+            Operation_Discharge_selection = new Button();
+            Operation_DischargeTo30_selection = new Button();
+            Operation_ConnectBattery_Override = new CheckBox();
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -599,8 +608,9 @@
             ToggleConsole_Btn.ImageTransparentColor = Color.Magenta;
             ToggleConsole_Btn.Name = "ToggleConsole_Btn";
             ToggleConsole_Btn.Size = new Size(23, 22);
+            ToggleConsole_Btn.Tag = "ToggleConsole";
             ToggleConsole_Btn.Text = "Close Console";
-            ToggleConsole_Btn.Click += ToggleConsole_Btn_Click;
+            ToggleConsole_Btn.Click += ButtonHandler;
             // 
             // ConsoleClear_Btn
             // 
@@ -609,8 +619,9 @@
             ConsoleClear_Btn.ImageTransparentColor = Color.Magenta;
             ConsoleClear_Btn.Name = "ConsoleClear_Btn";
             ConsoleClear_Btn.Size = new Size(23, 22);
+            ConsoleClear_Btn.Tag = "ClearConsole";
             ConsoleClear_Btn.Text = "Clear console";
-            ConsoleClear_Btn.Click += ConsoleClear_Btn_Click;
+            ConsoleClear_Btn.Click += ButtonHandler;
             // 
             // Console_DownloadBtn
             // 
@@ -619,8 +630,9 @@
             Console_DownloadBtn.ImageTransparentColor = Color.Magenta;
             Console_DownloadBtn.Name = "Console_DownloadBtn";
             Console_DownloadBtn.Size = new Size(23, 22);
+            Console_DownloadBtn.Tag = "SaveLOG";
             Console_DownloadBtn.Text = "Download Log";
-            Console_DownloadBtn.Click += errorLogToolStripMenuItem_Click;
+            Console_DownloadBtn.Click += ButtonHandler;
             // 
             // toolStripSeparator4
             // 
@@ -695,11 +707,6 @@
             label7.Text = "Current Operation:";
             label7.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // contextMenuStrip1
-            // 
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(61, 4);
-            // 
             // menuStrip1
             // 
             menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5 });
@@ -742,14 +749,18 @@
             toolStripMenuItem8.Image = Properties.Resources.Save;
             toolStripMenuItem8.Name = "toolStripMenuItem8";
             toolStripMenuItem8.Size = new Size(186, 22);
+            toolStripMenuItem8.Tag = "SaveCSV";
             toolStripMenuItem8.Text = "Save Runtime CSV";
+            toolStripMenuItem8.Click += ButtonHandler;
             // 
             // RuntimeCSV_ToolstripItem
             // 
             RuntimeCSV_ToolstripItem.Image = Properties.Resources.SaveAs;
             RuntimeCSV_ToolstripItem.Name = "RuntimeCSV_ToolstripItem";
             RuntimeCSV_ToolstripItem.Size = new Size(186, 22);
+            RuntimeCSV_ToolstripItem.Tag = "SaveAsCSV";
             RuntimeCSV_ToolstripItem.Text = "Save Runtime CSV As";
+            RuntimeCSV_ToolstripItem.Click += ButtonHandler;
             // 
             // toolStripSeparator5
             // 
@@ -761,25 +772,29 @@
             toolStripMenuItem2.Image = Properties.Resources.Save;
             toolStripMenuItem2.Name = "toolStripMenuItem2";
             toolStripMenuItem2.Size = new Size(186, 22);
+            toolStripMenuItem2.Tag = "SaveLOG";
             toolStripMenuItem2.Text = "Save ErrorLog";
+            toolStripMenuItem2.Click += ButtonHandler;
             // 
             // errorLogToolStripMenuItem
             // 
             errorLogToolStripMenuItem.Image = Properties.Resources.SaveAs;
             errorLogToolStripMenuItem.Name = "errorLogToolStripMenuItem";
             errorLogToolStripMenuItem.Size = new Size(186, 22);
+            errorLogToolStripMenuItem.Tag = "SaveAsLOG";
             errorLogToolStripMenuItem.Text = "Save ErrorLog As";
+            errorLogToolStripMenuItem.Click += ButtonHandler;
             // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuISettings, Menu_SocketTab });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuISettings, Menu_SocketTab, toolStripSeparator7, toolStripMenuItem7, toolStripMenuItem6 });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(44, 20);
             toolsToolStripMenuItem.Text = "&View";
             // 
             // toolStripMenuISettings
             // 
-            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepSessionData, toolStripSeparator3, toolStripMenuItem4 });
+            toolStripMenuISettings.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuSetting_keepSessionData, toolStripSeparator3, toolStripMenuItem4, toolStripMenuItem9 });
             toolStripMenuISettings.Image = Properties.Resources.SettingsGroup;
             toolStripMenuISettings.Name = "toolStripMenuISettings";
             toolStripMenuISettings.Size = new Size(174, 22);
@@ -790,21 +805,111 @@
             toolStripMenuSetting_keepSessionData.CheckOnClick = true;
             toolStripMenuSetting_keepSessionData.Image = Properties.Resources.Settings;
             toolStripMenuSetting_keepSessionData.Name = "toolStripMenuSetting_keepSessionData";
-            toolStripMenuSetting_keepSessionData.Size = new Size(183, 22);
+            toolStripMenuSetting_keepSessionData.Size = new Size(220, 22);
+            toolStripMenuSetting_keepSessionData.Tag = "ToggleSessionData";
             toolStripMenuSetting_keepSessionData.Text = "Auto save input data";
+            toolStripMenuSetting_keepSessionData.Click += ButtonHandler;
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(180, 6);
+            toolStripSeparator3.Size = new Size(217, 6);
             // 
             // toolStripMenuItem4
             // 
-            toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { toolStripTextBox2, toolStripTextBox3 });
-            toolStripMenuItem4.Image = Properties.Resources.Key;
+            toolStripMenuItem4.Image = Properties.Resources.FolderOpened;
             toolStripMenuItem4.Name = "toolStripMenuItem4";
-            toolStripMenuItem4.Size = new Size(183, 22);
-            toolStripMenuItem4.Text = "Ip Configuration";
+            toolStripMenuItem4.Size = new Size(220, 22);
+            toolStripMenuItem4.Text = "Set Default CSV file location";
+            // 
+            // toolStripMenuItem9
+            // 
+            toolStripMenuItem9.Image = Properties.Resources.FolderOpened;
+            toolStripMenuItem9.Name = "toolStripMenuItem9";
+            toolStripMenuItem9.Size = new Size(220, 22);
+            toolStripMenuItem9.Text = "Set Default Log file location";
+            // 
+            // Menu_SocketTab
+            // 
+            Menu_SocketTab.DropDownItems.AddRange(new ToolStripItem[] { SocketTab_Connect_Btn, SocketTab_Disconnect_Btn });
+            Menu_SocketTab.Image = Properties.Resources.RemoteServer;
+            Menu_SocketTab.Name = "Menu_SocketTab";
+            Menu_SocketTab.Size = new Size(174, 22);
+            Menu_SocketTab.Text = "Socket Connection";
+            // 
+            // SocketTab_Connect_Btn
+            // 
+            SocketTab_Connect_Btn.Image = Properties.Resources.ConnectToRemoteServer;
+            SocketTab_Connect_Btn.Name = "SocketTab_Connect_Btn";
+            SocketTab_Connect_Btn.Size = new Size(168, 22);
+            SocketTab_Connect_Btn.Tag = "TryConnectSocket";
+            SocketTab_Connect_Btn.Text = "connect to sm15k";
+            SocketTab_Connect_Btn.Click += ButtonHandler;
+            // 
+            // SocketTab_Disconnect_Btn
+            // 
+            SocketTab_Disconnect_Btn.Image = Properties.Resources.Disconnect;
+            SocketTab_Disconnect_Btn.Name = "SocketTab_Disconnect_Btn";
+            SocketTab_Disconnect_Btn.Size = new Size(168, 22);
+            SocketTab_Disconnect_Btn.Tag = "DisconnectSocket";
+            SocketTab_Disconnect_Btn.Text = "Close Connection";
+            SocketTab_Disconnect_Btn.Click += ButtonHandler;
+            // 
+            // toolStripSeparator7
+            // 
+            toolStripSeparator7.Name = "toolStripSeparator7";
+            toolStripSeparator7.Size = new Size(171, 6);
+            // 
+            // toolStripMenuItem7
+            // 
+            toolStripMenuItem7.DropDownItems.AddRange(new ToolStripItem[] { LimitLabel_01, LimitLabel_02, LimitLabel_03, toolStripSeparator1, LimitLabel_04, LimitLabel_05 });
+            toolStripMenuItem7.Image = Properties.Resources.Memory;
+            toolStripMenuItem7.Name = "toolStripMenuItem7";
+            toolStripMenuItem7.Size = new Size(174, 22);
+            toolStripMenuItem7.Text = "Machine Limits";
+            // 
+            // LimitLabel_01
+            // 
+            LimitLabel_01.Name = "LimitLabel_01";
+            LimitLabel_01.ReadOnly = true;
+            LimitLabel_01.Size = new Size(100, 23);
+            // 
+            // LimitLabel_02
+            // 
+            LimitLabel_02.Name = "LimitLabel_02";
+            LimitLabel_02.ReadOnly = true;
+            LimitLabel_02.Size = new Size(100, 23);
+            // 
+            // LimitLabel_03
+            // 
+            LimitLabel_03.Name = "LimitLabel_03";
+            LimitLabel_03.ReadOnly = true;
+            LimitLabel_03.Size = new Size(100, 23);
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(157, 6);
+            // 
+            // LimitLabel_04
+            // 
+            LimitLabel_04.Name = "LimitLabel_04";
+            LimitLabel_04.ReadOnly = true;
+            LimitLabel_04.Size = new Size(100, 23);
+            // 
+            // LimitLabel_05
+            // 
+            LimitLabel_05.Name = "LimitLabel_05";
+            LimitLabel_05.ReadOnly = true;
+            LimitLabel_05.Size = new Size(100, 23);
+            // 
+            // toolStripMenuItem6
+            // 
+            toolStripMenuItem6.DropDownItems.AddRange(new ToolStripItem[] { toolStripTextBox2, toolStripTextBox3 });
+            toolStripMenuItem6.Image = Properties.Resources.Key;
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new Size(174, 22);
+            toolStripMenuItem6.Text = "Ip Configuration";
             // 
             // toolStripTextBox2
             // 
@@ -820,30 +925,6 @@
             toolStripTextBox3.Size = new Size(100, 23);
             toolStripTextBox3.Text = "Port: 8462";
             // 
-            // Menu_SocketTab
-            // 
-            Menu_SocketTab.DropDownItems.AddRange(new ToolStripItem[] { SocketTab_Connect_Btn, SocketTab_Disconnect_Btn });
-            Menu_SocketTab.Image = Properties.Resources.RemoteServer;
-            Menu_SocketTab.Name = "Menu_SocketTab";
-            Menu_SocketTab.Size = new Size(174, 22);
-            Menu_SocketTab.Text = "Socket Connection";
-            // 
-            // SocketTab_Connect_Btn
-            // 
-            SocketTab_Connect_Btn.Image = Properties.Resources.ConnectToRemoteServer;
-            SocketTab_Connect_Btn.Name = "SocketTab_Connect_Btn";
-            SocketTab_Connect_Btn.Size = new Size(168, 22);
-            SocketTab_Connect_Btn.Text = "connect to sm15k";
-            SocketTab_Connect_Btn.Click += SocketTab_Connect_Btn_click;
-            // 
-            // SocketTab_Disconnect_Btn
-            // 
-            SocketTab_Disconnect_Btn.Image = Properties.Resources.Disconnect;
-            SocketTab_Disconnect_Btn.Name = "SocketTab_Disconnect_Btn";
-            SocketTab_Disconnect_Btn.Size = new Size(168, 22);
-            SocketTab_Disconnect_Btn.Text = "Close Connection";
-            SocketTab_Disconnect_Btn.Click += SocketTab_Disconnect_Btn_Click;
-            // 
             // toolStripMenuItem5
             // 
             toolStripMenuItem5.DropDownItems.AddRange(new ToolStripItem[] { MenuItem_Documentation });
@@ -855,6 +936,7 @@
             // MenuItem_Documentation
             // 
             MenuItem_Documentation.DropDownItems.AddRange(new ToolStripItem[] { LinkToDeltaElectronica, toolStripSeparator2, toolStripTextBox1 });
+            MenuItem_Documentation.Image = Properties.Resources.StatusInformation;
             MenuItem_Documentation.Name = "MenuItem_Documentation";
             MenuItem_Documentation.Size = new Size(157, 22);
             MenuItem_Documentation.Text = "Documentation";
@@ -863,17 +945,17 @@
             // 
             LinkToDeltaElectronica.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
             LinkToDeltaElectronica.ForeColor = Color.Blue;
-            LinkToDeltaElectronica.Image = Properties.Resources.QuestionMark;
+            LinkToDeltaElectronica.Image = Properties.Resources.StatusHelp;
             LinkToDeltaElectronica.Name = "LinkToDeltaElectronica";
-            LinkToDeltaElectronica.Size = new Size(235, 22);
-            LinkToDeltaElectronica.Tag = "https://www.delta-elektronika.nl/products/sm15k-series";
+            LinkToDeltaElectronica.Size = new Size(359, 22);
+            LinkToDeltaElectronica.Tag = "OpenDeltaURL";
             LinkToDeltaElectronica.Text = "Delta elektronica Sm15k series ";
-            LinkToDeltaElectronica.Click += MenuItem_Click;
+            LinkToDeltaElectronica.Click += ButtonHandler;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(232, 6);
+            toolStripSeparator2.Size = new Size(356, 6);
             // 
             // toolStripTextBox1
             // 
@@ -881,22 +963,23 @@
             toolStripTextBox1.ForeColor = Color.Blue;
             toolStripTextBox1.Image = Properties.Resources.SourceControlSites;
             toolStripTextBox1.Name = "toolStripTextBox1";
-            toolStripTextBox1.Size = new Size(235, 22);
-            toolStripTextBox1.Tag = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
-            toolStripTextBox1.Text = "Github Project page";
-            toolStripTextBox1.Click += MenuItem_Click;
+            toolStripTextBox1.Size = new Size(359, 22);
+            toolStripTextBox1.Tag = "OpenGitURL";
+            toolStripTextBox1.Text = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
+            toolStripTextBox1.Click += ButtonHandler;
             // 
             // OperationsBox_UI
             // 
             OperationsBox_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             OperationsBox_UI.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            OperationsBox_UI.Controls.Add(Label_Total_Time_UI);
-            OperationsBox_UI.Controls.Add(label5);
             OperationsBox_UI.Controls.Add(Operation_ConnectBattery_Override);
             OperationsBox_UI.Controls.Add(Operation_DischargeTo30_selection);
             OperationsBox_UI.Controls.Add(Operation_Discharge_selection);
             OperationsBox_UI.Controls.Add(Operation_Charge_selection);
+            OperationsBox_UI.Controls.Add(Operation_NoneORStop_Selection);
             OperationsBox_UI.Controls.Add(Operation_Output_Switch);
+            OperationsBox_UI.Controls.Add(Label_Total_Time_UI);
+            OperationsBox_UI.Controls.Add(label5);
             OperationsBox_UI.Controls.Add(Label_Elapsed_Time_UI);
             OperationsBox_UI.Controls.Add(label4);
             OperationsBox_UI.Controls.Add(StatusCurrentOperation_UI);
@@ -930,58 +1013,66 @@
             label5.Text = "Estimated Time:";
             label5.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // Operation_ConnectBattery_Override
+            // Operation_Output_Switch
             // 
-            Operation_ConnectBattery_Override.AutoSize = true;
-            Operation_ConnectBattery_Override.Location = new Point(136, 222);
-            Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
-            Operation_ConnectBattery_Override.Size = new Size(139, 25);
-            Operation_ConnectBattery_Override.TabIndex = 24;
-            Operation_ConnectBattery_Override.Text = "Connect Battery";
-            Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
+            Operation_Output_Switch.Location = new Point(98, 264);
+            Operation_Output_Switch.Name = "Operation_Output_Switch";
+            Operation_Output_Switch.Size = new Size(96, 43);
+            Operation_Output_Switch.TabIndex = 27;
+            Operation_Output_Switch.Text = "Start";
+            Operation_Output_Switch.UseVisualStyleBackColor = true;
+            Operation_Output_Switch.Click += SelectOperation;
             // 
-            // Operation_DischargeTo30_selection
+            // Operation_NoneORStop_Selection
             // 
-            Operation_DischargeTo30_selection.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            Operation_DischargeTo30_selection.Location = new Point(157, 349);
-            Operation_DischargeTo30_selection.Name = "Operation_DischargeTo30_selection";
-            Operation_DischargeTo30_selection.Size = new Size(118, 42);
-            Operation_DischargeTo30_selection.TabIndex = 23;
-            Operation_DischargeTo30_selection.Text = "Discharge To 30%";
-            Operation_DischargeTo30_selection.UseVisualStyleBackColor = true;
-            Operation_DischargeTo30_selection.Click += SelectOperation;
-            // 
-            // Operation_Discharge_selection
-            // 
-            Operation_Discharge_selection.Location = new Point(157, 301);
-            Operation_Discharge_selection.Name = "Operation_Discharge_selection";
-            Operation_Discharge_selection.Size = new Size(118, 42);
-            Operation_Discharge_selection.TabIndex = 22;
-            Operation_Discharge_selection.Text = "Discharge";
-            Operation_Discharge_selection.UseVisualStyleBackColor = true;
-            Operation_Discharge_selection.Click += SelectOperation;
+            Operation_NoneORStop_Selection.Location = new Point(200, 264);
+            Operation_NoneORStop_Selection.Name = "Operation_NoneORStop_Selection";
+            Operation_NoneORStop_Selection.Size = new Size(96, 43);
+            Operation_NoneORStop_Selection.TabIndex = 27;
+            Operation_NoneORStop_Selection.Text = "None";
+            Operation_NoneORStop_Selection.UseVisualStyleBackColor = true;
+            Operation_NoneORStop_Selection.Click += SelectOperation;
             // 
             // Operation_Charge_selection
             // 
-            Operation_Charge_selection.Location = new Point(157, 253);
+            Operation_Charge_selection.Location = new Point(200, 313);
             Operation_Charge_selection.Name = "Operation_Charge_selection";
-            Operation_Charge_selection.Size = new Size(118, 42);
-            Operation_Charge_selection.TabIndex = 21;
+            Operation_Charge_selection.Size = new Size(96, 43);
+            Operation_Charge_selection.TabIndex = 27;
             Operation_Charge_selection.Text = "Charge";
             Operation_Charge_selection.UseVisualStyleBackColor = true;
             Operation_Charge_selection.Click += SelectOperation;
             // 
-            // Operation_Output_Switch
+            // Operation_Discharge_selection
             // 
-            Operation_Output_Switch.AutoSize = true;
-            Operation_Output_Switch.BackColor = Color.Chartreuse;
-            Operation_Output_Switch.Location = new Point(21, 253);
-            Operation_Output_Switch.Name = "Operation_Output_Switch";
-            Operation_Output_Switch.Size = new Size(130, 42);
-            Operation_Output_Switch.TabIndex = 12;
-            Operation_Output_Switch.Text = "Start";
-            Operation_Output_Switch.UseVisualStyleBackColor = false;
-            Operation_Output_Switch.Click += SelectOperation;
+            Operation_Discharge_selection.Location = new Point(200, 362);
+            Operation_Discharge_selection.Name = "Operation_Discharge_selection";
+            Operation_Discharge_selection.Size = new Size(96, 43);
+            Operation_Discharge_selection.TabIndex = 27;
+            Operation_Discharge_selection.Text = "Discharge";
+            Operation_Discharge_selection.UseVisualStyleBackColor = true;
+            Operation_Discharge_selection.Click += SelectOperation;
+            // 
+            // Operation_DischargeTo30_selection
+            // 
+            Operation_DischargeTo30_selection.Location = new Point(200, 411);
+            Operation_DischargeTo30_selection.Name = "Operation_DischargeTo30_selection";
+            Operation_DischargeTo30_selection.Size = new Size(96, 43);
+            Operation_DischargeTo30_selection.TabIndex = 27;
+            Operation_DischargeTo30_selection.Text = "Discharge30";
+            Operation_DischargeTo30_selection.UseVisualStyleBackColor = true;
+            Operation_DischargeTo30_selection.Click += SelectOperation;
+            // 
+            // Operation_ConnectBattery_Override
+            // 
+            Operation_ConnectBattery_Override.AutoSize = true;
+            Operation_ConnectBattery_Override.Location = new Point(157, 233);
+            Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
+            Operation_ConnectBattery_Override.Size = new Size(139, 25);
+            Operation_ConnectBattery_Override.TabIndex = 28;
+            Operation_ConnectBattery_Override.Text = "Connect Battery";
+            Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
+            Operation_ConnectBattery_Override.Click += SelectOperation;
             // 
             // MainForm
             // 
@@ -997,7 +1088,6 @@
             Margin = new Padding(4);
             Name = "MainForm";
             Text = "Whisper Power - Sm15k Controller";
-            FormClosing += MainForm_FormClosing;
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -1059,7 +1149,6 @@
         private GroupBox groupBox1;
         private TextBox StatusCurrentOperation_UI;
         private Label label7;
-        private ContextMenuStrip contextMenuStrip1;
         private GroupBox ConsoleBox;
         private TextBox Label_Elapsed_Time_UI;
         private Label label4;
@@ -1080,9 +1169,6 @@
         private ToolStripMenuItem SocketTab_Disconnect_Btn;
         private ToolStripMenuItem toolStripTextBox1;
         private ToolStripMenuItem toolStripMenuItem3;
-        private ToolStripMenuItem toolStripMenuItem4;
-        private ToolStripTextBox toolStripTextBox2;
-        private ToolStripTextBox toolStripTextBox3;
         private ToolStrip toolStrip1;
         private ToolStripButton ToggleConsole_Btn;
         private ToolStripButton ConsoleClear_Btn;
@@ -1105,12 +1191,26 @@
         private Button ApplyBatteryDataButton;
         private GroupBox FactoryInformationBox;
         private GroupBox OperationsBox_UI;
+        private TextBox Label_Total_Time_UI;
+        private Label label5;
+        private ToolStripMenuItem toolStripMenuItem7;
+        private ToolStripTextBox LimitLabel_01;
+        private ToolStripTextBox LimitLabel_02;
+        private ToolStripTextBox LimitLabel_03;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripTextBox LimitLabel_04;
+        private ToolStripTextBox LimitLabel_05;
+        private ToolStripMenuItem toolStripMenuItem4;
+        private ToolStripMenuItem toolStripMenuItem9;
+        private ToolStripSeparator toolStripSeparator7;
+        private ToolStripMenuItem toolStripMenuItem6;
+        private ToolStripTextBox toolStripTextBox2;
+        private ToolStripTextBox toolStripTextBox3;
         private Button Operation_Output_Switch;
+        private CheckBox Operation_ConnectBattery_Override;
         private Button Operation_DischargeTo30_selection;
         private Button Operation_Discharge_selection;
         private Button Operation_Charge_selection;
-        private CheckBox Operation_ConnectBattery_Override;
-        private TextBox Label_Total_Time_UI;
-        private Label label5;
+        private Button Operation_NoneORStop_Selection;
     }
 }
