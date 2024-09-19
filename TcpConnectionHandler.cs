@@ -93,36 +93,40 @@ namespace sm70_cp_450_GUI
         // Process the query queue
         private async void ProcessQueryQueue()
         {
-            if (_isProcessingQueryQueue) return;
-
-            _isProcessingQueryQueue = true;
-
-            while (_queryQueue.TryDequeue(out var query))
+            if (IsConnected)
             {
-                string? response = await SendQueryAsync(query);
-                _ = _pendingQueries?.Remove(query);
+                if (_isProcessingQueryQueue) return;
 
-                // Log the query and response
-                _logManager?.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
-                if(MainForm.Instance != null)
+                _isProcessingQueryQueue = true;
+
+                while (_queryQueue.TryDequeue(out var query))
                 {
-                    if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out var uiAction))
-                    {
-                        // Log that we found the matching action
-                        _logManager?.AddDebugLogMessage($"⚠️ Found action for query: {query}");
+                    string? response = await SendQueryAsync(query);
+                    _ = _pendingQueries?.Remove(query);
 
-                        // Invoke the corresponding UI action
-                        MainForm.Instance.Invoke(new Action(() => uiAction(response)));
-                    }
-                    else
+                    // Log the query and response
+                    _logManager?.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
+                    if (MainForm.Instance != null)
                     {
-                        // Log if there was no matching action
-                        _logManager?.AddDebugLogMessage($"❌ No matching action for query: {query}");
+                        if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out var uiAction))
+                        {
+                            // Log that we found the matching action
+                            _logManager?.AddDebugLogMessage($"⚠️ Found action for query: {query}");
+
+                            // Invoke the corresponding UI action
+                            MainForm.Instance.Invoke(new Action(() => uiAction(response)));
+                        }
+                        else
+                        {
+                            // Log if there was no matching action
+                            _logManager?.AddDebugLogMessage($"❌ No matching action for query: {query}");
+                        }
                     }
                 }
-            }
 
-            _isProcessingQueryQueue = false;
+                _isProcessingQueryQueue = false;
+            }
+           
         }
 
 
@@ -140,29 +144,27 @@ namespace sm70_cp_450_GUI
 
             try
             {
-                using (var cts = new CancellationTokenSource(timeoutMilliseconds))
+                using var cts = new CancellationTokenSource(timeoutMilliseconds);
+                // Write the query to the network stream
+                byte[] messageBuffer = Encoding.UTF8.GetBytes(query + "\n");
+                await _networkStream.WriteAsync(messageBuffer, cts.Token);
+                await _networkStream.FlushAsync(cts.Token);
+
+                // Read the response
+                var buffer = new byte[1024];
+                var stringBuilder = new StringBuilder();
+                int bytesRead;
+
+                do
                 {
-                    // Write the query to the network stream
-                    byte[] messageBuffer = Encoding.UTF8.GetBytes(query + "\n");
-                    await _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length, cts.Token);
-                    await _networkStream.FlushAsync(cts.Token);
-
-                    // Read the response
-                    var buffer = new byte[1024];
-                    var stringBuilder = new StringBuilder();
-                    int bytesRead;
-
-                    do
+                    bytesRead = await _networkStream.ReadAsync(buffer, cts.Token);
+                    if (bytesRead > 0)
                     {
-                        bytesRead = await _networkStream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-                        if (bytesRead > 0)
-                        {
-                            stringBuilder?.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                        }
-                    } while (_networkStream.DataAvailable && !cts.Token.IsCancellationRequested);
+                        stringBuilder?.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                    }
+                } while (_networkStream.DataAvailable && !cts.Token.IsCancellationRequested);
 
-                    return stringBuilder?.ToString().Trim();
-                }
+                return stringBuilder?.ToString().Trim();
             }
             catch (Exception ex)
             {
@@ -189,7 +191,7 @@ namespace sm70_cp_450_GUI
             try
             {
                 byte[] messageBuffer = Encoding.UTF8.GetBytes(command + "\n");
-                await _networkStream.WriteAsync(messageBuffer, 0, messageBuffer.Length);
+                await _networkStream.WriteAsync(messageBuffer);
                 await _networkStream.FlushAsync();
                 return true;  // Command sent successfully
             }

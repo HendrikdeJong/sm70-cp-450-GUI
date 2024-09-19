@@ -14,7 +14,7 @@ namespace sm70_cp_450_GUI
 
         private int _currentErrorIndex = 0;  // Index to cycle through errors
         private int _errorDisplayCounter = 0;  // Counter for slower error display
-        private int _errorDisplayInterval = 10;  // Change this to set slower rate (e.g., 10 ticks = 10 seconds)
+        private readonly int _errorDisplayInterval = 10;  // Change this to set slower rate (e.g., 10 ticks = 10 seconds)
 
         // Private constructor to prevent direct instantiation
         private LogManager() { }
@@ -23,10 +23,7 @@ namespace sm70_cp_450_GUI
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new LogManager();
-                }
+                _instance ??= new LogManager();
                 return _instance;
             }
         }
@@ -45,7 +42,7 @@ namespace sm70_cp_450_GUI
         {
             DateTime currentTime = DateTime.Now;
 
-            if (LogMessage.Contains("❌") || LogMessage.Contains("[ERROR]"))
+            if (LogMessage.Contains('❌') || LogMessage.Contains("[ERROR]"))
             {
                 _errorMessages[LogMessage] = _errorMessages.ContainsKey(LogMessage)
                     ? (_errorMessages[LogMessage].Count + 1, currentTime)
@@ -144,7 +141,7 @@ namespace sm70_cp_450_GUI
             batteryData.Add(metrics);
         }
 
-        public void ExportToCsv(object sender, EventArgs e, bool SaveAs, string? saveLocation)
+        public void ExportToCsv(bool SaveAs, string? saveLocation)
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -178,7 +175,7 @@ namespace sm70_cp_450_GUI
                 }
 
                 // Append current time to the file name
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
                 string fileNameWithTime = $"battery_data_{timestamp}.csv";
                 string filePath = Path.Combine(saveLocation, fileNameWithTime);
 
@@ -192,7 +189,7 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        public void ExportLogToFile(object sender, EventArgs e, bool SaveAs, string? saveLocation)
+        public void ExportLogToFile(bool SaveAs, string? saveLocation)
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -232,7 +229,7 @@ namespace sm70_cp_450_GUI
                 }
 
                 // Append current time to the file name
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
                 string fileNameWithTime = $"log_{timestamp}.txt";
                 string filePath = Path.Combine(saveLocation, fileNameWithTime);
 
@@ -255,11 +252,11 @@ namespace sm70_cp_450_GUI
 
 
 
-        private string TruncateMessage(string errorMessage, int TruncateLength)
+        private static string TruncateMessage(string errorMessage, int TruncateLength)
         {
             if (errorMessage.Length > TruncateLength)
             {
-                return errorMessage.Substring(0, TruncateLength) + "...";
+                return $"{errorMessage[..TruncateLength]}...";
             }
             return errorMessage;
         }

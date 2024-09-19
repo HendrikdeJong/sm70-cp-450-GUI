@@ -17,47 +17,20 @@ namespace sm70_cp_450_GUI
         public static MainForm? Instance { get; private set; }
 
         private Timer? errorCleanupTimer;
-
+        //private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
+        //private readonly Stopwatch _stopwatch = new();
+        //private TimeSpan? EstimateTotalTime;
 
         public bool _ConsoleState = false;
         private bool _EditingValues = false;
-        private AvailablePrograms _SelectedProgram = AvailablePrograms.None;
-
-        private double _ratedVoltage = 0;
-        private double _ratedCapacity = 0;
-        private double _ratedPower = 0;
-        private double _cRating = 0;
+        private bool _started = false;
+        private bool _OngoingOperation = false;
 
         public double currentVoltage = 0;
         public double currentCurrent = 0;
         public double currentPower = 0;
 
-        private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
-        private readonly Stopwatch _stopwatch = new();
-        private TimeSpan? EstimateTotalTime;
-
-        private double _StoredVoltageSetting = 0;
-        private double _StoredCurrent = 0;
-        private double _StoredPower = 0;
-        private double _StoredNegativeCurrent = 0;
-        private double _StoredNegativePower = 0;
-
-        private double _TEMPCurrent = 0;
-        private double _TEMPPower = 0;
-        private double _TEMPNegativeCurrent = 0;
-        private double _TEMPNegativePower = 0;
-
         public Dictionary<string, Action<string>> _commandToUIActions;
-
-        private bool _started = false;
-        private bool _OngoingOperation = false;
-        private enum AvailablePrograms
-        {
-            None,
-            Charging,
-            Discharging,
-            DischargingTo30,
-        }
 
         public MainForm()
         {
@@ -68,9 +41,9 @@ namespace sm70_cp_450_GUI
             // UI actions associated with commands
             _commandToUIActions = new Dictionary<string, Action<string>>
             {
-                { "MEASure:VOLtage?", (response) => {VoltageDisplay.Text = response + " V";     currentVoltage = double.Parse(response);}},
-                { "MEASure:CURrent?", (response) => {AmperageDisplay.Text = response + " A";    currentCurrent = double.Parse(response);}},
-                { "MEASure:POWer?", (response) => {WattageDisplay.Text = response + " W";    currentPower = double.Parse(response);}},
+                { "MEASure:VOLtage?", (response) => {VoltageDisplay.Text = response + " V"; currentVoltage = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
+                { "MEASure:CURrent?", (response) => {AmperageDisplay.Text = response + " A"; currentCurrent = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
+                { "MEASure:POWer?", (response) => {WattageDisplay.Text = response + " W"; currentPower = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
 
                 { "SOURce:VOLtage?", (response) => Label_MachineAppliedVoltage_UI.Text = response + " V" },
                 { "SOURce:CURrent?", (response) => Label_MachineAppliedCurrentPlus_UI.Text = response + " A" },
@@ -104,7 +77,7 @@ namespace sm70_cp_450_GUI
 
             if (Properties.Settings.Default._KeepMemory == true)
             {
-                UpdateUIFromSettings();
+                UpdateUIFromStoredCookies();
             }
             toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
             _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
@@ -126,32 +99,32 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void UpdateUIFromSettings()
+        private void UpdateUIFromStoredCookies()
         {
 
-            _ratedVoltage = Properties.Settings.Default._ratedVoltage;
-            _ratedCapacity = Properties.Settings.Default._ratedCapacity;
-            _ratedPower = Properties.Settings.Default._ratedPower;
-            _cRating = Properties.Settings.Default._cRating;
+            //_ratedVoltage = Properties.Settings.Default._ratedVoltage;
+            //_ratedCapacity = Properties.Settings.Default._ratedCapacity;
+            //_ratedPower = Properties.Settings.Default._ratedPower;
+            //_cRating = Properties.Settings.Default._cRating;
 
-            _StoredVoltageSetting = Properties.Settings.Default._StoredVoltageSetting;
-            _StoredCurrent = Properties.Settings.Default._StoredCurrent;
-            _StoredPower = Properties.Settings.Default._StoredPower;
+            //_StoredVoltageSetting = Properties.Settings.Default._StoredVoltageSetting;
+            //_StoredCurrent = Properties.Settings.Default._StoredCurrent;
+            //_StoredPower = Properties.Settings.Default._StoredPower;
 
-            _StoredNegativeCurrent = Properties.Settings.Default._StoredNegativeCurrent;
-            _StoredNegativePower = Properties.Settings.Default._StoredNegativePower;
+            //_StoredNegativeCurrent = Properties.Settings.Default._StoredNegativeCurrent;
+            //_StoredNegativePower = Properties.Settings.Default._StoredNegativePower;
 
 
-            RatedBatteryVoltageUI.Text = _ratedVoltage.ToString();
-            RatedBatteryAmperageUI.Text = _ratedCapacity.ToString();
-            C_Rating_UI.Text = _cRating.ToString();
+            //RatedBatteryVoltageUI.Text = _ratedVoltage.ToString();
+            //RatedBatteryAmperageUI.Text = _ratedCapacity.ToString();
+            //C_Rating_UI.Text = _cRating.ToString();
 
-            // Update your UI elements with loaded values
-            InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
-            InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
-            InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
-            InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
-            InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
+            //// Update your UI elements with loaded values
+            //InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
+            //InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
+            //InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
+            //InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
+            //InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
         }
 
         private void Timers()
@@ -172,44 +145,15 @@ namespace sm70_cp_450_GUI
                 _commandManager?.Request_Source_Current_Negative();
                 _commandManager?.Request_Source_Power_Negative();
 
-                //_commandManager?.RequestTime();
-                StatusCurrentOperation_UI.Text = _SelectedProgram.ToString();
+                Operation_NoneORStop_Selection.BackColor = _OngoingOperation ? Color.Red : SystemColors.Control;
+                Operation_NoneORStop_Selection.Enabled = !_started;
 
-                // Always update the elapsed time display
-                if (_stopwatch.IsRunning)
-                {
-                    _OngoingOperation = true;
-                    _timeSinceLastSave = _timeSinceLastSave.Add(TimeSpan.FromSeconds(1)); // Increment by 1 second
-
-                    if (_timeSinceLastSave.TotalSeconds >= 5)  // Check if 5 seconds have passed
-                    {
-                        logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
-                        _timeSinceLastSave = TimeSpan.Zero;  // Reset the timer
-                    }
-
-
-                    TimeSpan elapsed = _stopwatch.Elapsed;
-
-                    TimeSpan _TimeRemaining = ((EstimateTotalTime ?? TimeSpan.Zero) - elapsed);
-
-                    Label_Total_Time_UI.Text = $"{_TimeRemaining.Hours:D2}:{_TimeRemaining.Minutes:D2}:{_TimeRemaining.Seconds:D2}";
-                    Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-
-                    // Check if the remaining time is less than or equal to zero
-                    if (_TimeRemaining <= TimeSpan.Zero)
-                    {
-                        _OngoingOperation = false;
-                        _stopwatch.Stop();  // Stop the stopwatch
-                        //ToggleOutput();
-                        _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
-                        MessageBox.Show("Time is up! The machine has been stopped.");
-                    }
-                } else _OngoingOperation = false;
+                StateManager();
             };
 
             Timer? LateUpdate = new()
             {
-                Interval = 10000 // 10 second interval
+                Interval = 10000
             };
             LateUpdate.Tick += (sender, e) =>
             {
@@ -232,227 +176,166 @@ namespace sm70_cp_450_GUI
             {
                 errorCleanupTimer = new Timer
                 {
-                    Interval = 1000 // 1 second interval
+                    Interval = 1000
                 };
                 errorCleanupTimer.Tick += (sender, e) => logManager.UpdateConsole();
                 errorCleanupTimer.Start();
             }
         }
+        private CurrentState _currentState;
 
-        private void ToggleManualEditing(object sender, EventArgs e)
+        private enum CurrentState
         {
-            _EditingValues = !_EditingValues;
-            InputField_StoredValueVoltage.ReadOnly = !_EditingValues;
-            InputField_StoredValueCurrentPlus.ReadOnly = !_EditingValues;
-            InputField_StoredValuePowerPlus.ReadOnly = !_EditingValues;
-            InputField_StoredValueCurrentMin.ReadOnly = !_EditingValues;
-            InputField_StoredValuePowerMin.ReadOnly = !_EditingValues;
+            Idle,
+            Charging,
+            Discharging,
+            ConnectingBattery,
+        }
 
-            if (_EditingValues)
+        private enum SetState
+        {
+            Charge,
+            Discharge,
+            BatteryConnect,
+        }
+
+        private double _EstimateVoltageSum = 2; // TEMP 2 Volts above or below _ratedVoltage
+
+        private double _MaxChargeVoltage;
+        private double _MaxPower;
+        private double _MaxCurrent;
+
+        private double _CutOffDischargeVoltage;
+        private double _MinPower;
+        private double _MinCurrent;
+
+        private double Charge_C_Rating;
+        private double Discharge_C_Rating;
+
+        private double _ratedVoltage = 0;
+        private double _ratedCapacity = 0;
+
+
+        private async void StateManager()
+        {
+            while (!await Task.Run(() => InitialSetup()))
             {
-                Button_Toggle_ValueEditor.Text = "Save And Update Values";
-                //UpdateFromManualOverride();
+                await Task.Delay(1000);
             }
-            else
+
+            // Check if output should be turned on or off based on the state
+            bool outputShouldBeOn = (_currentState != CurrentState.Idle && _currentState != CurrentState.ConnectingBattery);
+
+            // Temporarily turn off output to check no-load voltage
+            if (_commandManager != null)
             {
-                Button_Toggle_ValueEditor.Text = "Edit Values";
-                UpdateFromManualOverride();
+                // Turn output off to measure no-load voltage
+                _commandManager.SetOutputState(false);
+                await Task.Delay(500);  // Allow some time for the voltage to stabilize without load
+
+                // Check current no-load voltage
+                double noLoadVoltage = currentVoltage;
+
+                // Conditions for stopping operation (full or empty)
+                if (_currentState == CurrentState.Charging && noLoadVoltage >= _MaxChargeVoltage)
+                {
+                    // Battery is full, turn output off and highlight front panel
+                    outputShouldBeOn = false;
+                    _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
+                }
+                else if (_currentState == CurrentState.Discharging && noLoadVoltage <= _CutOffDischargeVoltage)
+                {
+                    // Battery is empty, turn output off and highlight front panel
+                    outputShouldBeOn = false;
+                    _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
+                }
+
+                // Re-enable the output based on state
+                _commandManager.SetOutputState(outputShouldBeOn);
+            }
+
+            switch (_currentState)
+            {
+                case CurrentState.Idle:
+                    // No action needed, output should remain off
+                    break;
+                case CurrentState.Charging:
+                    SetValuesToMachine(SetState.Charge);
+                    break;
+                case CurrentState.Discharging:
+                    SetValuesToMachine(SetState.Discharge);
+                    break;
+                case CurrentState.ConnectingBattery:
+                    SetValuesToMachine(SetState.BatteryConnect);
+                    break;
+                default:
+                    break;
             }
         }
-        private void UpdateFromManualOverride()
-        {
-            InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
-            InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
-            InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
-            InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
-            InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
-            _StoredVoltageSetting = ParseInput(InputField_StoredValueVoltage.Text);
-            _StoredCurrent = ParseInput(InputField_StoredValueCurrentPlus.Text);
-            _StoredPower = ParseInput(InputField_StoredValuePowerPlus.Text);
-            _StoredNegativeCurrent = ParseInput(InputField_StoredValueCurrentMin.Text);
-            _StoredNegativePower = ParseInput(InputField_StoredValuePowerMin.Text);
-            SaveSettings(_StoredVoltageSetting, _StoredCurrent, _StoredPower, _StoredNegativeCurrent, _StoredNegativePower);
-        }
-        private void SaveSettings(double V, double A, double W, double N_A, double N_W)
-        {
-            _StoredVoltageSetting = V;
-            _StoredCurrent = A;
-            _StoredPower = W;
-            _StoredNegativeCurrent = N_A;
-            _StoredNegativePower = N_W;
 
-            _batteryManager?.SaveSettings(V, A, W, N_A, N_W);
-
-            InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
-            InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
-            InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
-            InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
-            InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
-        }
-        private void UpdateFromBatteryLabelData(object sender, EventArgs e)
+        private bool InitialSetup()
         {
             _ratedVoltage = ParseInput(RatedBatteryVoltageUI.Text);
             _ratedCapacity = ParseInput(RatedBatteryAmperageUI.Text);
-            _cRating = ParseInput(C_Rating_UI.Text);
+            Charge_C_Rating = ParseInput(C_Rating_UI.Text);
+            Discharge_C_Rating = ParseInput(C_Rating_UI.Text);
+            
+            if(_ratedVoltage <= 0 || _ratedCapacity <= 0 || Charge_C_Rating <= 0 || Discharge_C_Rating <= 0)
+                return false;
 
-            _batteryManager?.SetBatterySettings(_ratedVoltage, _ratedCapacity, _cRating);
-            CalculateWithCRating();
-        }
-        private void CalculateWithCRating()
+            _MaxCurrent = _ratedCapacity * Charge_C_Rating;
+            _MaxPower = _MaxCurrent * _ratedVoltage;
 
-        {
-            double amps = _ratedCapacity * _cRating;  // How much current can be applied safely
-            double watts = amps * _ratedVoltage;      // Power in watts
-            _ratedPower = watts;
+            _MinCurrent = _ratedCapacity * Discharge_C_Rating;
+            _MinPower = _MinCurrent * _ratedVoltage;
 
-            SaveSettings(_ratedVoltage, amps, watts, -amps, -watts);
-        }
-        private static string RemoveNonNumeric(string input)
-        {
-            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
-        }
-        private double ParseInput(string input)
-        {
-            return double.TryParse(RemoveNonNumeric(input), out double result) ? result : 0;
+            _MaxChargeVoltage = _ratedVoltage + _EstimateVoltageSum;
+            _CutOffDischargeVoltage = _ratedVoltage + _EstimateVoltageSum;
+            return true;
         }
 
-        private void SelectOperation(Object sender, EventArgs e)
-        {
-            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
 
-            if (sender is CheckBox _CheckBox)
+        private void SetValuesToMachine(SetState State)
+        {
+            if(_currentState != CurrentState.Idle)
             {
-                if (_CheckBox.Name == "Operation_ConnectBattery_Override")
+                _commandManager?.SetOutputCurrent(_MaxCurrent);
+                _commandManager?.SetOutputPower(_MaxPower);
+                _commandManager?.SetOutputCurrentNegative(_MinCurrent);
+                _commandManager?.SetOutputPowerNegative(_MinPower);
+
+                switch (State)
                 {
-                    if (!_started || _OngoingOperation)
-                    {
-                        AvailablePrograms storedProgram = _SelectedProgram;
-
-
-                        Operation_Output_Switch.Visible = !_CheckBox.Checked;
-                        Operation_Output_Switch.Enabled = !_CheckBox.Checked;
-                        _tcpHandler?.EnqueueCommand(_CheckBox.Checked ? "OUTPut ON" : "OUTPut OFF");
-
-
-                        if (_CheckBox.Checked)
-                        {
-                            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
-                            _commandManager?.SetOutputCurrent(_TEMPCurrent);
-                            _commandManager?.SetOutputPower(_TEMPPower);
-                            _commandManager?.SetOutputCurrentNegative(_TEMPNegativeCurrent);
-                            _commandManager?.SetOutputPowerNegative(_TEMPNegativePower);
-                        }
-                        else
-                        {
-                            _commandManager?.SetOutputVoltage(_StoredVoltageSetting);
-                            _commandManager?.SetOutputCurrent(1.5);
-                            _commandManager?.SetOutputPower(0);
-                            _commandManager?.SetOutputCurrentNegative(0);
-                            _commandManager?.SetOutputPowerNegative(0);
-                        }
-                    }
-                }
-
-            }
-
-            if (sender is Button button)
-            {
-                switch (button.Name)
-                {
-                    case "Operation_Output_Switch":
-                        if (_SelectedProgram != AvailablePrograms.None)
-                        {
-                            ToggleOutput();
-                            //MessageBox.Show($"selected switch {_started}, {Operation_Output_Switch.Location}");
-                        }
+                    case SetState.Charge:
+                        _commandManager?.SetOutputVoltage(_MaxChargeVoltage);
                         break;
-                    case "Operation_NoneORStop_Selection":
-                        if (!_started)
-                        {
-                            SetTimer(00);
-                            _SelectedProgram = AvailablePrograms.None;
-                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_NoneORStop_Selection.Location.Y);
-                            _TEMPCurrent = 0;
-                            _TEMPPower = 0;
-                            _TEMPNegativeCurrent = 0;
-                            _TEMPNegativePower = 0;
-                        }
+                    case SetState.Discharge:
+                        _commandManager?.SetOutputVoltage(_CutOffDischargeVoltage);
                         break;
-                    case "Operation_Charge_selection":
-                        if (!_started && !_OngoingOperation)
-                        {
-                            _SelectedProgram = AvailablePrograms.Charging;
-                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Charge_selection.Location.Y);
-                            ChargeMethod(1);
-                        }
+                    case SetState.BatteryConnect:
+                        _commandManager?.SetOutputVoltage(_ratedVoltage);
                         break;
-                    case "Operation_Discharge_selection":
-                        if (!_started && !_OngoingOperation)
-                        {
-                            _SelectedProgram = AvailablePrograms.Discharging;
-                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_Discharge_selection.Location.Y);
-                            DischargeMethod(1);
-                        }
-                        break;
-                    case "Operation_DischargeTo30_selection":
-                        if (!_started && !_OngoingOperation)
-                        {
-                            _SelectedProgram = AvailablePrograms.DischargingTo30;
-                            Operation_Output_Switch.Location = new Point(Operation_Output_Switch.Location.X, Operation_DischargeTo30_selection.Location.Y);
-                            DischargeMethod(0.7);
-                        }
+                    default:
+                        _commandManager?.SetOutputVoltage(0);
                         break;
                 }
             }
+            else
+            {
+                _commandManager?.SetOutputVoltage(0);
+                _commandManager?.SetOutputCurrent(0);
+                _commandManager?.SetOutputPower(0);
+                _commandManager?.SetOutputCurrentNegative(0);
+                _commandManager?.SetOutputPowerNegative(0);
+            }
+           
         }
 
-        private void ToggleOutput()
-        {
-            _started = !_started;
-            _tcpHandler?.EnqueueCommand(_started ? "OUTPut ON" : "OUTPut OFF");
-            Operation_Output_Switch.BackColor = _started ? Color.Red : Color.Green;
-            Operation_Output_Switch.Text = _started ? "pause" : "start";
-            if (_started) _stopwatch.Start(); else _stopwatch.Stop();
-        }
 
-        private void ChargeMethod(double Percentage)
-        {
-            SetTimer(Percentage);
-            _commandManager?.SetOutputCurrent(_StoredCurrent);
-            _commandManager?.SetOutputPower(_StoredPower);
-            _commandManager?.SetOutputCurrentNegative(0);
-            _commandManager?.SetOutputPowerNegative(0);
 
-            _TEMPCurrent = _StoredCurrent;
-            _TEMPPower = _StoredPower;
-            _TEMPNegativeCurrent = 0;
-            _TEMPNegativePower = 0;
 
-        }
 
-        private void DischargeMethod(double Percentage)
-        {
-            SetTimer(Percentage);
-            _commandManager?.SetOutputCurrent(0);
-            _commandManager?.SetOutputPower(0);
-            _commandManager?.SetOutputCurrentNegative(_StoredNegativeCurrent);
-            _commandManager?.SetOutputPowerNegative(_StoredNegativePower);
 
-            _TEMPCurrent = 0;
-            _TEMPPower = 0;
-            _TEMPNegativeCurrent = _StoredNegativeCurrent;
-            _TEMPNegativePower = _StoredNegativePower;
-
-        }
-
-        private void SetTimer(double Percentage, bool? CancelOperation = false)
-        {
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            _stopwatch.Reset();
-            logManager?.batteryData.Clear();
-
-            if (CancelOperation == false) EstimateTotalTime = _batteryManager?.CalculateTimeEstimate(Percentage);
-        }
 
 
         private static void OpenURL(string url)
@@ -474,78 +357,81 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
-
-
-        private void SaveSettings(object sender, EventArgs e)
+        private static double ParseInput(string input)
         {
-            SaveFileDialog? saveFileDialog = new()
-            {
-                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
-                Title = "Save Factory Settings",
-                FileName = "factory_settings.txt"
-            };
-
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filePath = saveFileDialog.FileName;
-
-                using (StreamWriter? writer = new(filePath))
-                {
-                    // Save the settings in comma-separated format (CSV-like)
-                    writer.WriteLine($"{_StoredVoltageSetting},{_StoredCurrent},{_StoredPower},{_StoredNegativeCurrent},{_StoredNegativePower}");
-                }
-
-                _ = MessageBox.Show("Settings successfully saved to " + filePath);
-            }
+            return double.TryParse(RemoveNonNumeric(input), out double result) ? result : 0;
         }
-        private void LoadSettings(object sender, EventArgs e)
+        private static string RemoveNonNumeric(string input)
         {
-            OpenFileDialog? openFileDialog = new()
-            {
-                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
-                Title = "Load Factory Settings"
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filePath = openFileDialog.FileName;
-
-                using StreamReader? reader = new(filePath);
-                string? line = reader.ReadLine();
-                if (!string.IsNullOrEmpty(line))
-                {
-                    // Split the values by comma
-                    string[] values = line.Split(',');
-
-                    if (values.Length == 5)
-                    {
-                        _StoredVoltageSetting = double.Parse(values[0]);
-                        _StoredCurrent = double.Parse(values[1]);
-                        _StoredPower = double.Parse(values[2]);
-                        _StoredNegativeCurrent = double.Parse(values[3]);
-                        _StoredNegativePower = double.Parse(values[4]);
-
-                        // Populate the UI fields with the loaded values
-                        InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
-                        InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
-                        InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
-                        InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
-                        InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
-
-                        _ = MessageBox.Show("Settings successfully loaded from " + filePath);
-                    }
-                    else
-                    {
-                        _ = MessageBox.Show("Error: Incorrect format in the settings file.");
-                    }
-                }
-            }
+            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-        }
 
+        //private void SaveSettings(object sender, EventArgs e)
+        //{
+        //    SaveFileDialog? saveFileDialog = new()
+        //    {
+        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
+        //        Title = "Save Factory Settings",
+        //        FileName = "factory_settings.txt"
+        //    };
+
+        //    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        //    {
+        //        string filePath = saveFileDialog.FileName;
+
+        //        using (StreamWriter? writer = new(filePath))
+        //        {
+        //            // Save the settings in comma-separated format (CSV-like)
+        //            writer.WriteLine($"{_StoredVoltageSetting},{_StoredCurrent},{_StoredPower},{_StoredNegativeCurrent},{_StoredNegativePower}");
+        //        }
+
+        //        _ = MessageBox.Show("Settings successfully saved to " + filePath);
+        //    }
+        //}
+        //private void LoadSettings(object sender, EventArgs e)
+        //{
+        //    OpenFileDialog? openFileDialog = new()
+        //    {
+        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
+        //        Title = "Load Factory Settings"
+        //    };
+
+        //    if (openFileDialog.ShowDialog() == DialogResult.OK)
+        //    {
+        //        string filePath = openFileDialog.FileName;
+
+        //        using StreamReader? reader = new(filePath);
+        //        string? line = reader.ReadLine();
+        //        if (!string.IsNullOrEmpty(line))
+        //        {
+        //            // Split the values by comma
+        //            string[] values = line.Split(',');
+
+        //            if (values.Length == 5)
+        //            {
+        //                _StoredVoltageSetting = double.Parse(values[0]);
+        //                _StoredCurrent = double.Parse(values[1]);
+        //                _StoredPower = double.Parse(values[2]);
+        //                _StoredNegativeCurrent = double.Parse(values[3]);
+        //                _StoredNegativePower = double.Parse(values[4]);
+
+        //                // Populate the UI fields with the loaded values
+        //                InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
+        //                InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
+        //                InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
+        //                InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
+        //                InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
+
+        //                _ = MessageBox.Show("Settings successfully loaded from " + filePath);
+        //            }
+        //            else
+        //            {
+        //                _ = MessageBox.Show("Error: Incorrect format in the settings file.");
+        //            }
+        //        }
+        //    }
+        //}
         private async void ButtonHandler(object sender, EventArgs e)
         {
             // Try to extract the Tag from both Control and ToolStripItem
@@ -579,17 +465,31 @@ namespace sm70_cp_450_GUI
                     case "Stop":
                         
                         break;
+
+                    case "SetStateIdle":
+                        _currentState = CurrentState.Idle;
+                        break;
+                    case "SetStateCharge":
+                        _currentState = CurrentState.Charging;
+                        break;
+                    case "SetStateDischarge":
+                        _currentState = CurrentState.Discharging;
+                        break;
+                    case "SetStateConnectBattery":
+                        _currentState = CurrentState.ConnectingBattery;
+                        break;
+
                     case "SaveCSV":
-                        logManager?.ExportToCsv(sender, e, false, _SaveLocationCSV);
+                        logManager?.ExportToCsv(false, _SaveLocationCSV);
                         break;
                     case "SaveAsCSV":
-                        logManager?.ExportToCsv(sender, e, true, null);
+                        logManager?.ExportToCsv(true, null);
                         break;
                     case "SaveLOG":
-                        logManager?.ExportLogToFile(sender, e, false, _SaveLocationLOG);
+                        logManager?.ExportLogToFile(false, _SaveLocationLOG);
                         break;
                     case "SaveAsLOG":
-                        logManager?.ExportLogToFile(sender, e, true, null);
+                        logManager?.ExportLogToFile(true, null);
                         break;
                     case "ToggleConsole":
                         _ConsoleState = !_ConsoleState;

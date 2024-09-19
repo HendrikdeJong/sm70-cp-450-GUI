@@ -9,12 +9,10 @@ namespace sm70_cp_450_GUI
     public class BatteryManager
     {
         private static BatteryManager? _instance;
-        private CommandManager _commandManager;
 
         // Private constructor
         private BatteryManager()
         {
-            _commandManager = CommandManager.Instance;
             BatteryData = new List<BatteryMetrics>();
 
         }
@@ -24,10 +22,7 @@ namespace sm70_cp_450_GUI
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new BatteryManager();
-                }
+                _instance ??= new BatteryManager();
                 return _instance;
             }
         }
@@ -90,7 +85,6 @@ namespace sm70_cp_450_GUI
             Properties.Settings.Default.Save();
         }
 
-        // Function to calculate time to discharge to 30%
         public TimeSpan CalculateTimeEstimate(double Percentage)
         {
             if (RatedCapacity <= 0 || CRating <= 0)
@@ -116,7 +110,7 @@ namespace sm70_cp_450_GUI
             }
 
 
-            EstimateTime = TimeSpan.FromHours(fullDischargeTimeHours * 0.70);
+            EstimateTime = TimeSpan.FromHours(fullDischargeTimeHours * (Percentage / 100));
             return EstimateTime;
         }
     }

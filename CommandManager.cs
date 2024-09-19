@@ -11,8 +11,8 @@ namespace sm70_cp_450_GUI
     {
 
         private static CommandManager? _instance;
-        private TcpConnectionHandler _tcpHandler;
-        private LogManager _logManager;
+        private readonly TcpConnectionHandler _tcpHandler;
+        private readonly LogManager _logManager;
 
         private CommandManager()
         {
@@ -216,6 +216,11 @@ namespace sm70_cp_450_GUI
             //if (!IsConnectionEstablished()) return;
             _logManager.AddDebugLogMessage($"⚠️ trying to enqueue command: SOURce:POWer:NEGative {outputPowerNegative}");
             _tcpHandler.EnqueueCommand($"SOURce:POWer:NEGative {outputPowerNegative}");
+        }
+
+        public void SetOutputState(bool v)
+        {
+            _tcpHandler.EnqueueCommand(v ? "OUTPut ON" : "OUTPut OFF");
         }
         #endregion
 
