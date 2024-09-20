@@ -168,6 +168,7 @@ namespace sm70_cp_450_GUI
                 _commandManager?.RequestSystemPowerLimit();
                 _commandManager?.RequestSystemNegCurrentLimit();
                 _commandManager?.RequestSystemNegPowerLimit();
+                CalculateSOC();
             };
 
 
@@ -218,15 +219,16 @@ namespace sm70_cp_450_GUI
         private bool ShowOnce = false;
         private bool BatteryConnected = false;
 
+        private void CalculateSOC()
+        {
+            // Calculate the state of charge (SoC) in percentage
+            stateOfChargePlus = (currentCurrent  / _ratedCapacity) * 100;
+            stateOfChargeNeg = (currentCurrent  / _ratedCapacity) * 100;
 
-        //private double chargeLimit = TrackbarDischarge.Value;
-        //private int dischargeLimit = Trackbarcharge.Value;
+            textBox1.Text = stateOfChargePlus.ToString() + " %";
+            textBox2.Text = stateOfChargeNeg.ToString() + " %";
+        }
 
-
-
-        //gpt test
-        private double currentAh = 0; // Current amp-hours charged or discharged
-        private double totalCapacityAh = 0; // Total capacity of the battery in Ah (this will be set from _ratedCapacity)
 
         private double stateOfChargePlus = 0; // SoC in percentage
         private double stateOfChargeNeg = 0; // SoC in percentage
@@ -332,9 +334,6 @@ namespace sm70_cp_450_GUI
                     break;
             }
         }
-
-
-
 
         private void InitializeBatterySettings()
         {
