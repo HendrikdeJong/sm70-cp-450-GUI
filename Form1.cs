@@ -1,3 +1,4 @@
+using System.Data;
 using System.Diagnostics;
 using System.Xml.Linq;
 using Timer = System.Windows.Forms.Timer;
@@ -182,24 +183,23 @@ namespace sm70_cp_450_GUI
                 errorCleanupTimer.Start();
             }
         }
-        private CurrentState _currentState;
 
-        private enum CurrentState
-        {
-            Idle,
-            Charging,
-            Discharging,
-            ConnectingBattery,
-        }
 
+
+
+
+
+
+        private SetState currentState;
         private enum SetState
         {
+            None,
             Charge,
             Discharge,
             BatteryConnect,
         }
 
-        private double _EstimateVoltageSum = 2; // TEMP 2 Volts above or below _ratedVoltage
+
 
         private double _MaxChargeVoltage;
         private double _MaxPower;
@@ -214,74 +214,143 @@ namespace sm70_cp_450_GUI
 
         private double _ratedVoltage = 0;
         private double _ratedCapacity = 0;
+        private bool DataSet = false;
+        private bool ShowOnce = false;
+        private bool BatteryConnected = false;
 
 
-        private async void StateManager()
+        //private double chargeLimit = TrackbarDischarge.Value;
+        //private int dischargeLimit = Trackbarcharge.Value;
+
+
+
+        //gpt test
+        private double currentAh = 0; // Current amp-hours charged or discharged
+        private double totalCapacityAh = 0; // Total capacity of the battery in Ah (this will be set from _ratedCapacity)
+
+        private double stateOfChargePlus = 0; // SoC in percentage
+        private double stateOfChargeNeg = 0; // SoC in percentage
+
+
+
+
+
+
+        private void StateManager()
         {
-            while (!await Task.Run(() => InitialSetup()))
+            if (_tcpHandler == null) return;
+            if (DataSet && _tcpHandler.IsConnected)
             {
-                await Task.Delay(1000);
-            }
 
-            // Check if output should be turned on or off based on the state
-            bool outputShouldBeOn = (_currentState != CurrentState.Idle && _currentState != CurrentState.ConnectingBattery);
 
-            // Temporarily turn off output to check no-load voltage
-            if (_commandManager != null)
-            {
-                // Turn output off to measure no-load voltage
-                _commandManager.SetOutputState(false);
-                await Task.Delay(500);  // Allow some time for the voltage to stabilize without load
-
-                // Check current no-load voltage
-                double noLoadVoltage = currentVoltage;
-
-                // Conditions for stopping operation (full or empty)
-                if (_currentState == CurrentState.Charging && noLoadVoltage >= _MaxChargeVoltage)
+                if (!Operation_ConnectBattery_Override.Checked || !BatteryConnected)
                 {
-                    // Battery is full, turn output off and highlight front panel
-                    outputShouldBeOn = false;
-                    _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
-                }
-                else if (_currentState == CurrentState.Discharging && noLoadVoltage <= _CutOffDischargeVoltage)
-                {
-                    // Battery is empty, turn output off and highlight front panel
-                    outputShouldBeOn = false;
-                    _tcpHandler?.EnqueueCommand("SYSTem:FROntpanel:HIGhlight");
-                }
-
-                // Re-enable the output based on state
-                _commandManager.SetOutputState(outputShouldBeOn);
-            }
-
-            switch (_currentState)
-            {
-                case CurrentState.Idle:
-                    // No action needed, output should remain off
-                    break;
-                case CurrentState.Charging:
-                    SetValuesToMachine(SetState.Charge);
-                    break;
-                case CurrentState.Discharging:
-                    SetValuesToMachine(SetState.Discharge);
-                    break;
-                case CurrentState.ConnectingBattery:
                     SetValuesToMachine(SetState.BatteryConnect);
+                    if (IsApproximatelyEqual(currentCurrent, 1, 0.9)) BatteryConnected = true;
+                }
+                if (BatteryConnected) return;
+
+                if (!ShowOnce)
+                {
+                    ShowOnce = true;
+                    SetValuesToMachine(SetState.None);
+                    MessageBox.Show("battery is connected");
+                }
+
+                if (currentState == SetState.Charge)
+                {
+                    if (IsApproximatelyEqual(currentVoltage, _MaxPower, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.001))
+                    {
+                        SetValuesToMachine(SetState.None);
+                        MessageBox.Show("Battery is fully charged");
+                    }
+                    // Check for target SoC, e.g., charging to 30% GPT
+                    if (stateOfChargePlus >= 30) // Example: Stop charging at 30% SoC
+                    {
+                        SetValuesToMachine(SetState.None);
+                        MessageBox.Show("Battery charged to target SoC (30%)");
+                    }
+                }
+                else if (currentState == SetState.Discharge)
+                {
+                    if (IsApproximatelyEqual(currentVoltage, _CutOffDischargeVoltage, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.001))
+                    {
+                        SetValuesToMachine(SetState.None);
+                        MessageBox.Show("Battery is fully discharged");
+                    }
+                    // Check for target SoC, e.g., discharging to 30% GPT
+                    if (stateOfChargeNeg <= 30) // Example: Stop discharging at 30% SoC
+                    {
+                        SetValuesToMachine(SetState.None);
+                        MessageBox.Show("Battery discharged to target SoC (30%)");
+                    }
+                }
+            }
+        }
+
+        private void SetValuesToMachine(SetState State)
+        {
+            switch (State)
+            {
+                case SetState.None:
+                    currentState = SetState.None;
+                    _commandManager?.SetOutputState(false);
+                    _commandManager?.SetOutputVoltage(0);
+                    _commandManager?.SetOutputCurrent(0);
+                    _commandManager?.SetOutputCurrentNegative(0);
+                    _commandManager?.SetOutputPower(0);
+                    _commandManager?.SetOutputCurrentNegative(0);
+                    break;
+                case SetState.Charge:
+                    currentState = SetState.Charge;
+                    _commandManager?.SetOutputState(true);
+                    _commandManager?.SetOutputVoltage(_MaxChargeVoltage);
+                    _commandManager?.SetOutputCurrent(_MaxCurrent);
+                    _commandManager?.SetOutputCurrentNegative(_MinCurrent);
+                    _commandManager?.SetOutputPower(_MaxPower);
+                    _commandManager?.SetOutputCurrentNegative(_MinPower);
+                    break;
+                case SetState.Discharge:
+                    currentState = SetState.Discharge;
+                    _commandManager?.SetOutputState(true);
+                    _commandManager?.SetOutputVoltage(_CutOffDischargeVoltage);
+                    _commandManager?.SetOutputCurrent(_MaxCurrent);
+                    _commandManager?.SetOutputCurrentNegative(_MinCurrent);
+                    _commandManager?.SetOutputPower(_MaxPower);
+                    _commandManager?.SetOutputCurrentNegative(_MinPower);
+                    break;
+                case SetState.BatteryConnect:
+                    currentState = SetState.BatteryConnect;
+                    _commandManager?.SetOutputState(true);
+                    _commandManager?.SetOutputVoltage(_ratedVoltage);
+                    _commandManager?.SetOutputCurrent(1);
+                    _commandManager?.SetOutputCurrentNegative(1);
+                    _commandManager?.SetOutputPower(0);
+                    _commandManager?.SetOutputCurrentNegative(0);
                     break;
                 default:
                     break;
             }
         }
 
-        private bool InitialSetup()
+
+
+
+        private void InitializeBatterySettings()
         {
+            double typicalVoltagePerCell = 2;
+            double numberOfCells = 2;
+
             _ratedVoltage = ParseInput(RatedBatteryVoltageUI.Text);
             _ratedCapacity = ParseInput(RatedBatteryAmperageUI.Text);
-            Charge_C_Rating = ParseInput(C_Rating_UI.Text);
-            Discharge_C_Rating = ParseInput(C_Rating_UI.Text);
-            
-            if(_ratedVoltage <= 0 || _ratedCapacity <= 0 || Charge_C_Rating <= 0 || Discharge_C_Rating <= 0)
-                return false;
+            Charge_C_Rating = ParseInput(Charge_cRating.Text);
+            Discharge_C_Rating = ParseInput(Discharge_cRating.Text);
+
+            if (string.IsNullOrEmpty(RatedBatteryVoltageUI.Text) || string.IsNullOrEmpty(RatedBatteryAmperageUI.Text) || string.IsNullOrEmpty(Charge_cRating.Text))
+            {
+                DataSet = false;
+                return;
+            }
 
             _MaxCurrent = _ratedCapacity * Charge_C_Rating;
             _MaxPower = _MaxCurrent * _ratedVoltage;
@@ -289,55 +358,39 @@ namespace sm70_cp_450_GUI
             _MinCurrent = _ratedCapacity * Discharge_C_Rating;
             _MinPower = _MinCurrent * _ratedVoltage;
 
-            _MaxChargeVoltage = _ratedVoltage + _EstimateVoltageSum;
-            _CutOffDischargeVoltage = _ratedVoltage + _EstimateVoltageSum;
-            return true;
+            if (batterychemistryType.SelectedIndex == 0)
+            {
+                typicalVoltagePerCell = 3.7; // Nominal voltage for a Lithium-Ion cell
+                numberOfCells = Math.Round(_ratedVoltage / typicalVoltagePerCell);
+
+                _MaxChargeVoltage = numberOfCells * 4.2;
+                _CutOffDischargeVoltage = numberOfCells * 3.0;
+            }
+            else if (batterychemistryType.SelectedIndex == 1)// this is Lead-Acid
+            {
+                typicalVoltagePerCell = 2.0; // Nominal voltage for a Lead-Acid cell
+                numberOfCells = Math.Round(_ratedVoltage / typicalVoltagePerCell);
+
+                _MaxChargeVoltage = numberOfCells * 2.4;
+                _CutOffDischargeVoltage = numberOfCells * 1.75;
+            }
+
+            InputField_StoredValueVoltage.Text = ($"{_CutOffDischargeVoltage} ~ {_MaxChargeVoltage} V");
+            InputField_StoredValueCurrentPlus.Text = ($"{_MaxCurrent} A");
+            InputField_StoredValuePowerPlus.Text = ($"{_MaxPower} W");
+            InputField_StoredValueCurrentMin.Text = ($" - {_MinCurrent} A");
+            InputField_StoredValuePowerMin.Text = ($" - {_MinPower} W");
+            DataSet = true;
         }
 
 
-        private void SetValuesToMachine(SetState State)
+
+
+        public static bool IsApproximatelyEqual(double value1, double value2, double value3 = 0.1)
         {
-            if(_currentState != CurrentState.Idle)
-            {
-                _commandManager?.SetOutputCurrent(_MaxCurrent);
-                _commandManager?.SetOutputPower(_MaxPower);
-                _commandManager?.SetOutputCurrentNegative(_MinCurrent);
-                _commandManager?.SetOutputPowerNegative(_MinPower);
-
-                switch (State)
-                {
-                    case SetState.Charge:
-                        _commandManager?.SetOutputVoltage(_MaxChargeVoltage);
-                        break;
-                    case SetState.Discharge:
-                        _commandManager?.SetOutputVoltage(_CutOffDischargeVoltage);
-                        break;
-                    case SetState.BatteryConnect:
-                        _commandManager?.SetOutputVoltage(_ratedVoltage);
-                        break;
-                    default:
-                        _commandManager?.SetOutputVoltage(0);
-                        break;
-                }
-            }
-            else
-            {
-                _commandManager?.SetOutputVoltage(0);
-                _commandManager?.SetOutputCurrent(0);
-                _commandManager?.SetOutputPower(0);
-                _commandManager?.SetOutputCurrentNegative(0);
-                _commandManager?.SetOutputPowerNegative(0);
-            }
-           
+            double difference = Math.Abs(value1 - value2);
+            return difference <= value3;
         }
-
-
-
-
-
-
-
-
         private static void OpenURL(string url)
         {
             if (!string.IsNullOrEmpty(url))
@@ -434,7 +487,6 @@ namespace sm70_cp_450_GUI
         //}
         private async void ButtonHandler(object sender, EventArgs e)
         {
-            // Try to extract the Tag from both Control and ToolStripItem
             string? tag = null;
             string? name = null;
 
@@ -449,34 +501,33 @@ namespace sm70_cp_450_GUI
                 name = toolStripItem.Name;
             }
 
-            // If we found a valid tag, process it
             if (tag != null)
             {
                 //logManager?.AddDebugLogMessage($"Tag found: {tag}");
 
                 switch (tag)
                 {
+                    case "setData":
+                        InitializeBatterySettings();
+                        break;
                     case "Start":
-                        
+
                         break;
                     case "TogglePause":
-                        
+
                         break;
                     case "Stop":
-                        
+
                         break;
 
                     case "SetStateIdle":
-                        _currentState = CurrentState.Idle;
+                        SetValuesToMachine(SetState.None);
                         break;
                     case "SetStateCharge":
-                        _currentState = CurrentState.Charging;
+                        SetValuesToMachine(SetState.Charge);
                         break;
                     case "SetStateDischarge":
-                        _currentState = CurrentState.Discharging;
-                        break;
-                    case "SetStateConnectBattery":
-                        _currentState = CurrentState.ConnectingBattery;
+                        SetValuesToMachine(SetState.Discharge);
                         break;
 
                     case "SaveCSV":
@@ -526,7 +577,6 @@ namespace sm70_cp_450_GUI
             {
                 //logManager?.AddDebugLogMessage("No valid tag found for the control or item.");
             }
-
         }
     }
 }

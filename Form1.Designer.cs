@@ -64,18 +64,24 @@
             toolStripSeparator4 = new ToolStripSeparator();
             Console_Short_ErrorLabel = new ToolStripLabel();
             Console_Simple_Textbox_UI = new RichTextBox();
+            Operation_ConnectBattery_Override = new CheckBox();
             StatusCurrentOperation_UI = new TextBox();
             label7 = new Label();
             label4 = new Label();
             Label_Elapsed_Time_UI = new TextBox();
+            textBox2 = new TextBox();
+            textBox1 = new TextBox();
             TotalTime_Label = new TextBox();
             label3 = new Label();
             Label_Total_Time_UI = new TextBox();
             label5 = new Label();
             FactoryInformationBox = new GroupBox();
+            batterychemistryType = new ComboBox();
             ApplyBatteryDataButton = new Button();
-            C_Rating_UI = new TextBox();
+            Discharge_cRating = new TextBox();
+            Charge_cRating = new TextBox();
             RatedBatteryVoltageUI = new TextBox();
+            label11 = new Label();
             label1 = new Label();
             label6 = new Label();
             label2 = new Label();
@@ -116,18 +122,14 @@
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripTextBox1 = new ToolStripMenuItem();
             OperationsBox_UI = new GroupBox();
-            BatteryHandleBox = new GroupBox();
             ControlPanel = new GroupBox();
             label9 = new Label();
             label8 = new Label();
             TrackbarDischarge = new TrackBar();
             TrackbarCharge = new TrackBar();
             Operation_NoneORStop_Selection = new Button();
-            Operation_DischargeTo30_selection = new Button();
-            Operation_Output_Switch = new Button();
             Operation_Charge_selection = new Button();
             Operation_Discharge_selection = new Button();
-            Operation_ConnectBattery_Override = new CheckBox();
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -142,7 +144,6 @@
             FactoryInformationBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
-            BatteryHandleBox.SuspendLayout();
             ControlPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).BeginInit();
             ((System.ComponentModel.ISupportInitialize)TrackbarCharge).BeginInit();
@@ -493,10 +494,13 @@
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             groupBox1.Controls.Add(ConsoleBox);
+            groupBox1.Controls.Add(Operation_ConnectBattery_Override);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(Label_Elapsed_Time_UI);
+            groupBox1.Controls.Add(textBox2);
+            groupBox1.Controls.Add(textBox1);
             groupBox1.Controls.Add(TotalTime_Label);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(Label_Total_Time_UI);
@@ -595,6 +599,16 @@
             Console_Simple_Textbox_UI.TabStop = false;
             Console_Simple_Textbox_UI.Text = "";
             // 
+            // Operation_ConnectBattery_Override
+            // 
+            Operation_ConnectBattery_Override.AutoSize = true;
+            Operation_ConnectBattery_Override.Location = new Point(17, 242);
+            Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
+            Operation_ConnectBattery_Override.Size = new Size(272, 25);
+            Operation_ConnectBattery_Override.TabIndex = 28;
+            Operation_ConnectBattery_Override.Text = "Confirm Battery Battery connection";
+            Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
+            // 
             // StatusCurrentOperation_UI
             // 
             StatusCurrentOperation_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -638,6 +652,32 @@
             Label_Elapsed_Time_UI.TabIndex = 24;
             Label_Elapsed_Time_UI.Text = "00:00:00";
             Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
+            // 
+            // textBox2
+            // 
+            textBox2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            textBox2.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox2.Location = new Point(153, 331);
+            textBox2.Margin = new Padding(0);
+            textBox2.Name = "textBox2";
+            textBox2.ReadOnly = true;
+            textBox2.Size = new Size(144, 36);
+            textBox2.TabIndex = 26;
+            textBox2.Text = "SOC +";
+            textBox2.TextAlign = HorizontalAlignment.Center;
+            // 
+            // textBox1
+            // 
+            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            textBox1.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox1.Location = new Point(9, 331);
+            textBox1.Margin = new Padding(0);
+            textBox1.Name = "textBox1";
+            textBox1.ReadOnly = true;
+            textBox1.Size = new Size(144, 36);
+            textBox1.TabIndex = 26;
+            textBox1.Text = "SOC -";
+            textBox1.TextAlign = HorizontalAlignment.Center;
             // 
             // TotalTime_Label
             // 
@@ -686,9 +726,12 @@
             // FactoryInformationBox
             // 
             FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            FactoryInformationBox.Controls.Add(batterychemistryType);
             FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
-            FactoryInformationBox.Controls.Add(C_Rating_UI);
+            FactoryInformationBox.Controls.Add(Discharge_cRating);
+            FactoryInformationBox.Controls.Add(Charge_cRating);
             FactoryInformationBox.Controls.Add(RatedBatteryVoltageUI);
+            FactoryInformationBox.Controls.Add(label11);
             FactoryInformationBox.Controls.Add(label1);
             FactoryInformationBox.Controls.Add(label6);
             FactoryInformationBox.Controls.Add(label2);
@@ -696,43 +739,77 @@
             FactoryInformationBox.Dock = DockStyle.Top;
             FactoryInformationBox.Location = new Point(3, 25);
             FactoryInformationBox.Name = "FactoryInformationBox";
-            FactoryInformationBox.Size = new Size(433, 173);
+            FactoryInformationBox.Size = new Size(433, 242);
             FactoryInformationBox.TabIndex = 18;
             FactoryInformationBox.TabStop = false;
             FactoryInformationBox.Text = "Factory Information";
             // 
+            // batterychemistryType
+            // 
+            batterychemistryType.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            batterychemistryType.AutoCompleteMode = AutoCompleteMode.Suggest;
+            batterychemistryType.FormattingEnabled = true;
+            batterychemistryType.Items.AddRange(new object[] { "Lithium-Ion", "Lead-Acid" });
+            batterychemistryType.Location = new Point(307, 23);
+            batterychemistryType.Name = "batterychemistryType";
+            batterychemistryType.Size = new Size(123, 29);
+            batterychemistryType.TabIndex = 12;
+            // 
             // ApplyBatteryDataButton
             // 
-            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ApplyBatteryDataButton.Location = new Point(6, 131);
+            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ApplyBatteryDataButton.Location = new Point(6, 200);
             ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
             ApplyBatteryDataButton.Size = new Size(421, 36);
             ApplyBatteryDataButton.TabIndex = 11;
+            ApplyBatteryDataButton.Tag = "setData";
             ApplyBatteryDataButton.Text = "Apply";
             ApplyBatteryDataButton.UseVisualStyleBackColor = true;
+            ApplyBatteryDataButton.Click += ButtonHandler;
             // 
-            // C_Rating_UI
+            // Discharge_cRating
             // 
-            C_Rating_UI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            C_Rating_UI.Location = new Point(307, 98);
-            C_Rating_UI.Name = "C_Rating_UI";
-            C_Rating_UI.PlaceholderText = "C1";
-            C_Rating_UI.Size = new Size(120, 29);
-            C_Rating_UI.TabIndex = 10;
+            Discharge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Discharge_cRating.Location = new Point(307, 159);
+            Discharge_cRating.Name = "Discharge_cRating";
+            Discharge_cRating.PlaceholderText = "Discharge Rating";
+            Discharge_cRating.Size = new Size(120, 29);
+            Discharge_cRating.TabIndex = 10;
+            // 
+            // Charge_cRating
+            // 
+            Charge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Charge_cRating.Location = new Point(307, 124);
+            Charge_cRating.Name = "Charge_cRating";
+            Charge_cRating.PlaceholderText = "Charge Rating";
+            Charge_cRating.Size = new Size(120, 29);
+            Charge_cRating.TabIndex = 10;
             // 
             // RatedBatteryVoltageUI
             // 
-            RatedBatteryVoltageUI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            RatedBatteryVoltageUI.Location = new Point(307, 28);
+            RatedBatteryVoltageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            RatedBatteryVoltageUI.Location = new Point(307, 58);
             RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
             RatedBatteryVoltageUI.PlaceholderText = "Voltage";
             RatedBatteryVoltageUI.Size = new Size(120, 29);
             RatedBatteryVoltageUI.TabIndex = 3;
             // 
+            // label11
+            // 
+            label11.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label11.AutoSize = true;
+            label11.Location = new Point(12, 31);
+            label11.Name = "label11";
+            label11.Size = new Size(95, 21);
+            label11.TabIndex = 6;
+            label11.Text = "Battery Type";
+            label11.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label1.AutoSize = true;
-            label1.Location = new Point(12, 32);
+            label1.Location = new Point(12, 62);
             label1.Name = "label1";
             label1.Size = new Size(106, 21);
             label1.TabIndex = 6;
@@ -741,8 +818,9 @@
             // 
             // label6
             // 
+            label6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label6.AutoSize = true;
-            label6.Location = new Point(12, 102);
+            label6.Location = new Point(12, 132);
             label6.Name = "label6";
             label6.Size = new Size(69, 21);
             label6.TabIndex = 9;
@@ -751,8 +829,9 @@
             // 
             // label2
             // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label2.AutoSize = true;
-            label2.Location = new Point(12, 67);
+            label2.Location = new Point(12, 97);
             label2.Name = "label2";
             label2.Size = new Size(110, 21);
             label2.TabIndex = 8;
@@ -761,8 +840,8 @@
             // 
             // RatedBatteryAmperageUI
             // 
-            RatedBatteryAmperageUI.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            RatedBatteryAmperageUI.Location = new Point(307, 63);
+            RatedBatteryAmperageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            RatedBatteryAmperageUI.Location = new Point(307, 93);
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
             RatedBatteryAmperageUI.Size = new Size(120, 29);
@@ -1031,7 +1110,7 @@
             // 
             OperationsBox_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             OperationsBox_UI.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            OperationsBox_UI.Controls.Add(BatteryHandleBox);
+            OperationsBox_UI.Controls.Add(ControlPanel);
             OperationsBox_UI.Controls.Add(FactoryInformationBox);
             OperationsBox_UI.Location = new Point(456, 231);
             OperationsBox_UI.Name = "OperationsBox_UI";
@@ -1040,17 +1119,6 @@
             OperationsBox_UI.TabStop = false;
             OperationsBox_UI.Text = "Operations";
             // 
-            // BatteryHandleBox
-            // 
-            BatteryHandleBox.Controls.Add(ControlPanel);
-            BatteryHandleBox.Controls.Add(Operation_ConnectBattery_Override);
-            BatteryHandleBox.Location = new Point(9, 210);
-            BatteryHandleBox.Name = "BatteryHandleBox";
-            BatteryHandleBox.Size = new Size(421, 261);
-            BatteryHandleBox.TabIndex = 19;
-            BatteryHandleBox.TabStop = false;
-            BatteryHandleBox.Text = "Please connect battery";
-            // 
             // ControlPanel
             // 
             ControlPanel.Controls.Add(label9);
@@ -1058,22 +1126,21 @@
             ControlPanel.Controls.Add(TrackbarDischarge);
             ControlPanel.Controls.Add(TrackbarCharge);
             ControlPanel.Controls.Add(Operation_NoneORStop_Selection);
-            ControlPanel.Controls.Add(Operation_DischargeTo30_selection);
-            ControlPanel.Controls.Add(Operation_Output_Switch);
             ControlPanel.Controls.Add(Operation_Charge_selection);
             ControlPanel.Controls.Add(Operation_Discharge_selection);
             ControlPanel.Dock = DockStyle.Bottom;
-            ControlPanel.Location = new Point(3, 59);
+            ControlPanel.Location = new Point(3, 273);
             ControlPanel.Name = "ControlPanel";
-            ControlPanel.Size = new Size(415, 199);
-            ControlPanel.TabIndex = 19;
+            ControlPanel.Size = new Size(433, 195);
+            ControlPanel.TabIndex = 20;
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
             // 
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(0, 89);
+            label9.Enabled = false;
+            label9.Location = new Point(6, 25);
             label9.Name = "label9";
             label9.Size = new Size(114, 21);
             label9.TabIndex = 28;
@@ -1082,7 +1149,8 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(0, 25);
+            label8.Enabled = false;
+            label8.Location = new Point(292, 25);
             label8.Name = "label8";
             label8.Size = new Size(95, 21);
             label8.TabIndex = 28;
@@ -1091,7 +1159,7 @@
             // TrackbarDischarge
             // 
             TrackbarDischarge.LargeChange = 30;
-            TrackbarDischarge.Location = new Point(0, 113);
+            TrackbarDischarge.Location = new Point(6, 49);
             TrackbarDischarge.Maximum = 100;
             TrackbarDischarge.Minimum = 10;
             TrackbarDischarge.Name = "TrackbarDischarge";
@@ -1104,7 +1172,7 @@
             // TrackbarCharge
             // 
             TrackbarCharge.LargeChange = 30;
-            TrackbarCharge.Location = new Point(0, 49);
+            TrackbarCharge.Location = new Point(292, 49);
             TrackbarCharge.Maximum = 100;
             TrackbarCharge.Minimum = 10;
             TrackbarCharge.Name = "TrackbarCharge";
@@ -1116,66 +1184,36 @@
             // 
             // Operation_NoneORStop_Selection
             // 
-            Operation_NoneORStop_Selection.Location = new Point(270, 28);
+            Operation_NoneORStop_Selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Operation_NoneORStop_Selection.Location = new Point(151, 159);
             Operation_NoneORStop_Selection.Name = "Operation_NoneORStop_Selection";
-            Operation_NoneORStop_Selection.Size = new Size(139, 30);
+            Operation_NoneORStop_Selection.Size = new Size(132, 30);
             Operation_NoneORStop_Selection.TabIndex = 27;
             Operation_NoneORStop_Selection.Tag = "SetStateIdle";
-            Operation_NoneORStop_Selection.Text = "Idle";
+            Operation_NoneORStop_Selection.Text = "Idle / stop output";
             Operation_NoneORStop_Selection.UseVisualStyleBackColor = true;
-            Operation_NoneORStop_Selection.Click += ButtonHandler;
-            // 
-            // Operation_DischargeTo30_selection
-            // 
-            Operation_DischargeTo30_selection.Location = new Point(270, 137);
-            Operation_DischargeTo30_selection.Name = "Operation_DischargeTo30_selection";
-            Operation_DischargeTo30_selection.Size = new Size(139, 30);
-            Operation_DischargeTo30_selection.TabIndex = 27;
-            Operation_DischargeTo30_selection.Tag = "SetStateConnectingBattery";
-            Operation_DischargeTo30_selection.Text = "ConnectingBattery";
-            Operation_DischargeTo30_selection.UseVisualStyleBackColor = true;
-            Operation_DischargeTo30_selection.Click += ButtonHandler;
-            // 
-            // Operation_Output_Switch
-            // 
-            Operation_Output_Switch.Location = new Point(149, 28);
-            Operation_Output_Switch.Name = "Operation_Output_Switch";
-            Operation_Output_Switch.Size = new Size(115, 30);
-            Operation_Output_Switch.TabIndex = 27;
-            Operation_Output_Switch.Text = "Start";
-            Operation_Output_Switch.UseVisualStyleBackColor = true;
             // 
             // Operation_Charge_selection
             // 
-            Operation_Charge_selection.Location = new Point(270, 64);
+            Operation_Charge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Operation_Charge_selection.Location = new Point(288, 159);
             Operation_Charge_selection.Name = "Operation_Charge_selection";
             Operation_Charge_selection.Size = new Size(139, 30);
             Operation_Charge_selection.TabIndex = 27;
             Operation_Charge_selection.Tag = "SetStateCharge";
             Operation_Charge_selection.Text = "Charge";
             Operation_Charge_selection.UseVisualStyleBackColor = true;
-            Operation_Charge_selection.Click += ButtonHandler;
             // 
             // Operation_Discharge_selection
             // 
-            Operation_Discharge_selection.Location = new Point(270, 101);
+            Operation_Discharge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Operation_Discharge_selection.Location = new Point(6, 159);
             Operation_Discharge_selection.Name = "Operation_Discharge_selection";
             Operation_Discharge_selection.Size = new Size(139, 30);
             Operation_Discharge_selection.TabIndex = 27;
             Operation_Discharge_selection.Tag = "SetStateDischarge";
             Operation_Discharge_selection.Text = "Discharge";
             Operation_Discharge_selection.UseVisualStyleBackColor = true;
-            Operation_Discharge_selection.Click += ButtonHandler;
-            // 
-            // Operation_ConnectBattery_Override
-            // 
-            Operation_ConnectBattery_Override.AutoSize = true;
-            Operation_ConnectBattery_Override.Location = new Point(6, 28);
-            Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
-            Operation_ConnectBattery_Override.Size = new Size(272, 25);
-            Operation_ConnectBattery_Override.TabIndex = 28;
-            Operation_ConnectBattery_Override.Text = "Confirm Battery Battery connection";
-            Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -1218,8 +1256,6 @@
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             OperationsBox_UI.ResumeLayout(false);
-            BatteryHandleBox.ResumeLayout(false);
-            BatteryHandleBox.PerformLayout();
             ControlPanel.ResumeLayout(false);
             ControlPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).EndInit();
@@ -1292,12 +1328,11 @@
         private ToolStripMenuItem toolStripMenuItem2;
         private ToolStripMenuItem toolStripMenuSetting_keepSessionData;
         private TextBox RatedBatteryAmperageUI;
-        private TrackBar TrackbarCharge;
         private Label label2;
         private Label label6;
         private Label label1;
         private TextBox RatedBatteryVoltageUI;
-        private TextBox C_Rating_UI;
+        private TextBox Charge_cRating;
         private Button ApplyBatteryDataButton;
         private GroupBox FactoryInformationBox;
         private GroupBox OperationsBox_UI;
@@ -1316,18 +1351,21 @@
         private ToolStripMenuItem toolStripMenuItem6;
         private ToolStripTextBox toolStripTextBox2;
         private ToolStripTextBox toolStripTextBox3;
-        private Button Operation_Output_Switch;
         private CheckBox Operation_ConnectBattery_Override;
-        private Button Operation_DischargeTo30_selection;
-        private Button Operation_Discharge_selection;
-        private Button Operation_Charge_selection;
-        private Button Operation_NoneORStop_Selection;
-        private GroupBox BatteryHandleBox;
-        private GroupBox ControlPanel;
         private TextBox TotalTime_Label;
         private Label label3;
+        private TextBox Discharge_cRating;
+        private GroupBox ControlPanel;
         private Label label9;
         private Label label8;
         private TrackBar TrackbarDischarge;
+        private TrackBar TrackbarCharge;
+        private Button Operation_NoneORStop_Selection;
+        private Button Operation_Charge_selection;
+        private Button Operation_Discharge_selection;
+        private ComboBox batterychemistryType;
+        private Label label11;
+        private TextBox textBox2;
+        private TextBox textBox1;
     }
 }

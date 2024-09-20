@@ -30,15 +30,15 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        public bool IsConnectionEstablished()
-        {
-            if (!_tcpHandler.IsConnected)
-            {
-                _logManager.AddDebugLogMessage("❌ TCP connection is not established.");
-                return false;
-            }
-            return true;
-        }
+        //public bool IsConnectionEstablished()
+        //{
+        //    if (!_tcpHandler.IsConnected)
+        //    {
+        //        _logManager.AddDebugLogMessage("❌ TCP connection is not established.");
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         #region queries
 
@@ -127,6 +127,21 @@ namespace sm70_cp_450_GUI
             _tcpHandler.EnqueueQuery("SYSTem:TIMe?");
         }
 
+        public void RequestInstrumentCurrentPOS()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: MEASure:INStrument AH,POS,TOTAL?");
+            _tcpHandler.EnqueueQuery("MEASure:INStrument AH,POS,TOTAL?");
+        }
+        public void RequestInstrumentCurrentNEG()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: MEASure:INStrument AH,NEG,TOTAL?");
+            _tcpHandler.EnqueueQuery("MEASure:INStrument AH,NEG,TOTAL?");
+        }
+        public void RequestInstrumentTime()
+        {
+            _logManager.AddDebugLogMessage("⚠️ trying to enqueueQuery: MEASure:INStrument AH,TIMESEC?");
+            _tcpHandler.EnqueueQuery("MEASure:INStrument AH,TIMESEC?");
+        }
 
         internal void RequestSystemVoltageLimit()
         {
@@ -222,6 +237,7 @@ namespace sm70_cp_450_GUI
         {
             _tcpHandler.EnqueueCommand(v ? "OUTPut ON" : "OUTPut OFF");
         }
+
         #endregion
 
     }
