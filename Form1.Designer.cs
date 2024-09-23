@@ -56,6 +56,7 @@
             InputField_StoredValueCurrentPlus = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             groupBox1 = new GroupBox();
+            button1 = new Button();
             ConsoleBox = new GroupBox();
             toolStrip1 = new ToolStrip();
             ToggleConsole_Btn = new ToolStripButton();
@@ -71,12 +72,8 @@
             Label_Elapsed_Time_UI = new TextBox();
             textBox2 = new TextBox();
             textBox1 = new TextBox();
-            TotalTime_Label = new TextBox();
-            label3 = new Label();
-            Label_Total_Time_UI = new TextBox();
-            label5 = new Label();
             FactoryInformationBox = new GroupBox();
-            batterychemistryType = new ComboBox();
+            BatteryChemistryType = new ComboBox();
             ApplyBatteryDataButton = new Button();
             Discharge_cRating = new TextBox();
             Charge_cRating = new TextBox();
@@ -493,6 +490,7 @@
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(ConsoleBox);
             groupBox1.Controls.Add(Operation_ConnectBattery_Override);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
@@ -501,16 +499,23 @@
             groupBox1.Controls.Add(Label_Elapsed_Time_UI);
             groupBox1.Controls.Add(textBox2);
             groupBox1.Controls.Add(textBox1);
-            groupBox1.Controls.Add(TotalTime_Label);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(Label_Total_Time_UI);
-            groupBox1.Controls.Add(label5);
             groupBox1.Location = new Point(12, 231);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(438, 474);
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
+            // 
+            // button1
+            // 
+            button1.Location = new Point(328, 20);
+            button1.Name = "button1";
+            button1.Size = new Size(104, 41);
+            button1.TabIndex = 29;
+            button1.Tag = "TEST";
+            button1.Text = "TEST";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += ButtonHandler;
             // 
             // ConsoleBox
             // 
@@ -602,7 +607,7 @@
             // Operation_ConnectBattery_Override
             // 
             Operation_ConnectBattery_Override.AutoSize = true;
-            Operation_ConnectBattery_Override.Location = new Point(17, 242);
+            Operation_ConnectBattery_Override.Location = new Point(17, 153);
             Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
             Operation_ConnectBattery_Override.Size = new Size(272, 25);
             Operation_ConnectBattery_Override.TabIndex = 28;
@@ -657,7 +662,7 @@
             // 
             textBox2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textBox2.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox2.Location = new Point(153, 331);
+            textBox2.Location = new Point(152, 107);
             textBox2.Margin = new Padding(0);
             textBox2.Name = "textBox2";
             textBox2.ReadOnly = true;
@@ -670,7 +675,7 @@
             // 
             textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textBox1.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox1.Location = new Point(9, 331);
+            textBox1.Location = new Point(8, 107);
             textBox1.Margin = new Padding(0);
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
@@ -679,54 +684,10 @@
             textBox1.Text = "SOC -";
             textBox1.TextAlign = HorizontalAlignment.Center;
             // 
-            // TotalTime_Label
-            // 
-            TotalTime_Label.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            TotalTime_Label.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            TotalTime_Label.Location = new Point(152, 156);
-            TotalTime_Label.Margin = new Padding(0);
-            TotalTime_Label.Name = "TotalTime_Label";
-            TotalTime_Label.ReadOnly = true;
-            TotalTime_Label.Size = new Size(144, 36);
-            TotalTime_Label.TabIndex = 26;
-            TotalTime_Label.Text = "00:00:00";
-            TotalTime_Label.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label3
-            // 
-            label3.Location = new Point(6, 156);
-            label3.Name = "label3";
-            label3.Size = new Size(142, 36);
-            label3.TabIndex = 25;
-            label3.Text = "Total Time:";
-            label3.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // Label_Total_Time_UI
-            // 
-            Label_Total_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            Label_Total_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Total_Time_UI.Location = new Point(152, 107);
-            Label_Total_Time_UI.Margin = new Padding(0);
-            Label_Total_Time_UI.Name = "Label_Total_Time_UI";
-            Label_Total_Time_UI.ReadOnly = true;
-            Label_Total_Time_UI.Size = new Size(144, 36);
-            Label_Total_Time_UI.TabIndex = 26;
-            Label_Total_Time_UI.Text = "00:00:00";
-            Label_Total_Time_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label5
-            // 
-            label5.Location = new Point(6, 107);
-            label5.Name = "label5";
-            label5.Size = new Size(142, 36);
-            label5.TabIndex = 25;
-            label5.Text = "Estimated Time:";
-            label5.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // FactoryInformationBox
             // 
             FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            FactoryInformationBox.Controls.Add(batterychemistryType);
+            FactoryInformationBox.Controls.Add(BatteryChemistryType);
             FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
             FactoryInformationBox.Controls.Add(Discharge_cRating);
             FactoryInformationBox.Controls.Add(Charge_cRating);
@@ -744,16 +705,16 @@
             FactoryInformationBox.TabStop = false;
             FactoryInformationBox.Text = "Factory Information";
             // 
-            // batterychemistryType
+            // BatteryChemistryType
             // 
-            batterychemistryType.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            batterychemistryType.AutoCompleteMode = AutoCompleteMode.Suggest;
-            batterychemistryType.FormattingEnabled = true;
-            batterychemistryType.Items.AddRange(new object[] { "Lithium-Ion", "Lead-Acid" });
-            batterychemistryType.Location = new Point(307, 23);
-            batterychemistryType.Name = "batterychemistryType";
-            batterychemistryType.Size = new Size(123, 29);
-            batterychemistryType.TabIndex = 12;
+            BatteryChemistryType.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            BatteryChemistryType.AutoCompleteMode = AutoCompleteMode.Suggest;
+            BatteryChemistryType.FormattingEnabled = true;
+            BatteryChemistryType.Items.AddRange(new object[] { "Lithium-Ion", "Lead-Acid" });
+            BatteryChemistryType.Location = new Point(307, 23);
+            BatteryChemistryType.Name = "BatteryChemistryType";
+            BatteryChemistryType.Size = new Size(123, 29);
+            BatteryChemistryType.TabIndex = 2;
             // 
             // ApplyBatteryDataButton
             // 
@@ -761,7 +722,7 @@
             ApplyBatteryDataButton.Location = new Point(6, 200);
             ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
             ApplyBatteryDataButton.Size = new Size(421, 36);
-            ApplyBatteryDataButton.TabIndex = 11;
+            ApplyBatteryDataButton.TabIndex = 7;
             ApplyBatteryDataButton.Tag = "setData";
             ApplyBatteryDataButton.Text = "Apply";
             ApplyBatteryDataButton.UseVisualStyleBackColor = true;
@@ -774,7 +735,7 @@
             Discharge_cRating.Name = "Discharge_cRating";
             Discharge_cRating.PlaceholderText = "Discharge Rating";
             Discharge_cRating.Size = new Size(120, 29);
-            Discharge_cRating.TabIndex = 10;
+            Discharge_cRating.TabIndex = 6;
             // 
             // Charge_cRating
             // 
@@ -783,7 +744,7 @@
             Charge_cRating.Name = "Charge_cRating";
             Charge_cRating.PlaceholderText = "Charge Rating";
             Charge_cRating.Size = new Size(120, 29);
-            Charge_cRating.TabIndex = 10;
+            Charge_cRating.TabIndex = 5;
             // 
             // RatedBatteryVoltageUI
             // 
@@ -845,7 +806,7 @@
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
             RatedBatteryAmperageUI.Size = new Size(120, 29);
-            RatedBatteryAmperageUI.TabIndex = 7;
+            RatedBatteryAmperageUI.TabIndex = 4;
             // 
             // menuStrip1
             // 
@@ -1139,7 +1100,6 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Enabled = false;
             label9.Location = new Point(6, 25);
             label9.Name = "label9";
             label9.Size = new Size(114, 21);
@@ -1149,7 +1109,6 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Enabled = false;
             label8.Location = new Point(292, 25);
             label8.Name = "label8";
             label8.Size = new Size(95, 21);
@@ -1192,6 +1151,7 @@
             Operation_NoneORStop_Selection.Tag = "SetStateIdle";
             Operation_NoneORStop_Selection.Text = "Idle / stop output";
             Operation_NoneORStop_Selection.UseVisualStyleBackColor = true;
+            Operation_NoneORStop_Selection.Click += ButtonHandler;
             // 
             // Operation_Charge_selection
             // 
@@ -1203,6 +1163,7 @@
             Operation_Charge_selection.Tag = "SetStateCharge";
             Operation_Charge_selection.Text = "Charge";
             Operation_Charge_selection.UseVisualStyleBackColor = true;
+            Operation_Charge_selection.Click += ButtonHandler;
             // 
             // Operation_Discharge_selection
             // 
@@ -1214,6 +1175,7 @@
             Operation_Discharge_selection.Tag = "SetStateDischarge";
             Operation_Discharge_selection.Text = "Discharge";
             Operation_Discharge_selection.UseVisualStyleBackColor = true;
+            Operation_Discharge_selection.Click += ButtonHandler;
             // 
             // MainForm
             // 
@@ -1336,8 +1298,6 @@
         private Button ApplyBatteryDataButton;
         private GroupBox FactoryInformationBox;
         private GroupBox OperationsBox_UI;
-        private TextBox Label_Total_Time_UI;
-        private Label label5;
         private ToolStripMenuItem toolStripMenuItem7;
         private ToolStripTextBox LimitLabel_01;
         private ToolStripTextBox LimitLabel_02;
@@ -1352,8 +1312,6 @@
         private ToolStripTextBox toolStripTextBox2;
         private ToolStripTextBox toolStripTextBox3;
         private CheckBox Operation_ConnectBattery_Override;
-        private TextBox TotalTime_Label;
-        private Label label3;
         private TextBox Discharge_cRating;
         private GroupBox ControlPanel;
         private Label label9;
@@ -1363,9 +1321,10 @@
         private Button Operation_NoneORStop_Selection;
         private Button Operation_Charge_selection;
         private Button Operation_Discharge_selection;
-        private ComboBox batterychemistryType;
+        private ComboBox BatteryChemistryType;
         private Label label11;
         private TextBox textBox2;
         private TextBox textBox1;
+        private Button button1;
     }
 }
