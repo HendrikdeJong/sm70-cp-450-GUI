@@ -56,7 +56,6 @@
             InputField_StoredValueCurrentPlus = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             groupBox1 = new GroupBox();
-            button1 = new Button();
             ConsoleBox = new GroupBox();
             toolStrip1 = new ToolStrip();
             ToggleConsole_Btn = new ToolStripButton();
@@ -260,8 +259,10 @@
             Button_Toggle_ValueEditor.Name = "Button_Toggle_ValueEditor";
             Button_Toggle_ValueEditor.Size = new Size(280, 26);
             Button_Toggle_ValueEditor.TabIndex = 1;
+            Button_Toggle_ValueEditor.Tag = "ToggleEditing";
             Button_Toggle_ValueEditor.Text = "Edit values";
             Button_Toggle_ValueEditor.UseVisualStyleBackColor = true;
+            Button_Toggle_ValueEditor.Click += ButtonHandler;
             // 
             // tableLayoutPanel7
             // 
@@ -490,7 +491,6 @@
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(ConsoleBox);
             groupBox1.Controls.Add(Operation_ConnectBattery_Override);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
@@ -505,17 +505,6 @@
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
-            // 
-            // button1
-            // 
-            button1.Location = new Point(328, 20);
-            button1.Name = "button1";
-            button1.Size = new Size(104, 41);
-            button1.TabIndex = 29;
-            button1.Tag = "TEST";
-            button1.Text = "TEST";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += ButtonHandler;
             // 
             // ConsoleBox
             // 
@@ -700,7 +689,7 @@
             FactoryInformationBox.Dock = DockStyle.Top;
             FactoryInformationBox.Location = new Point(3, 25);
             FactoryInformationBox.Name = "FactoryInformationBox";
-            FactoryInformationBox.Size = new Size(433, 242);
+            FactoryInformationBox.Size = new Size(433, 200);
             FactoryInformationBox.TabIndex = 18;
             FactoryInformationBox.TabStop = false;
             FactoryInformationBox.Text = "Factory Information";
@@ -711,7 +700,7 @@
             BatteryChemistryType.AutoCompleteMode = AutoCompleteMode.Suggest;
             BatteryChemistryType.FormattingEnabled = true;
             BatteryChemistryType.Items.AddRange(new object[] { "Lithium-Ion", "Lead-Acid" });
-            BatteryChemistryType.Location = new Point(307, 23);
+            BatteryChemistryType.Location = new Point(304, 18);
             BatteryChemistryType.Name = "BatteryChemistryType";
             BatteryChemistryType.Size = new Size(123, 29);
             BatteryChemistryType.TabIndex = 2;
@@ -719,7 +708,7 @@
             // ApplyBatteryDataButton
             // 
             ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ApplyBatteryDataButton.Location = new Point(6, 200);
+            ApplyBatteryDataButton.Location = new Point(6, 158);
             ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
             ApplyBatteryDataButton.Size = new Size(421, 36);
             ApplyBatteryDataButton.TabIndex = 7;
@@ -731,35 +720,35 @@
             // Discharge_cRating
             // 
             Discharge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Discharge_cRating.Location = new Point(307, 159);
+            Discharge_cRating.Location = new Point(304, 123);
             Discharge_cRating.Name = "Discharge_cRating";
             Discharge_cRating.PlaceholderText = "Discharge Rating";
-            Discharge_cRating.Size = new Size(120, 29);
+            Discharge_cRating.Size = new Size(123, 29);
             Discharge_cRating.TabIndex = 6;
             // 
             // Charge_cRating
             // 
             Charge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Charge_cRating.Location = new Point(307, 124);
+            Charge_cRating.Location = new Point(175, 123);
             Charge_cRating.Name = "Charge_cRating";
             Charge_cRating.PlaceholderText = "Charge Rating";
-            Charge_cRating.Size = new Size(120, 29);
+            Charge_cRating.Size = new Size(123, 29);
             Charge_cRating.TabIndex = 5;
             // 
             // RatedBatteryVoltageUI
             // 
             RatedBatteryVoltageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            RatedBatteryVoltageUI.Location = new Point(307, 58);
+            RatedBatteryVoltageUI.Location = new Point(304, 53);
             RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
             RatedBatteryVoltageUI.PlaceholderText = "Voltage";
-            RatedBatteryVoltageUI.Size = new Size(120, 29);
+            RatedBatteryVoltageUI.Size = new Size(123, 29);
             RatedBatteryVoltageUI.TabIndex = 3;
             // 
             // label11
             // 
             label11.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label11.AutoSize = true;
-            label11.Location = new Point(12, 31);
+            label11.Location = new Point(12, 26);
             label11.Name = "label11";
             label11.Size = new Size(95, 21);
             label11.TabIndex = 6;
@@ -770,7 +759,7 @@
             // 
             label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label1.AutoSize = true;
-            label1.Location = new Point(12, 62);
+            label1.Location = new Point(12, 57);
             label1.Name = "label1";
             label1.Size = new Size(106, 21);
             label1.TabIndex = 6;
@@ -781,7 +770,7 @@
             // 
             label6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label6.AutoSize = true;
-            label6.Location = new Point(12, 132);
+            label6.Location = new Point(12, 126);
             label6.Name = "label6";
             label6.Size = new Size(69, 21);
             label6.TabIndex = 9;
@@ -792,7 +781,7 @@
             // 
             label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label2.AutoSize = true;
-            label2.Location = new Point(12, 97);
+            label2.Location = new Point(12, 92);
             label2.Name = "label2";
             label2.Size = new Size(110, 21);
             label2.TabIndex = 8;
@@ -802,10 +791,10 @@
             // RatedBatteryAmperageUI
             // 
             RatedBatteryAmperageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            RatedBatteryAmperageUI.Location = new Point(307, 93);
+            RatedBatteryAmperageUI.Location = new Point(304, 88);
             RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
             RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
-            RatedBatteryAmperageUI.Size = new Size(120, 29);
+            RatedBatteryAmperageUI.Size = new Size(123, 29);
             RatedBatteryAmperageUI.TabIndex = 4;
             // 
             // menuStrip1
@@ -1090,9 +1079,9 @@
             ControlPanel.Controls.Add(Operation_Charge_selection);
             ControlPanel.Controls.Add(Operation_Discharge_selection);
             ControlPanel.Dock = DockStyle.Bottom;
-            ControlPanel.Location = new Point(3, 273);
+            ControlPanel.Location = new Point(3, 231);
             ControlPanel.Name = "ControlPanel";
-            ControlPanel.Size = new Size(433, 195);
+            ControlPanel.Size = new Size(433, 237);
             ControlPanel.TabIndex = 20;
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
@@ -1105,6 +1094,7 @@
             label9.Size = new Size(114, 21);
             label9.TabIndex = 28;
             label9.Text = "Discharge to %";
+            label9.Visible = false;
             // 
             // label8
             // 
@@ -1114,6 +1104,7 @@
             label8.Size = new Size(95, 21);
             label8.TabIndex = 28;
             label8.Text = "Charge to %";
+            label8.Visible = false;
             // 
             // TrackbarDischarge
             // 
@@ -1127,6 +1118,7 @@
             TrackbarDischarge.TabIndex = 0;
             TrackbarDischarge.TickFrequency = 10;
             TrackbarDischarge.Value = 100;
+            TrackbarDischarge.Visible = false;
             // 
             // TrackbarCharge
             // 
@@ -1140,11 +1132,12 @@
             TrackbarCharge.TabIndex = 0;
             TrackbarCharge.TickFrequency = 10;
             TrackbarCharge.Value = 10;
+            TrackbarCharge.Visible = false;
             // 
             // Operation_NoneORStop_Selection
             // 
             Operation_NoneORStop_Selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_NoneORStop_Selection.Location = new Point(151, 159);
+            Operation_NoneORStop_Selection.Location = new Point(151, 201);
             Operation_NoneORStop_Selection.Name = "Operation_NoneORStop_Selection";
             Operation_NoneORStop_Selection.Size = new Size(132, 30);
             Operation_NoneORStop_Selection.TabIndex = 27;
@@ -1156,7 +1149,7 @@
             // Operation_Charge_selection
             // 
             Operation_Charge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Charge_selection.Location = new Point(288, 159);
+            Operation_Charge_selection.Location = new Point(288, 201);
             Operation_Charge_selection.Name = "Operation_Charge_selection";
             Operation_Charge_selection.Size = new Size(139, 30);
             Operation_Charge_selection.TabIndex = 27;
@@ -1168,7 +1161,7 @@
             // Operation_Discharge_selection
             // 
             Operation_Discharge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Discharge_selection.Location = new Point(6, 159);
+            Operation_Discharge_selection.Location = new Point(6, 201);
             Operation_Discharge_selection.Name = "Operation_Discharge_selection";
             Operation_Discharge_selection.Size = new Size(139, 30);
             Operation_Discharge_selection.TabIndex = 27;
@@ -1325,6 +1318,5 @@
         private Label label11;
         private TextBox textBox2;
         private TextBox textBox1;
-        private Button button1;
     }
 }

@@ -70,7 +70,6 @@ namespace sm70_cp_450_GUI
             InitializeUIActions(); // Call the new function to initialize UI actions
             Timers();
         }
-
         private void InitializeUIActions()
         {
             // UI actions associated with commands
@@ -94,7 +93,6 @@ namespace sm70_cp_450_GUI
                 { "SYSTem:LIMits:POWer:NEGative?", (response) => LimitLabel_05.Text = "-" + response + " W"},
             };
         }
-
         private void MainForm_Load(object? sender, EventArgs? e)
         {
             _commandManager = CommandManager.Instance;
@@ -114,12 +112,10 @@ namespace sm70_cp_450_GUI
             Timers();
             Show();
         }
-
         private void LogManager_OnLogUpdate(string logMessage)
         {
             if (InvokeRequired) Invoke(new Action(() => LogManager_OnLogUpdate(logMessage))); else Console_Simple_Textbox_UI.Text = logMessage;
         }
-
         private void UpdateUIFromStoredCookies()
         {
 
@@ -147,10 +143,9 @@ namespace sm70_cp_450_GUI
             //InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
             //InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
         }
-
         private void Timers()
         {
-            Timer? updateTimer = new(){Interval = 1000};
+            Timer? updateTimer = new() { Interval = 1000 };
             updateTimer.Tick += (sender, e) =>
             {
                 _commandManager?.Request_Measure_Voltage();
@@ -162,36 +157,13 @@ namespace sm70_cp_450_GUI
                 _commandManager?.Request_Source_Power();
                 _commandManager?.Request_Source_Current_Negative();
                 _commandManager?.Request_Source_Power_Negative();
-
-                //Operation_NoneORStop_Selection.BackColor = _OngoingOperation ? Color.Red : SystemColors.Control;
-                //Operation_NoneORStop_Selection.Enabled = !_started;
-
                 StateManager();
-                if (_stopwatch.IsRunning)
-                {
-                    TimeSpan elapsed = _stopwatch.Elapsed;
-
-                    //TimeSpan _TimeRemaining = ((EstimateTotalTime ?? TimeSpan.Zero) - elapsed);
-
-                    //Label_Total_Time_UI.Text = $"{_TimeRemaining.Hours:D2}:{_TimeRemaining.Minutes:D2}:{_TimeRemaining.Seconds:D2}";
-                    Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";
-                }
-
-                if( currentState != AvailableState.None)
-                {
-                    _started = true;
-                    _stopwatch.Start();
-                } else
-                {
-                    _started = false;
-                    _stopwatch.Stop();
-                }
+                if (_stopwatch.IsRunning){TimeSpan elapsed = _stopwatch.Elapsed; Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}";}
+                Operation_NoneORStop_Selection.BackColor = currentState != AvailableState.None ? Color.Red : SystemColors.Control;
+                _started = currentState != AvailableState.None ? true : false;
+                if (currentState != AvailableState.None) _stopwatch.Start(); else _stopwatch.Stop();
             };
-
-            Timer? LateUpdate = new()
-            {
-                Interval = 10000
-            };
+            Timer? LateUpdate = new(){Interval = 10000};
             LateUpdate.Tick += (sender, e) =>
             {
                 LiveInfoData.Text = $"SM70-CP-450 Controller Status:{(_tcpHandler == null ? " Not initialized" : (_tcpHandler.IsConnected ? " Connected" : " Not Connected"))}";
@@ -205,7 +177,7 @@ namespace sm70_cp_450_GUI
                 _commandManager?.RequestSystemNegCurrentLimit();
                 _commandManager?.RequestSystemNegPowerLimit();
                 CalculateSOC();
-                if(_stopwatch.IsRunning) logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
+                if (_stopwatch.IsRunning) logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
             };
 
 
@@ -213,96 +185,100 @@ namespace sm70_cp_450_GUI
             updateTimer.Start();
             if (logManager != null)
             {
-                errorCleanupTimer = new Timer{Interval = 1000};
+                errorCleanupTimer = new Timer { Interval = 1000 };
                 errorCleanupTimer.Tick += (sender, e) => logManager.UpdateConsole();
                 errorCleanupTimer.Start();
             }
         }
-
         private void CalculateSOC()
         {
-            if (_started)
-            {
-                // Calculate the state of charge (SoC) in percentage
-                SOC_Charge = (currentCurrent / _ratedCapacity) * 100;
-                SOC_Discharge = (1 - (currentCurrent * (_stopwatch.Elapsed.TotalMinutes * 60)) / _ratedCapacity) * 100;
+            if (!_started) return;
+            // Calculate the state of charge (SoC) in percentage
+            SOC_Charge = (currentCurrent / _ratedCapacity) * 100;
+            SOC_Discharge = (1 - (currentCurrent * _stopwatch.Elapsed.TotalHours) / _ratedCapacity) * 100;
 
-                textBox1.Text = SOC_Charge.ToString() + " %";
-                textBox2.Text = SOC_Discharge.ToString() + " %";
-            }
+            textBox1.Text = SOC_Charge.ToString() + " %";
+            textBox2.Text = SOC_Discharge.ToString() + " %";
         }
-
         private void StateManager()
         {
             if (_tcpHandler == null) return;
             if (DataSet && _tcpHandler.IsConnected)
             {
-                if (!Operation_ConnectBattery_Override.Checked)
-                {
-                    if (!BatteryConnected)
-                    {
-                        SetValuesToMachine(true, _MaxChargeVoltage, 1);
-                        if (!IsApproximatelyEqual(currentCurrent, 0.5, 2)) BatteryConnected = true;
-                    }
-                }
+                //if (!Operation_ConnectBattery_Override.Checked)
+                //{
+                //    if (!BatteryConnected)
+                //    {
+                //        SetValuesToMachine(true, _MaxChargeVoltage, 1);
+                //        if (!IsApproximatelyEqual(currentCurrent, 0.5, 2)) BatteryConnected = true;
+                //    }
+                //}
 
-                if (!ShowOnce && BatteryConnected == true)
-                {
-                    ShowOnce = true;
-                    SetValuesToMachine(false, _ratedVoltage);
-                    currentState = AvailableState.None;
-                    MessageBox.Show("battery is connected");
-                }
+                //if (!ShowOnce && BatteryConnected == true)
+                //{
+                //    ShowOnce = true;
+                //    SetValuesToMachine(false, _ratedVoltage);
+                //    currentState = AvailableState.None;
+                //    MessageBox.Show("battery is connected");
+                //}
 
 
-                if (currentState == AvailableState.Charge)
-                {
-                    if (IsApproximatelyEqual(currentVoltage, _MaxChargeVoltage, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.1))
-                    {
-                        SetValuesToMachine(false, _ratedVoltage);
-                        currentState = AvailableState.None;
-                        MessageBox.Show("Battery is fully charged");
-                    }
-                    //if (SOC_Charge >= 30)
-                    //{
-                    //    SetValuesToMachine(SetState.None);
-                    //    MessageBox.Show("Battery charged to target SoC (30%)");
-                    //}
-                }
-                else if (currentState == AvailableState.Discharge)
-                {
-                    if (IsApproximatelyEqual(currentVoltage, _CutOffDischargeVoltage, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.1))
-                    {
-                        SetValuesToMachine(false, _ratedVoltage);
-                        currentState = AvailableState.None;
-                        MessageBox.Show("Battery is fully discharged");
-                    }
-                    if (SOC_Discharge <= 30)
-                    {
-                        SetValuesToMachine(false, _ratedVoltage);
-                        currentState = AvailableState.None;
-                        MessageBox.Show("Battery discharged to target SoC (30%)");
-                    }
-                }
+                //if (currentState == AvailableState.Charge)
+                //{
+                //    if (IsApproximatelyEqual(currentVoltage, _MaxChargeVoltage, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.1))
+                //    {
+                //        _commandManager?.SetOutputState(false);
+                //        currentState = AvailableState.None;
+                //        MessageBox.Show("Battery is fully charged");
+                //    }
+                //}
+                //else if (currentState == AvailableState.Discharge)
+                //{
+                //    if (IsApproximatelyEqual(currentVoltage, _CutOffDischargeVoltage, 0.5) && IsApproximatelyEqual(currentCurrent, 0, 0.1))
+                //    {
+                //        _commandManager?.SetOutputState(false);
+                //        currentState = AvailableState.None;
+                //        MessageBox.Show("Battery is fully discharged");
+                //    }
+                //    if (SOC_Discharge <= 30)
+                //    {
+                //        _commandManager?.SetOutputState(false);
+                //        currentState = AvailableState.None;
+                //        MessageBox.Show("Battery discharged to target SoC (30%)");
+                //    }
+                //}
             }
         }
-
-
         private void SetValuesToMachine(bool output, double voltage, double amp = 0, double ampNeg = 0, double power = 0, double powerNeg = 0)
         {
             amp = amp == 0 ? _MaxCurrent : amp;
             ampNeg = ampNeg != 0 ? _MinCurrent : ampNeg;
             power = power != 0 ? _MaxPower : power;
             powerNeg = powerNeg != 0 ? _MinPower : powerNeg;
-            voltage = Math.Round(voltage, 1);
 
-            MessageBox.Show($"trying to set values: {output}, {voltage}, {amp}, {ampNeg}, {power}, {powerNeg}");
+            //MessageBox.Show($"trying to set values: {output}, {voltage}, {amp}, {ampNeg}, {power}, {powerNeg}");
             _commandManager?.SetOutputState(output);
             _commandManager?.SetOutputVoltage(voltage);
             _commandManager?.SetOutputCurrent(amp);
             _commandManager?.SetOutputCurrentNegative(ampNeg);
             _commandManager?.SetOutputPower(power);
             _commandManager?.SetOutputPowerNegative(powerNeg);
+        }
+        private void UpdateBatterySettings()
+        {
+            double value1, value2;
+            string input = InputField_StoredValueVoltage.Text;
+            string[] values = input.Split('~');
+            if (values.Length == 2 && double.TryParse(values[0], out value1) && double.TryParse(values[1], out value2)) { _CutOffDischargeVoltage = value1; _MaxChargeVoltage = value2; }
+            else { MessageBox.Show("Invalid input for voltage range"); return; }
+            _CutOffDischargeVoltage = value1;
+            _MaxChargeVoltage = value2;
+            _MaxCurrent = ParseInput(InputField_StoredValueCurrentPlus.Text);
+            _MaxPower = ParseInput(InputField_StoredValuePowerPlus.Text);
+            _MinCurrent = ParseInput(InputField_StoredValueCurrentMin.Text);
+            _MinPower = ParseInput(InputField_StoredValuePowerMin.Text);
+            MessageBox.Show($"Values saved: {_CutOffDischargeVoltage}, {_MaxChargeVoltage}, {_MaxCurrent}, {_MaxPower}, {_MinCurrent}, {_MinPower}");
+
         }
         private void InitializeBatterySettings()
         {
@@ -379,7 +355,7 @@ namespace sm70_cp_450_GUI
         }
         private static string RemoveNonNumeric(string input)
         {
-            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',').ToArray());
+            return new string(input.Where(c => char.IsDigit(c) || c == '.' || c == '-' || c == ',' || c == '~').ToArray());
         }
         private async void ButtonHandler(object sender, EventArgs e)
         {
@@ -403,11 +379,15 @@ namespace sm70_cp_450_GUI
 
                 switch (tag)
                 {
-                    case "TEST":
-                        double voltage = Math.Round(_MaxChargeVoltage, 1);
-                        
-                        _tcpHandler?.EnqueueCommand($"SOURce:VOLtage {voltage}");
-                        MessageBox.Show($"Test button Pressed, trying: SOURce:VOLtage {voltage}");
+                    case "ToggleEditing":
+                        _EditingValues = !_EditingValues;
+                        InputField_StoredValueVoltage.ReadOnly = !_EditingValues;
+                        InputField_StoredValueCurrentPlus.ReadOnly = !_EditingValues;
+                        InputField_StoredValuePowerPlus.ReadOnly = !_EditingValues;
+                        InputField_StoredValueCurrentMin.ReadOnly = !_EditingValues;
+                        InputField_StoredValuePowerMin.ReadOnly = !_EditingValues;
+                        Button_Toggle_ValueEditor.Text = _EditingValues ? "Save And Update Values" : "Edit Values";
+                        if(!_EditingValues) UpdateBatterySettings();
                         break;
                     case "setData":
                         InitializeBatterySettings();
@@ -415,17 +395,17 @@ namespace sm70_cp_450_GUI
                     case "SetStateIdle":
                         currentState = AvailableState.None;
                         SetValuesToMachine(false, _ratedVoltage);
-                        MessageBox.Show("Machine is now idle");
+                        //MessageBox.Show("Machine is now idle");
                         break;
                     case "SetStateCharge":
                         currentState = AvailableState.Charge;
                         SetValuesToMachine(true, _MaxChargeVoltage);
-                        MessageBox.Show($"Machine is now charging{_MaxChargeVoltage}");
+                        //MessageBox.Show($"Machine is now charging{_MaxChargeVoltage}");
                         break;
                     case "SetStateDischarge":
                         currentState = AvailableState.Discharge;
                         SetValuesToMachine(true, _CutOffDischargeVoltage);
-                        MessageBox.Show($"Machine is now discharging{_CutOffDischargeVoltage}");
+                        //MessageBox.Show($"Machine is now discharging{_CutOffDischargeVoltage}");
                         break;
                     case "SaveCSV":
                         logManager?.ExportToCsv(false, _SaveLocationCSV);
