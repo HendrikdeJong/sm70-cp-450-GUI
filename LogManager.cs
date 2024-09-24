@@ -249,7 +249,75 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
+        private void SaveSettings(object sender, EventArgs e)
+        {
+            if(MainForm.Instance == null)
+            {
+                return;
+            }
+            SaveFileDialog? saveFileDialog = new()
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
+                Title = "Save Factory Settings",
+                FileName = "factory_settings.txt"
+            };
 
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+
+                using (StreamWriter? writer = new(filePath))
+                {
+                    // Save the settings in comma-separated format (CSV-like)
+                    writer.WriteLine($"{MainForm.Instance._CutOffDischargeVoltage},{MainForm.Instance._MaxChargeVoltage},{MainForm.Instance._MaxCurrent},{MainForm.Instance._MaxPower},{MainForm.Instance._MinCurrent},{MainForm.Instance._MinPower}");
+                }
+
+                _ = MessageBox.Show("Settings successfully saved to " + filePath);
+            }
+        }
+        //private void LoadSettings(object sender, EventArgs e)
+        //{
+        //    OpenFileDialog? openFileDialog = new()
+        //    {
+        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
+        //        Title = "Load Factory Settings"
+        //    };
+
+        //    if (openFileDialog.ShowDialog() == DialogResult.OK)
+        //    {
+        //        string filePath = openFileDialog.FileName;
+
+        //        using StreamReader? reader = new(filePath);
+        //        string? line = reader.ReadLine();
+        //        if (!string.IsNullOrEmpty(line))
+        //        {
+        //            // Split the values by comma
+        //            string[] values = line.Split(',');
+
+        //            if (values.Length == 5)
+        //            {
+        //                _StoredVoltageSetting = double.Parse(values[0]);
+        //                _StoredCurrent = double.Parse(values[1]);
+        //                _StoredPower = double.Parse(values[2]);
+        //                _StoredNegativeCurrent = double.Parse(values[3]);
+        //                _StoredNegativePower = double.Parse(values[4]);
+
+        //                // Populate the UI fields with the loaded values
+        //                InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
+        //                InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
+        //                InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
+        //                InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
+        //                InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
+
+        //                _ = MessageBox.Show("Settings successfully loaded from " + filePath);
+        //            }
+        //            else
+        //            {
+        //                _ = MessageBox.Show("Error: Incorrect format in the settings file.");
+        //            }
+        //        }
+        //    }
+        //}
 
 
         private static string TruncateMessage(string errorMessage, int TruncateLength)

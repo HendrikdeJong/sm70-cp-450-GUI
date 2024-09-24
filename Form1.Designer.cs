@@ -56,6 +56,7 @@
             InputField_StoredValueCurrentPlus = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             groupBox1 = new GroupBox();
+            label9 = new Label();
             ConsoleBox = new GroupBox();
             toolStrip1 = new ToolStrip();
             ToggleConsole_Btn = new ToolStripButton();
@@ -64,7 +65,10 @@
             toolStripSeparator4 = new ToolStripSeparator();
             Console_Short_ErrorLabel = new ToolStripLabel();
             Console_Simple_Textbox_UI = new RichTextBox();
+            label8 = new Label();
+            TrackbarDischarge = new TrackBar();
             Operation_ConnectBattery_Override = new CheckBox();
+            TrackbarCharge = new TrackBar();
             StatusCurrentOperation_UI = new TextBox();
             label7 = new Label();
             label4 = new Label();
@@ -119,10 +123,6 @@
             toolStripTextBox1 = new ToolStripMenuItem();
             OperationsBox_UI = new GroupBox();
             ControlPanel = new GroupBox();
-            label9 = new Label();
-            label8 = new Label();
-            TrackbarDischarge = new TrackBar();
-            TrackbarCharge = new TrackBar();
             Operation_NoneORStop_Selection = new Button();
             Operation_Charge_selection = new Button();
             Operation_Discharge_selection = new Button();
@@ -137,12 +137,12 @@
             groupBox1.SuspendLayout();
             ConsoleBox.SuspendLayout();
             toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).BeginInit();
             FactoryInformationBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
             ControlPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).BeginInit();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -491,8 +491,12 @@
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            groupBox1.Controls.Add(label9);
             groupBox1.Controls.Add(ConsoleBox);
+            groupBox1.Controls.Add(label8);
+            groupBox1.Controls.Add(TrackbarDischarge);
             groupBox1.Controls.Add(Operation_ConnectBattery_Override);
+            groupBox1.Controls.Add(TrackbarCharge);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label4);
@@ -505,6 +509,16 @@
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(15, 183);
+            label9.Name = "label9";
+            label9.Size = new Size(114, 21);
+            label9.TabIndex = 28;
+            label9.Text = "Discharge to %";
+            label9.Visible = false;
             // 
             // ConsoleBox
             // 
@@ -593,6 +607,30 @@
             Console_Simple_Textbox_UI.TabStop = false;
             Console_Simple_Textbox_UI.Text = "";
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(301, 183);
+            label8.Name = "label8";
+            label8.Size = new Size(95, 21);
+            label8.TabIndex = 28;
+            label8.Text = "Charge to %";
+            label8.Visible = false;
+            // 
+            // TrackbarDischarge
+            // 
+            TrackbarDischarge.LargeChange = 30;
+            TrackbarDischarge.Location = new Point(15, 207);
+            TrackbarDischarge.Maximum = 100;
+            TrackbarDischarge.Minimum = 10;
+            TrackbarDischarge.Name = "TrackbarDischarge";
+            TrackbarDischarge.Size = new Size(122, 45);
+            TrackbarDischarge.SmallChange = 10;
+            TrackbarDischarge.TabIndex = 0;
+            TrackbarDischarge.TickFrequency = 10;
+            TrackbarDischarge.Value = 100;
+            TrackbarDischarge.Visible = false;
+            // 
             // Operation_ConnectBattery_Override
             // 
             Operation_ConnectBattery_Override.AutoSize = true;
@@ -602,6 +640,20 @@
             Operation_ConnectBattery_Override.TabIndex = 28;
             Operation_ConnectBattery_Override.Text = "Confirm Battery Battery connection";
             Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
+            // 
+            // TrackbarCharge
+            // 
+            TrackbarCharge.LargeChange = 30;
+            TrackbarCharge.Location = new Point(301, 207);
+            TrackbarCharge.Maximum = 100;
+            TrackbarCharge.Minimum = 10;
+            TrackbarCharge.Name = "TrackbarCharge";
+            TrackbarCharge.Size = new Size(122, 45);
+            TrackbarCharge.SmallChange = 10;
+            TrackbarCharge.TabIndex = 0;
+            TrackbarCharge.TickFrequency = 10;
+            TrackbarCharge.Value = 10;
+            TrackbarCharge.Visible = false;
             // 
             // StatusCurrentOperation_UI
             // 
@@ -1071,10 +1123,6 @@
             // 
             // ControlPanel
             // 
-            ControlPanel.Controls.Add(label9);
-            ControlPanel.Controls.Add(label8);
-            ControlPanel.Controls.Add(TrackbarDischarge);
-            ControlPanel.Controls.Add(TrackbarCharge);
             ControlPanel.Controls.Add(Operation_NoneORStop_Selection);
             ControlPanel.Controls.Add(Operation_Charge_selection);
             ControlPanel.Controls.Add(Operation_Discharge_selection);
@@ -1086,60 +1134,12 @@
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
             // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(6, 25);
-            label9.Name = "label9";
-            label9.Size = new Size(114, 21);
-            label9.TabIndex = 28;
-            label9.Text = "Discharge to %";
-            label9.Visible = false;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(292, 25);
-            label8.Name = "label8";
-            label8.Size = new Size(95, 21);
-            label8.TabIndex = 28;
-            label8.Text = "Charge to %";
-            label8.Visible = false;
-            // 
-            // TrackbarDischarge
-            // 
-            TrackbarDischarge.LargeChange = 30;
-            TrackbarDischarge.Location = new Point(6, 49);
-            TrackbarDischarge.Maximum = 100;
-            TrackbarDischarge.Minimum = 10;
-            TrackbarDischarge.Name = "TrackbarDischarge";
-            TrackbarDischarge.Size = new Size(122, 45);
-            TrackbarDischarge.SmallChange = 10;
-            TrackbarDischarge.TabIndex = 0;
-            TrackbarDischarge.TickFrequency = 10;
-            TrackbarDischarge.Value = 100;
-            TrackbarDischarge.Visible = false;
-            // 
-            // TrackbarCharge
-            // 
-            TrackbarCharge.LargeChange = 30;
-            TrackbarCharge.Location = new Point(292, 49);
-            TrackbarCharge.Maximum = 100;
-            TrackbarCharge.Minimum = 10;
-            TrackbarCharge.Name = "TrackbarCharge";
-            TrackbarCharge.Size = new Size(122, 45);
-            TrackbarCharge.SmallChange = 10;
-            TrackbarCharge.TabIndex = 0;
-            TrackbarCharge.TickFrequency = 10;
-            TrackbarCharge.Value = 10;
-            TrackbarCharge.Visible = false;
-            // 
             // Operation_NoneORStop_Selection
             // 
             Operation_NoneORStop_Selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_NoneORStop_Selection.Location = new Point(151, 201);
+            Operation_NoneORStop_Selection.Location = new Point(151, 171);
             Operation_NoneORStop_Selection.Name = "Operation_NoneORStop_Selection";
-            Operation_NoneORStop_Selection.Size = new Size(132, 30);
+            Operation_NoneORStop_Selection.Size = new Size(132, 60);
             Operation_NoneORStop_Selection.TabIndex = 27;
             Operation_NoneORStop_Selection.Tag = "SetStateIdle";
             Operation_NoneORStop_Selection.Text = "Idle / stop output";
@@ -1149,9 +1149,9 @@
             // Operation_Charge_selection
             // 
             Operation_Charge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Charge_selection.Location = new Point(288, 201);
+            Operation_Charge_selection.Location = new Point(288, 171);
             Operation_Charge_selection.Name = "Operation_Charge_selection";
-            Operation_Charge_selection.Size = new Size(139, 30);
+            Operation_Charge_selection.Size = new Size(139, 60);
             Operation_Charge_selection.TabIndex = 27;
             Operation_Charge_selection.Tag = "SetStateCharge";
             Operation_Charge_selection.Text = "Charge";
@@ -1161,9 +1161,9 @@
             // Operation_Discharge_selection
             // 
             Operation_Discharge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Discharge_selection.Location = new Point(6, 201);
+            Operation_Discharge_selection.Location = new Point(6, 171);
             Operation_Discharge_selection.Name = "Operation_Discharge_selection";
-            Operation_Discharge_selection.Size = new Size(139, 30);
+            Operation_Discharge_selection.Size = new Size(139, 60);
             Operation_Discharge_selection.TabIndex = 27;
             Operation_Discharge_selection.Tag = "SetStateDischarge";
             Operation_Discharge_selection.Text = "Discharge";
@@ -1206,15 +1206,14 @@
             ConsoleBox.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).EndInit();
+            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).EndInit();
             FactoryInformationBox.ResumeLayout(false);
             FactoryInformationBox.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             OperationsBox_UI.ResumeLayout(false);
             ControlPanel.ResumeLayout(false);
-            ControlPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).EndInit();
-            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

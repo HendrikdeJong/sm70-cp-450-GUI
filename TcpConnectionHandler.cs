@@ -31,6 +31,8 @@ namespace sm70_cp_450_GUI
         private bool _isProcessingCommandQueue = false;
 
         public bool IsConnected => _tcpClient?.Connected ?? false;
+        public event Action? OnConnectionEstablished;
+        public event Action? OnConnectionLost;
 
         private TcpConnectionHandler()
         {
@@ -57,6 +59,7 @@ namespace sm70_cp_450_GUI
             {
                 await _tcpClient.ConnectAsync(_DefaultServerIp, _DefaultServerPort);
                 _networkStream = _tcpClient.GetStream();
+                OnConnectionEstablished?.Invoke();
                 EnqueueCommand("SYSTem:REMote:CV: Remote");
                 EnqueueCommand("SYSTem:REMote:CC: Remote");
                 EnqueueCommand("SYSTem:REMote:CP: Remote");
@@ -71,6 +74,7 @@ namespace sm70_cp_450_GUI
         {
             _networkStream?.Close();
             _tcpClient?.Close();
+            OnConnectionLost?.Invoke();
         }
 
 
@@ -228,9 +232,6 @@ namespace sm70_cp_450_GUI
 
             _isProcessingCommandQueue = false;
         }
-
         #endregion
-
-
     }
 }
