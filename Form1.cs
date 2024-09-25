@@ -1,6 +1,4 @@
-using System.Data;
 using System.Diagnostics;
-using System.Xml.Linq;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
@@ -9,7 +7,6 @@ namespace sm70_cp_450_GUI
     {
         private LogManager? logManager;
         private TcpConnectionHandler? _tcpHandler;
-        private BatteryManager? _batteryManager;
         private CommandManager? _commandManager;
         private string? _SaveLocationCSV;
         private string? _SaveLocationLOG;
@@ -50,8 +47,6 @@ namespace sm70_cp_450_GUI
         private double _ratedCapacity = 0;
 
         private bool DataSet = false;
-        private bool ShowOnce = false;
-        private bool BatteryConnected = false;
 
         private double SOC_Charge = 0;
         private double SOC_Discharge = 0;
@@ -72,7 +67,6 @@ namespace sm70_cp_450_GUI
             _commandManager = CommandManager.Instance;
             logManager = LogManager.Instance;
             _tcpHandler = TcpConnectionHandler.Instance;
-            _batteryManager = BatteryManager.Instance;
             logManager.OnLogUpdate += LogManager_OnLogUpdate;
             toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
             _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
@@ -145,7 +139,7 @@ namespace sm70_cp_450_GUI
             StateManager();
             if (_stopwatch.IsRunning) { TimeSpan elapsed = _stopwatch.Elapsed; Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}"; }
             Operation_NoneORStop_Selection.BackColor = currentState != AvailableState.None ? Color.Red : SystemColors.Control;
-            _started = currentState != AvailableState.None ? true : false;
+            _started = currentState != AvailableState.None;
             if (currentState != AvailableState.None) _stopwatch.Start(); else _stopwatch.Stop();
         }
         private void LateUpdate()
@@ -164,20 +158,26 @@ namespace sm70_cp_450_GUI
         }
         private void LogManager_OnLogUpdate(string logMessage) { if (InvokeRequired) Invoke(new Action(() => LogManager_OnLogUpdate(logMessage))); else Console_Simple_Textbox_UI.Text = logMessage; }
         //handle the state of the machine
+        private bool _isPreChargeInProgress = false;
         private async void StateManager()
         {
             if (_tcpHandler == null) return;
 
             if (!DataSet || !_tcpHandler.IsConnected) return;
 
-            // Step 1: Precharge Pulse to Connect Battery
-            bool batteryConnected = await TryPreChargePulse();
-
-            if (!batteryConnected)
+            //step 1: check battery connection
+            if (!_isPreChargeInProgress)
             {
-                MessageBox.Show("Failed to connect the battery after 3 attempts.");
-                return;
+                _isPreChargeInProgress = true;
+                bool batteryConnected = await TryPreChargePulse();
+                if (!batteryConnected)
+                {
+                    MessageBox.Show("Failed to connect the battery after 3 attempts.");
+                    return;
+                }
             }
+
+
 
             // Step 2: Check the charging state if the battery is connected
             if (currentState == AvailableState.Charge)
@@ -221,6 +221,8 @@ namespace sm70_cp_450_GUI
 
                  //Step 2: Check if the voltage is stabilized (i.e., battery is connected)
                 if (CheckBatteryConnection(_preChargeActiveVoltage)){batteryConnected = true;break;}
+                MessageBox.Show($"Attempt {attempts} trying to check for battery connection");
+
                 await Task.Delay(1000); // Delay between retries
             }
 
@@ -228,14 +230,9 @@ namespace sm70_cp_450_GUI
         }
         private bool CheckBatteryConnection(double V)
         {
-            // If the voltage does not stabilize, return false
-            if (UtilityBase.IsApproximatelyEqual(currentVoltage, V, 0.5))
-            {
-                return false;
-            }
-
-            // If the voltage is stable (not dropping to zero), the battery is connected
-            return true;
+            if (UtilityBase.IsApproximatelyEqual(currentVoltage, V, 0.5)) return false; // If the voltage does not stabilize, return false
+            if (UtilityBase.IsApproximatelyEqual(currentVoltage, 0, 5)) return false; //this voltage is too low to be a correct connection
+            return true; // If the voltage is stable (not dropping to zero), the battery is connected
         }
         #endregion
 
@@ -269,10 +266,9 @@ namespace sm70_cp_450_GUI
 
         private void UpdateBatterySettings()
         {
-            double value1, value2;
             string input = InputField_StoredValueVoltage.Text;
             string[] values = input.Split('~');
-            if (values.Length == 2 && double.TryParse(values[0], out value1) && double.TryParse(values[1], out value2)) { _CutOffDischargeVoltage = value1; _MaxChargeVoltage = value2; }
+            if (values.Length == 2 && double.TryParse(values[0], out double value1) && double.TryParse(values[1], out double value2)) { _CutOffDischargeVoltage = value1; _MaxChargeVoltage = value2; }
             else { MessageBox.Show("Invalid input for voltage range"); return; }
             _CutOffDischargeVoltage = value1;
             _MaxChargeVoltage = value2;
@@ -285,9 +281,8 @@ namespace sm70_cp_450_GUI
 
         private void InitializeBatterySettings()
         {
-            double typicalVoltagePerCell = 2;
-            double numberOfCells = 2;
-
+            double typicalVoltagePerCell;
+            double numberOfCells;
             _ratedVoltage = UtilityBase.ParseInput(RatedBatteryVoltageUI.Text);
             _ratedCapacity = UtilityBase.ParseInput(RatedBatteryAmperageUI.Text);
             Charge_C_Rating = UtilityBase.ParseInput(Charge_cRating.Text);

@@ -63,6 +63,7 @@ namespace sm70_cp_450_GUI
                 EnqueueCommand("SYSTem:REMote:CV: Remote");
                 EnqueueCommand("SYSTem:REMote:CC: Remote");
                 EnqueueCommand("SYSTem:REMote:CP: Remote");
+                EnqueueCommand("SYSTem:POWersink output,On");
                 return true;
             }
             catch (Exception)
@@ -76,10 +77,6 @@ namespace sm70_cp_450_GUI
             _tcpClient?.Close();
             OnConnectionLost?.Invoke();
         }
-
-
-
-
 
         #region queries
 

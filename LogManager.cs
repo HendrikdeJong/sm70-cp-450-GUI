@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static sm70_cp_450_GUI.BatteryManager;
 using static sm70_cp_450_GUI.MainForm;
 
 namespace sm70_cp_450_GUI
@@ -18,15 +17,7 @@ namespace sm70_cp_450_GUI
 
         // Private constructor to prevent direct instantiation
         private LogManager() { }
-
-        public static LogManager Instance
-        {
-            get
-            {
-                _instance ??= new LogManager();
-                return _instance;
-            }
-        }
+        public static LogManager Instance{get{_instance ??= new LogManager();return _instance;}}
 
         // Define a delegate for the log update event
         public delegate void LogUpdateEventHandler(string logMessage);
@@ -37,6 +28,13 @@ namespace sm70_cp_450_GUI
         public Dictionary<string, (int Count, DateTime LastOccurred)> _errorMessages = new();
         public Dictionary<string, (int Count, DateTime LastOccurred)> _infoMessages = new();
         public List<BatteryMetrics> batteryData = new();
+        public class BatteryMetrics
+        {
+            public DateTime Time { get; set; }
+            public double Voltage { get; set; }
+            public double Current { get; set; }
+            public double Power { get; set; }
+        }
 
         public void AddDebugLogMessage(string LogMessage)
         {
