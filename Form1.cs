@@ -22,9 +22,6 @@ namespace sm70_cp_450_GUI
             Charge,
             Discharge,
         }
-        //private TimeSpan _timeSinceLastSave = TimeSpan.Zero;
-        //private TimeSpan? EstimateTotalTime;
-
         private bool _started = false;
         public bool _ConsoleState = false;
         private bool _EditingValues = false;
@@ -254,16 +251,12 @@ namespace sm70_cp_450_GUI
             power = power != 0 ? _MaxPower : power;
             powerNeg = powerNeg != 0 ? _MinPower : powerNeg;
 
-            //MessageBox.Show($"trying to set values: {output}, {voltage}, {amp}, {ampNeg}, {power}, {powerNeg}");
             _commandManager?.SetOutputVoltage(voltage);
             _commandManager?.SetOutputCurrent(amp);
             _commandManager?.SetOutputCurrentNegative(ampNeg);
             _commandManager?.SetOutputPower(power);
             _commandManager?.SetOutputPowerNegative(powerNeg);
         }
-
-        private void SetOutput(bool output){_commandManager?.SetOutputState(output); }
-
         private void UpdateBatterySettings()
         {
             string input = InputField_StoredValueVoltage.Text;
@@ -361,15 +354,15 @@ namespace sm70_cp_450_GUI
                         break;
                     case "SetStateIdle":
                         currentState = AvailableState.None;
-                        SetValuesToMachine(_ratedVoltage); SetOutput(false);
+                        SetValuesToMachine(_ratedVoltage); _commandManager?.SetOutputState(false);
                         break;
                     case "SetStateCharge":
                         currentState = AvailableState.Charge;
-                        SetValuesToMachine(_MaxChargeVoltage); SetOutput(true);
+                        SetValuesToMachine(_MaxChargeVoltage); _commandManager?.SetOutputState(true);
                         break;
                     case "SetStateDischarge":
                         currentState = AvailableState.Discharge;
-                        SetValuesToMachine(_CutOffDischargeVoltage); SetOutput(true);
+                        SetValuesToMachine(_CutOffDischargeVoltage); _commandManager?.SetOutputState(true);
                         break;
                     case "SaveCSV":
                         logManager?.ExportToCsv(false, _SaveLocationCSV);
@@ -419,6 +412,5 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
-        
     }
 }
