@@ -87,8 +87,7 @@ namespace sm70_cp_450_GUI
                 switch (comboBox.Name)
                 {
                     case "CV_ComboBox":
-                        if(comboBox.Text != CV) _commandManager?.
-                                (comboBox.Text); MessageBox.Show($"{comboBox.Name}: set to {comboBox.Text}");
+                        if(comboBox.Text != CV) _commandManager?.SetSystemRemoteSetting_CV(comboBox.Text); MessageBox.Show($"{comboBox.Name}: set to {comboBox.Text}");
                         break;
                     case "CC_ComboBox":
                         if (comboBox.Text != CC) _commandManager?.SetSystemRemoteSetting_CC(comboBox.Text); MessageBox.Show($"{comboBox.Name}: set to {comboBox.Text}");

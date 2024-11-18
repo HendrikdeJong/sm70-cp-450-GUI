@@ -34,11 +34,11 @@ namespace sm70_cp_450_GUI
 
         private double accumulatedCharge = 0;
 
-        private DateTime? chargeStartTime; // Null when not charging
-        private TimeSpan totalChargeTime; // Accumulated charging 
-        private double thresholdPercentage = 0; // User-set threshold percentage (e.g., 80%)
-        private double thresholdTime = 0; // User-set time in seconds to keep the current below the threshold
+        private DateTime? chargeStartTime; 
         private DateTime? thresholdStartTime = null;
+        private TimeSpan totalChargeTime;
+        private double thresholdPercentage = 0; 
+        private double thresholdTime = 0;
 
         public double CapacityPercent = 0;
         public float timer = 0;
@@ -50,7 +50,6 @@ namespace sm70_cp_450_GUI
             _logManager = LogManager.Instance;
             _mainForm = MainForm.Instance;
 
-            // Initialize the dictionary in the constructor
             _commandToUIActions = new Dictionary<string, Action<string>>();
         }
 
@@ -66,9 +65,8 @@ namespace sm70_cp_450_GUI
 
         private void SaveValues()
         {
-            // Get values for threshold percentage and time
-            thresholdPercentage = UtilityBase.ParseInput(Input_ThresholdPercentage.Text); // The percentage of max current
-            thresholdTime = UtilityBase.ParseInput(Input_ThresholdTime.Text); // Time to keep current below threshold (seconds)
+            thresholdPercentage = UtilityBase.ParseInput(Input_ThresholdPercentage.Text);
+            thresholdTime = UtilityBase.ParseInput(Input_ThresholdTime.Text);
 
             Capacity = UtilityBase.ParseInput(Input_Capacity.Text);
             BulkVoltage = UtilityBase.ParseInput(Input_BulkVoltage.Text);
@@ -105,7 +103,7 @@ namespace sm70_cp_450_GUI
 
             if (Rad_Btn_Discharge.Checked)
             {
-                chargeStartTime = null; // Reset charge timer when discharging
+                chargeStartTime = null;
 
                 // Discharge logic
                 if (ReadVoltage <= MinimumVoltage && OutputActive)
@@ -119,33 +117,54 @@ namespace sm70_cp_450_GUI
                     _commandManager?.SetOutputVoltage(MinimumVoltage);
                     _commandManager?.SetOutputCurrent(0);
                     _commandManager?.SetOutputCurrentNegative(maxCurrent);
+
+                    if (ReadCurrent <= thresholdPercentage / 100 * maxCurrent)
+                    {
+                        if (thresholdStartTime == null)
+                        {
+                            thresholdStartTime = DateTime.Now;
+                            _logManager?.AddDebugLogMessage($"Threshold timer started. Current: {ReadCurrent}, Threshold: {thresholdPercentage / 100 * maxCurrent}");
+                        }
+
+                        TimeSpan thresholdElapsed = DateTime.Now - thresholdStartTime.Value;
+
+                        if (thresholdElapsed.TotalSeconds >= thresholdTime)
+                        {
+                            _logManager?.AddDebugLogMessage($"Battery empty condition met. Switching to charge mode. Threshold duration: {thresholdElapsed.TotalSeconds} seconds.");
+                            Rad_Btn_Discharge.Checked = false;
+                            Rad_Btn_Charge.Checked = true;
+
+                            thresholdStartTime = null;
+                        }
+                    }
+                    else
+                    {
+                        if (thresholdStartTime != null)
+                        {
+                            _logManager?.AddDebugLogMessage($"Threshold timer reset. Current: {ReadCurrent}, Threshold: {thresholdPercentage / 100 * maxCurrent}");
+                        }
+                        thresholdStartTime = null;
+                    }
                 }
             }
 
             if (Rad_Btn_Charge.Checked)
             {
-                // Start tracking time if not already started
                 if (chargeStartTime == null)
                 {
                     chargeStartTime = DateTime.Now;
                 }
 
-                // Calculate elapsed time since charging started
                 TimeSpan elapsed = DateTime.Now - chargeStartTime.Value;
 
-                // Accumulate total charge time
                 totalChargeTime += elapsed;
 
-                // Reset chargeStartTime for next interval
                 chargeStartTime = DateTime.Now;
 
-                // Calculate accumulated charge (Amp-hours)
                 accumulatedCharge += (ReadCurrent * elapsed.TotalHours);
 
-                // Calculate SOC
                 double currentSOC = accumulatedCharge / Capacity * 100;
 
-                // Stop charging if SOC reaches the desired percentage
                 if (currentSOC >= wantedBatteryPercentage)
                 {
                     HandleCommand("Stop");
@@ -155,37 +174,6 @@ namespace sm70_cp_450_GUI
                     _commandManager?.SetOutputVoltage(BulkVoltage);
                     _commandManager?.SetOutputCurrent(maxCurrent);
                     _commandManager?.SetOutputCurrentNegative(0);
-                }
-
-                // **Threshold Current Logic**
-                if (ReadCurrent >= thresholdPercentage / 100 * maxCurrent)
-                {
-                    // If current exceeds the threshold, start the timer
-                    if (thresholdStartTime == null)
-                    {
-                        thresholdStartTime = DateTime.Now;
-                    }
-
-                    // Check if the current has been above the threshold for the user-set duration
-                    TimeSpan thresholdElapsed = DateTime.Now - thresholdStartTime.Value;
-
-                    if (thresholdElapsed.TotalSeconds >= thresholdTime)
-                    {
-                        // Take action to keep the current below the threshold
-                        _logManager?.AddDebugLogMessage($"Current exceeded threshold for {thresholdElapsed.TotalSeconds} seconds. Reducing current.");
-
-                        // Reduce current to below threshold (e.g., set it to a lower value)
-                        double reducedCurrent = maxCurrent * (thresholdPercentage - 10) / 100; // Reduce by 10% below the threshold
-                        _commandManager?.SetOutputCurrent(reducedCurrent);
-
-                        // Reset the timer
-                        thresholdStartTime = null;
-                    }
-                }
-                else
-                {
-                    // Reset threshold timer if current is below the threshold
-                    thresholdStartTime = null;
                 }
             }
         }

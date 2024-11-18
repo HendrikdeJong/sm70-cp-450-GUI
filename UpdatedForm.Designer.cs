@@ -53,6 +53,11 @@
             Input_ThresholdTime = new TextBox();
             Input_ThresholdPercentage = new TextBox();
             Input_CRating = new TextBox();
+            label2 = new Label();
+            label1 = new Label();
+            Label_Timer1 = new Label();
+            caloumcountingTimer = new System.Windows.Forms.Timer(components);
+            ThresholdReachedTimer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // Input_BulkVoltage
@@ -142,9 +147,8 @@
             // 
             // Label_Capacity
             // 
-            Label_Capacity.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_Capacity.AutoSize = true;
-            Label_Capacity.Location = new Point(87, 153);
+            Label_Capacity.Location = new Point(77, 153);
             Label_Capacity.Name = "Label_Capacity";
             Label_Capacity.Size = new Size(86, 15);
             Label_Capacity.TabIndex = 21;
@@ -152,9 +156,8 @@
             // 
             // Label_BulkVolt
             // 
-            Label_BulkVolt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_BulkVolt.AutoSize = true;
-            Label_BulkVolt.Location = new Point(87, 182);
+            Label_BulkVolt.Location = new Point(77, 182);
             Label_BulkVolt.Name = "Label_BulkVolt";
             Label_BulkVolt.Size = new Size(83, 15);
             Label_BulkVolt.TabIndex = 22;
@@ -162,9 +165,8 @@
             // 
             // Label_MinVolt
             // 
-            Label_MinVolt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_MinVolt.AutoSize = true;
-            Label_MinVolt.Location = new Point(87, 211);
+            Label_MinVolt.Location = new Point(77, 211);
             Label_MinVolt.Name = "Label_MinVolt";
             Label_MinVolt.Size = new Size(81, 15);
             Label_MinVolt.TabIndex = 23;
@@ -172,9 +174,8 @@
             // 
             // Label_MaxCurr
             // 
-            Label_MaxCurr.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_MaxCurr.AutoSize = true;
-            Label_MaxCurr.Location = new Point(87, 240);
+            Label_MaxCurr.Location = new Point(77, 240);
             Label_MaxCurr.Name = "Label_MaxCurr";
             Label_MaxCurr.Size = new Size(86, 15);
             Label_MaxCurr.TabIndex = 24;
@@ -182,9 +183,8 @@
             // 
             // Label_Procent
             // 
-            Label_Procent.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_Procent.AutoSize = true;
-            Label_Procent.Location = new Point(87, 269);
+            Label_Procent.Location = new Point(77, 269);
             Label_Procent.Name = "Label_Procent";
             Label_Procent.Size = new Size(81, 15);
             Label_Procent.TabIndex = 25;
@@ -192,21 +192,21 @@
             // 
             // Label_LiveVoltage
             // 
-            Label_LiveVoltage.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_LiveVoltage.AutoSize = true;
-            Label_LiveVoltage.Location = new Point(188, 57);
+            Label_LiveVoltage.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_LiveVoltage.Location = new Point(77, 99);
             Label_LiveVoltage.Name = "Label_LiveVoltage";
-            Label_LiveVoltage.Size = new Size(100, 15);
+            Label_LiveVoltage.Size = new Size(134, 21);
             Label_LiveVoltage.TabIndex = 26;
             Label_LiveVoltage.Text = "Label_LiveVoltage";
             // 
             // Label_LiveCurrent
             // 
-            Label_LiveCurrent.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_LiveCurrent.AutoSize = true;
-            Label_LiveCurrent.Location = new Point(294, 57);
+            Label_LiveCurrent.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_LiveCurrent.Location = new Point(217, 99);
             Label_LiveCurrent.Name = "Label_LiveCurrent";
-            Label_LiveCurrent.Size = new Size(101, 15);
+            Label_LiveCurrent.Size = new Size(135, 21);
             Label_LiveCurrent.TabIndex = 27;
             Label_LiveCurrent.Text = "Label_LiveCurrent";
             // 
@@ -234,9 +234,8 @@
             // 
             // Label_ThresholdTime
             // 
-            Label_ThresholdTime.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_ThresholdTime.AutoSize = true;
-            Label_ThresholdTime.Location = new Point(87, 327);
+            Label_ThresholdTime.Location = new Point(77, 327);
             Label_ThresholdTime.Name = "Label_ThresholdTime";
             Label_ThresholdTime.Size = new Size(96, 15);
             Label_ThresholdTime.TabIndex = 31;
@@ -244,9 +243,8 @@
             // 
             // Label_ThresholdPercentage
             // 
-            Label_ThresholdPercentage.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Label_ThresholdPercentage.AutoSize = true;
-            Label_ThresholdPercentage.Location = new Point(87, 298);
+            Label_ThresholdPercentage.Location = new Point(77, 298);
             Label_ThresholdPercentage.Name = "Label_ThresholdPercentage";
             Label_ThresholdPercentage.Size = new Size(80, 15);
             Label_ThresholdPercentage.TabIndex = 30;
@@ -276,11 +274,41 @@
             Input_CRating.Size = new Size(130, 23);
             Input_CRating.TabIndex = 32;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(451, 327);
+            label2.Name = "label2";
+            label2.Size = new Size(96, 15);
+            label2.TabIndex = 34;
+            label2.Text = "Label_TholdTime";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(451, 298);
+            label1.Name = "label1";
+            label1.Size = new Size(96, 15);
+            label1.TabIndex = 35;
+            label1.Text = "Label_TholdTime";
+            // 
+            // Label_Timer1
+            // 
+            Label_Timer1.AutoSize = true;
+            Label_Timer1.Location = new Point(451, 269);
+            Label_Timer1.Name = "Label_Timer1";
+            Label_Timer1.Size = new Size(76, 15);
+            Label_Timer1.TabIndex = 36;
+            Label_Timer1.Text = "Label_Timer1";
+            // 
             // UpdatedForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(727, 768);
+            Controls.Add(Label_Timer1);
+            Controls.Add(label1);
+            Controls.Add(label2);
             Controls.Add(Input_CRating);
             Controls.Add(Label_ThresholdTime);
             Controls.Add(Label_ThresholdPercentage);
@@ -335,5 +363,10 @@
         private TextBox Input_ThresholdTime;
         private TextBox Input_ThresholdPercentage;
         private TextBox Input_CRating;
+        private Label label2;
+        private Label label1;
+        private Label Label_Timer1;
+        private System.Windows.Forms.Timer caloumcountingTimer;
+        private System.Windows.Forms.Timer ThresholdReachedTimer;
     }
 }
