@@ -35,8 +35,10 @@
             Label_MachineAppliedVoltage_UI = new Label();
             Label_Remote_CV_UI = new Label();
             tableLayoutPanel8 = new TableLayoutPanel();
-            InputField_StoredValueVoltage = new TextBox();
             Button_Toggle_ValueEditor = new Button();
+            splitContainer1 = new SplitContainer();
+            InputField_StoredValueVoltageMIN = new TextBox();
+            InputField_StoredValueVoltageMAX = new TextBox();
             tableLayoutPanel7 = new TableLayoutPanel();
             InputField_StoredValuePowerMin = new TextBox();
             InputField_StoredValuePowerPlus = new TextBox();
@@ -56,7 +58,6 @@
             InputField_StoredValueCurrentPlus = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             groupBox1 = new GroupBox();
-            label9 = new Label();
             ConsoleBox = new GroupBox();
             toolStrip1 = new ToolStrip();
             ToggleConsole_Btn = new ToolStripButton();
@@ -65,16 +66,14 @@
             toolStripSeparator4 = new ToolStripSeparator();
             Console_Short_ErrorLabel = new ToolStripLabel();
             Console_Simple_Textbox_UI = new RichTextBox();
-            label8 = new Label();
-            TrackbarDischarge = new TrackBar();
             Operation_ConnectBattery_Override = new CheckBox();
-            TrackbarCharge = new TrackBar();
             StatusCurrentOperation_UI = new TextBox();
             label7 = new Label();
             label4 = new Label();
             Label_Elapsed_Time_UI = new TextBox();
             textBox2 = new TextBox();
             textBox1 = new TextBox();
+            button1 = new Button();
             FactoryInformationBox = new GroupBox();
             BatteryChemistryType = new ComboBox();
             ApplyBatteryDataButton = new Button();
@@ -123,6 +122,7 @@
             toolStripTextBox1 = new ToolStripMenuItem();
             OperationsBox_UI = new GroupBox();
             ControlPanel = new GroupBox();
+            button2 = new Button();
             Operation_NoneORStop_Selection = new Button();
             Operation_Charge_selection = new Button();
             Operation_Discharge_selection = new Button();
@@ -130,6 +130,10 @@
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
             tableLayoutPanel7.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
@@ -137,8 +141,6 @@
             groupBox1.SuspendLayout();
             ConsoleBox.SuspendLayout();
             toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).BeginInit();
             FactoryInformationBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
@@ -228,8 +230,8 @@
             // 
             tableLayoutPanel8.ColumnCount = 1;
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.Controls.Add(InputField_StoredValueVoltage, 0, 0);
             tableLayoutPanel8.Controls.Add(Button_Toggle_ValueEditor, 0, 1);
+            tableLayoutPanel8.Controls.Add(splitContainer1, 0, 0);
             tableLayoutPanel8.Dock = DockStyle.Fill;
             tableLayoutPanel8.Location = new Point(3, 104);
             tableLayoutPanel8.Name = "tableLayoutPanel8";
@@ -238,18 +240,6 @@
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel8.Size = new Size(286, 63);
             tableLayoutPanel8.TabIndex = 12;
-            // 
-            // InputField_StoredValueVoltage
-            // 
-            InputField_StoredValueVoltage.Dock = DockStyle.Fill;
-            InputField_StoredValueVoltage.Location = new Point(3, 3);
-            InputField_StoredValueVoltage.Name = "InputField_StoredValueVoltage";
-            InputField_StoredValueVoltage.PlaceholderText = "0 A";
-            InputField_StoredValueVoltage.ReadOnly = true;
-            InputField_StoredValueVoltage.Size = new Size(280, 29);
-            InputField_StoredValueVoltage.TabIndex = 0;
-            InputField_StoredValueVoltage.Tag = "";
-            InputField_StoredValueVoltage.TextAlign = HorizontalAlignment.Center;
             // 
             // Button_Toggle_ValueEditor
             // 
@@ -263,6 +253,47 @@
             Button_Toggle_ValueEditor.Text = "Edit values";
             Button_Toggle_ValueEditor.UseVisualStyleBackColor = true;
             Button_Toggle_ValueEditor.Click += ButtonHandler;
+            // 
+            // splitContainer1
+            // 
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(3, 3);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(InputField_StoredValueVoltageMIN);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(InputField_StoredValueVoltageMAX);
+            splitContainer1.Size = new Size(280, 25);
+            splitContainer1.SplitterDistance = 141;
+            splitContainer1.TabIndex = 2;
+            // 
+            // InputField_StoredValueVoltageMIN
+            // 
+            InputField_StoredValueVoltageMIN.Dock = DockStyle.Fill;
+            InputField_StoredValueVoltageMIN.Location = new Point(0, 0);
+            InputField_StoredValueVoltageMIN.Name = "InputField_StoredValueVoltageMIN";
+            InputField_StoredValueVoltageMIN.PlaceholderText = "0 V-";
+            InputField_StoredValueVoltageMIN.ReadOnly = true;
+            InputField_StoredValueVoltageMIN.Size = new Size(141, 29);
+            InputField_StoredValueVoltageMIN.TabIndex = 2;
+            InputField_StoredValueVoltageMIN.Tag = "";
+            InputField_StoredValueVoltageMIN.TextAlign = HorizontalAlignment.Center;
+            // 
+            // InputField_StoredValueVoltageMAX
+            // 
+            InputField_StoredValueVoltageMAX.Dock = DockStyle.Fill;
+            InputField_StoredValueVoltageMAX.Location = new Point(0, 0);
+            InputField_StoredValueVoltageMAX.Name = "InputField_StoredValueVoltageMAX";
+            InputField_StoredValueVoltageMAX.PlaceholderText = "0 V+";
+            InputField_StoredValueVoltageMAX.ReadOnly = true;
+            InputField_StoredValueVoltageMAX.Size = new Size(135, 29);
+            InputField_StoredValueVoltageMAX.TabIndex = 31;
+            InputField_StoredValueVoltageMAX.Tag = "";
+            InputField_StoredValueVoltageMAX.TextAlign = HorizontalAlignment.Center;
             // 
             // tableLayoutPanel7
             // 
@@ -284,7 +315,7 @@
             InputField_StoredValuePowerMin.Dock = DockStyle.Fill;
             InputField_StoredValuePowerMin.Location = new Point(3, 34);
             InputField_StoredValuePowerMin.Name = "InputField_StoredValuePowerMin";
-            InputField_StoredValuePowerMin.PlaceholderText = "0 W";
+            InputField_StoredValuePowerMin.PlaceholderText = "0 W-";
             InputField_StoredValuePowerMin.ReadOnly = true;
             InputField_StoredValuePowerMin.Size = new Size(281, 29);
             InputField_StoredValuePowerMin.TabIndex = 2;
@@ -468,7 +499,7 @@
             InputField_StoredValueCurrentMin.Dock = DockStyle.Fill;
             InputField_StoredValueCurrentMin.Location = new Point(3, 34);
             InputField_StoredValueCurrentMin.Name = "InputField_StoredValueCurrentMin";
-            InputField_StoredValueCurrentMin.PlaceholderText = "0 A";
+            InputField_StoredValueCurrentMin.PlaceholderText = "0 A-";
             InputField_StoredValueCurrentMin.ReadOnly = true;
             InputField_StoredValueCurrentMin.Size = new Size(280, 29);
             InputField_StoredValueCurrentMin.TabIndex = 1;
@@ -491,12 +522,8 @@
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            groupBox1.Controls.Add(label9);
             groupBox1.Controls.Add(ConsoleBox);
-            groupBox1.Controls.Add(label8);
-            groupBox1.Controls.Add(TrackbarDischarge);
             groupBox1.Controls.Add(Operation_ConnectBattery_Override);
-            groupBox1.Controls.Add(TrackbarCharge);
             groupBox1.Controls.Add(StatusCurrentOperation_UI);
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(label4);
@@ -509,16 +536,6 @@
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(15, 183);
-            label9.Name = "label9";
-            label9.Size = new Size(114, 21);
-            label9.TabIndex = 28;
-            label9.Text = "Discharge to %";
-            label9.Visible = false;
             // 
             // ConsoleBox
             // 
@@ -607,30 +624,6 @@
             Console_Simple_Textbox_UI.TabStop = false;
             Console_Simple_Textbox_UI.Text = "";
             // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(301, 183);
-            label8.Name = "label8";
-            label8.Size = new Size(95, 21);
-            label8.TabIndex = 28;
-            label8.Text = "Charge to %";
-            label8.Visible = false;
-            // 
-            // TrackbarDischarge
-            // 
-            TrackbarDischarge.LargeChange = 30;
-            TrackbarDischarge.Location = new Point(15, 207);
-            TrackbarDischarge.Maximum = 100;
-            TrackbarDischarge.Minimum = 10;
-            TrackbarDischarge.Name = "TrackbarDischarge";
-            TrackbarDischarge.Size = new Size(122, 45);
-            TrackbarDischarge.SmallChange = 10;
-            TrackbarDischarge.TabIndex = 0;
-            TrackbarDischarge.TickFrequency = 10;
-            TrackbarDischarge.Value = 100;
-            TrackbarDischarge.Visible = false;
-            // 
             // Operation_ConnectBattery_Override
             // 
             Operation_ConnectBattery_Override.AutoSize = true;
@@ -640,20 +633,6 @@
             Operation_ConnectBattery_Override.TabIndex = 28;
             Operation_ConnectBattery_Override.Text = "Confirm Battery Battery connection";
             Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
-            // 
-            // TrackbarCharge
-            // 
-            TrackbarCharge.LargeChange = 30;
-            TrackbarCharge.Location = new Point(301, 207);
-            TrackbarCharge.Maximum = 100;
-            TrackbarCharge.Minimum = 10;
-            TrackbarCharge.Name = "TrackbarCharge";
-            TrackbarCharge.Size = new Size(122, 45);
-            TrackbarCharge.SmallChange = 10;
-            TrackbarCharge.TabIndex = 0;
-            TrackbarCharge.TickFrequency = 10;
-            TrackbarCharge.Value = 10;
-            TrackbarCharge.Visible = false;
             // 
             // StatusCurrentOperation_UI
             // 
@@ -724,6 +703,17 @@
             textBox1.TabIndex = 26;
             textBox1.Text = "SOC -";
             textBox1.TextAlign = HorizontalAlignment.Center;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(6, 28);
+            button1.Name = "button1";
+            button1.Size = new Size(112, 137);
+            button1.TabIndex = 29;
+            button1.Tag = "OpenManualForm";
+            button1.Text = "Open Manual Controller";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += ButtonHandler;
             // 
             // FactoryInformationBox
             // 
@@ -1123,6 +1113,8 @@
             // 
             // ControlPanel
             // 
+            ControlPanel.Controls.Add(button2);
+            ControlPanel.Controls.Add(button1);
             ControlPanel.Controls.Add(Operation_NoneORStop_Selection);
             ControlPanel.Controls.Add(Operation_Charge_selection);
             ControlPanel.Controls.Add(Operation_Discharge_selection);
@@ -1133,6 +1125,17 @@
             ControlPanel.TabIndex = 20;
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
+            // 
+            // button2
+            // 
+            button2.Location = new Point(124, 28);
+            button2.Name = "button2";
+            button2.Size = new Size(112, 137);
+            button2.TabIndex = 30;
+            button2.Tag = "OpenSequencer";
+            button2.Text = "Open Sequencer";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += ButtonHandler;
             // 
             // Operation_NoneORStop_Selection
             // 
@@ -1184,6 +1187,7 @@
             Margin = new Padding(4);
             Name = "MainForm";
             Text = "Whisper Power - Sm15k Controller";
+            FormClosing += MainForm_FormClosing;
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -1192,6 +1196,12 @@
             tableLayoutPanel9.PerformLayout();
             tableLayoutPanel8.ResumeLayout(false);
             tableLayoutPanel8.PerformLayout();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel1.PerformLayout();
+            splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
             tableLayoutPanel7.ResumeLayout(false);
             tableLayoutPanel7.PerformLayout();
             tableLayoutPanel5.ResumeLayout(false);
@@ -1206,8 +1216,6 @@
             ConsoleBox.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)TrackbarDischarge).EndInit();
-            ((System.ComponentModel.ISupportInitialize)TrackbarCharge).EndInit();
             FactoryInformationBox.ResumeLayout(false);
             FactoryInformationBox.PerformLayout();
             menuStrip1.ResumeLayout(false);
@@ -1240,7 +1248,6 @@
         private Label Label_Remote_CC_UI;
         private Label Label_MachineAppliedCurrentMin_UI;
         private TableLayoutPanel tableLayoutPanel8;
-        private TextBox InputField_StoredValueVoltage;
         private Button Button_Toggle_ValueEditor;
         private TableLayoutPanel tableLayoutPanel9;
         private Label Label_MachineAppliedVoltage_UI;
@@ -1306,10 +1313,6 @@
         private CheckBox Operation_ConnectBattery_Override;
         private TextBox Discharge_cRating;
         private GroupBox ControlPanel;
-        private Label label9;
-        private Label label8;
-        private TrackBar TrackbarDischarge;
-        private TrackBar TrackbarCharge;
         private Button Operation_NoneORStop_Selection;
         private Button Operation_Charge_selection;
         private Button Operation_Discharge_selection;
@@ -1317,5 +1320,10 @@
         private Label label11;
         private TextBox textBox2;
         private TextBox textBox1;
+        private Button button1;
+        private SplitContainer splitContainer1;
+        private TextBox InputField_StoredValueVoltageMIN;
+        private TextBox InputField_StoredValueVoltageMAX;
+        private Button button2;
     }
 }

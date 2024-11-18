@@ -23,11 +23,12 @@ namespace sm70_cp_450_GUI
             Discharge,
         }
         private bool _started = false;
-        public bool _ConsoleState = false;
         private bool _EditingValues = false;
+        public bool _ConsoleState = false;
 
         public double currentVoltage = 0;
         public double currentCurrent = 0;
+
         public double currentPower = 0;
 
         public double _MaxChargeVoltage;
@@ -54,7 +55,7 @@ namespace sm70_cp_450_GUI
         {
             InitializeComponent();
             Instance = this;
-            _commandToUIActions = new Dictionary<string, Action<string>>(); // Initialize the dictionary
+            _commandToUIActions = new Dictionary<string, Action<string>>();
             TcpConnectionHandler.Instance.OnConnectionEstablished += InitializeUIActions;
             TcpConnectionHandler.Instance.OnConnectionLost += HandleConnectionLost;
             Load += MainForm_Load;
@@ -112,7 +113,7 @@ namespace sm70_cp_450_GUI
             updateTimer.Tick += (sender, e) => StandardUpdate();
             updateTimer.Start();
 
-            Timer? LateUpdateTimer = new(){Interval = 10000};
+            Timer? LateUpdateTimer = new() { Interval = 10000 };
             LateUpdateTimer.Tick += (sender, e) => LateUpdate();
             LateUpdateTimer.Start();
 
@@ -156,6 +157,7 @@ namespace sm70_cp_450_GUI
         private void LogManager_OnLogUpdate(string logMessage) { if (InvokeRequired) Invoke(new Action(() => LogManager_OnLogUpdate(logMessage))); else Console_Simple_Textbox_UI.Text = logMessage; }
         //handle the state of the machine
         private bool _isPreChargeInProgress = false;
+        private bool batteryConnected = false;
         private async void StateManager()
         {
             if (_tcpHandler == null) return;
@@ -166,7 +168,7 @@ namespace sm70_cp_450_GUI
             if (!_isPreChargeInProgress)
             {
                 _isPreChargeInProgress = true;
-                bool batteryConnected = await TryPreChargePulse();
+                batteryConnected = await TryPreChargePulse();
                 if (!batteryConnected)
                 {
                     MessageBox.Show("Failed to connect the battery after 3 attempts.");
@@ -174,14 +176,11 @@ namespace sm70_cp_450_GUI
                 }
             }
 
-
-
-            // Step 2: Check the charging state if the battery is connected
-            if (currentState == AvailableState.Charge)
+            if (currentState == AvailableState.Charge && batteryConnected)
             {
-                if (UtilityBase.IsApproximatelyEqual(currentVoltage, _MaxChargeVoltage, 0.5))
+                if (UtilityBase.IsApproximatelyEqual(currentVoltage, _MaxChargeVoltage, 1))
                 {
-                    if (UtilityBase.IsApproximatelyEqual(currentCurrent, 0, 0.1))
+                    if (UtilityBase.IsApproximatelyEqual(currentCurrent, 0, 1))
                     {
                         _commandManager?.SetOutputState(false);
                         currentState = AvailableState.None;
@@ -189,9 +188,9 @@ namespace sm70_cp_450_GUI
                     }
                 }
             }
-            else if (currentState == AvailableState.Discharge)
+            else if (currentState == AvailableState.Discharge && batteryConnected)
             {
-                // You mentioned not handling discharging yet, so this part can be developed later
+                // not handling discharging yet, so this part can be developed later
             }
         }
         private async Task<bool> TryPreChargePulse()
@@ -216,8 +215,8 @@ namespace sm70_cp_450_GUI
 
                 await Task.Delay(2500);
 
-                 //Step 2: Check if the voltage is stabilized (i.e., battery is connected)
-                if (CheckBatteryConnection(_preChargeActiveVoltage)){batteryConnected = true;break;}
+                //Step 2: Check if the voltage is stabilized (i.e., battery is connected)
+                if (CheckBatteryConnection(_preChargeActiveVoltage)) { batteryConnected = true; break; }
                 MessageBox.Show($"Attempt {attempts} trying to check for battery connection");
 
                 await Task.Delay(1000); // Delay between retries
@@ -227,7 +226,7 @@ namespace sm70_cp_450_GUI
         }
         private bool CheckBatteryConnection(double V)
         {
-            if (UtilityBase.IsApproximatelyEqual(currentVoltage, V, 0.5)) return false; // If the voltage does not stabilize, return false
+            if (UtilityBase.IsApproximatelyEqual(currentVoltage, V, 1)) return false; // If the voltage does not stabilize, return false
             if (UtilityBase.IsApproximatelyEqual(currentVoltage, 0, 5)) return false; //this voltage is too low to be a correct connection
             return true; // If the voltage is stable (not dropping to zero), the battery is connected
         }
@@ -243,7 +242,7 @@ namespace sm70_cp_450_GUI
             textBox1.Text = SOC_Charge.ToString() + " %";
             textBox2.Text = SOC_Discharge.ToString() + " %";
         }
-        
+
         private void SetValuesToMachine(double voltage, double amp = 0, double ampNeg = 0, double power = 0, double powerNeg = 0)
         {
             amp = amp == 0 ? _MaxCurrent : amp;
@@ -259,12 +258,8 @@ namespace sm70_cp_450_GUI
         }
         private void UpdateBatterySettings()
         {
-            string input = InputField_StoredValueVoltage.Text;
-            string[] values = input.Split('~');
-            if (values.Length == 2 && double.TryParse(values[0], out double value1) && double.TryParse(values[1], out double value2)) { _CutOffDischargeVoltage = value1; _MaxChargeVoltage = value2; }
-            else { MessageBox.Show("Invalid input for voltage range"); return; }
-            _CutOffDischargeVoltage = value1;
-            _MaxChargeVoltage = value2;
+            _CutOffDischargeVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltageMAX.Text);
+            _MaxChargeVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltageMIN.Text);
             _MaxCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentPlus.Text);
             _MaxPower = UtilityBase.ParseInput(InputField_StoredValuePowerPlus.Text);
             _MinCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentMin.Text);
@@ -294,7 +289,7 @@ namespace sm70_cp_450_GUI
 
             if (BatteryChemistryType.SelectedIndex == 0)
             {
-                typicalVoltagePerCell = 3.7; // Nominal voltage for a Lithium-Ion cell
+                typicalVoltagePerCell = 3.6; // Nominal voltage for a Lithium-Ion cell
                 numberOfCells = Math.Round(_ratedVoltage / typicalVoltagePerCell);
 
                 _MaxChargeVoltage = numberOfCells * 4.2;
@@ -309,7 +304,8 @@ namespace sm70_cp_450_GUI
                 _CutOffDischargeVoltage = numberOfCells * 1.75;
             }
 
-            InputField_StoredValueVoltage.Text = ($"{_CutOffDischargeVoltage} ~ {_MaxChargeVoltage} V");
+            InputField_StoredValueVoltageMAX.Text = ($"{_MaxChargeVoltage} V");
+            InputField_StoredValueVoltageMIN.Text = ($"{_CutOffDischargeVoltage} V");
             InputField_StoredValueCurrentPlus.Text = ($"{_MaxCurrent} A");
             InputField_StoredValuePowerPlus.Text = ($"{_MaxPower} W");
             InputField_StoredValueCurrentMin.Text = ($" - {_MinCurrent} A");
@@ -335,22 +331,29 @@ namespace sm70_cp_450_GUI
 
             if (tag != null)
             {
-                //logManager?.AddDebugLogMessage($"Tag found: {tag}");
-
                 switch (tag)
                 {
                     case "ToggleEditing":
                         _EditingValues = !_EditingValues;
-                        InputField_StoredValueVoltage.ReadOnly = !_EditingValues;
+                        InputField_StoredValueVoltageMAX.ReadOnly = !_EditingValues;
+                        InputField_StoredValueVoltageMIN.ReadOnly = !_EditingValues;
                         InputField_StoredValueCurrentPlus.ReadOnly = !_EditingValues;
                         InputField_StoredValuePowerPlus.ReadOnly = !_EditingValues;
                         InputField_StoredValueCurrentMin.ReadOnly = !_EditingValues;
                         InputField_StoredValuePowerMin.ReadOnly = !_EditingValues;
                         Button_Toggle_ValueEditor.Text = _EditingValues ? "Save And Update Values" : "Edit Values";
-                        if(!_EditingValues) UpdateBatterySettings();
+                        if (!_EditingValues) UpdateBatterySettings();
                         break;
                     case "setData":
                         InitializeBatterySettings();
+                        break;
+                    case "OpenManualForm":
+                        ManualForm manualForm = new();
+                        manualForm.Show();
+                        break;
+                    case "OpenSequencer":
+                        UpdatedForm updatedForm = new();
+                        updatedForm.Show();
                         break;
                     case "SetStateIdle":
                         currentState = AvailableState.None;
@@ -411,6 +414,14 @@ namespace sm70_cp_450_GUI
                         break;
                 }
             }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _commandManager?.SetSystemRemoteSetting_CV("Front");
+            _commandManager?.SetSystemRemoteSetting_CC("Front");
+            _commandManager?.SetSystemRemoteSetting_CP("Front");
+
         }
     }
 }

@@ -5,7 +5,7 @@ namespace sm70_cp_450_GUI
 {
     public static class UtilityBase
     {
-        public static bool IsApproximatelyEqual(double value1, double value2, double value3 = 0.1)
+        public static bool IsApproximatelyEqual(double value1, double value2, double value3 = 1)
         {
             double difference = Math.Abs(value1 - value2);
             return difference <= value3;

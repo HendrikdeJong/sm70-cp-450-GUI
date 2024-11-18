@@ -163,6 +163,18 @@ namespace sm70_cp_450_GUI
 
         #endregion
 
+
+
+
+
+
+
+
+
+
+
+
+
         #region commands
 
         public void SetSystemRemoteSetting_CV(string state)
@@ -199,7 +211,7 @@ namespace sm70_cp_450_GUI
 
         public void SetOutputCurrentNegative(double outputCurrentNegative)
         {
-            string String = outputCurrentNegative.ToString().Replace(',', '.');
+            string String = (-Math.Abs(outputCurrentNegative)).ToString().Replace(',', '.');
             _logManager.AddDebugLogMessage($"⚠️ trying to enqueue command: SOURce:CURrent:NEGative {String} ");
             _tcpHandler.EnqueueCommand($"SOURce:CURrent:NEGative {String}");
         }

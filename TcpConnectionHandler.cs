@@ -73,6 +73,10 @@ namespace sm70_cp_450_GUI
         }
         public void CloseConnection()
         {
+            EnqueueCommand("SYSTem:REMote:CV: Front");
+            EnqueueCommand("SYSTem:REMote:CC: Front");
+            EnqueueCommand("SYSTem:REMote:CP: Front");
+
             _networkStream?.Close();
             _tcpClient?.Close();
             OnConnectionLost?.Invoke();
