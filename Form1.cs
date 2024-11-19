@@ -397,7 +397,7 @@ namespace sm70_cp_450_GUI
                         }
                         break;
                     case "DisconnectSocket":
-                        if (_tcpHandler != null && _tcpHandler.IsConnected) _tcpHandler?.CloseConnection();
+                        if (_tcpHandler != null && _tcpHandler.IsConnected) _tcpHandler?.CloseConnectionAsync();
                         break;
                     case "ToggleSessionData":
                         Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSessionData.Checked;
@@ -416,12 +416,20 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _commandManager?.SetSystemRemoteSetting_CV("Front");
-            _commandManager?.SetSystemRemoteSetting_CC("Front");
-            _commandManager?.SetSystemRemoteSetting_CP("Front");
+            // Check if there is an ongoing TCP connection
+            if (_tcpHandler != null && _tcpHandler.IsConnected)
+            {
+                // Show a loading indicator or disable form elements if necessary
+                Cursor = Cursors.WaitCursor;
 
+                // Close the connection and await the completion of the process
+                await _tcpHandler.CloseConnectionAsync();
+            }
+
+            // Proceed with the form closing after the connection is closed
+            Cursor = Cursors.Default;  // Reset the cursor after the operation
         }
     }
 }

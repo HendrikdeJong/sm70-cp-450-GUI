@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,22 +25,29 @@ namespace sm70_cp_450_GUI
         private bool OutputActive;
 
         private double Capacity = 0;
+        private double MaxWatt = 0;
         private double BulkVoltage = 0;
         private double MinimumVoltage = 0;
         private double maxCurrent = 0;
         private double cRating = 0;
         private double wantedBatteryPercentage = 0;
 
+        private double TriggerOffsetCurrent = 0;
+
         public double ReadVoltage = 0;
         public double ReadCurrent = 0;
 
+
         private double accumulatedCharge = 0;
 
-        private DateTime? chargeStartTime; 
-        private DateTime? thresholdStartTime = null;
-        private TimeSpan totalChargeTime;
-        private double thresholdPercentage = 0; 
-        private double thresholdTime = 0;
+
+        private Stopwatch triggerStopwatch;
+        private Stopwatch coulombCountStopwatch;
+        private TimeSpan totalDischargeTime = TimeSpan.Zero;
+        private double dischargeSOC = 0;
+
+        private double TriggerThresholdPercent = 0; 
+        private TimeSpan TriggerThresholdTime = TimeSpan.Zero;
 
         public double CapacityPercent = 0;
         public float timer = 0;
@@ -49,8 +58,6 @@ namespace sm70_cp_450_GUI
             _commandManager = CommandManager.Instance;
             _logManager = LogManager.Instance;
             _mainForm = MainForm.Instance;
-
-            _commandToUIActions = new Dictionary<string, Action<string>>();
         }
 
         private void ReadValues()
@@ -65,10 +72,11 @@ namespace sm70_cp_450_GUI
 
         private void SaveValues()
         {
-            thresholdPercentage = UtilityBase.ParseInput(Input_ThresholdPercentage.Text);
-            thresholdTime = UtilityBase.ParseInput(Input_ThresholdTime.Text);
+            TriggerThresholdPercent = UtilityBase.ParseInput(Input_TriggerThreshold.Text);
+            TriggerThresholdTime = TimeSpan.FromSeconds(UtilityBase.ParseInput(Input_TriggerTime.Text));
 
             Capacity = UtilityBase.ParseInput(Input_Capacity.Text);
+            MaxWatt = UtilityBase.ParseInput(Input_Watt.Text);
             BulkVoltage = UtilityBase.ParseInput(Input_BulkVoltage.Text);
             MinimumVoltage = UtilityBase.ParseInput(Input_CutoffVoltage.Text);
             maxCurrent = UtilityBase.ParseInput(Input_MaxAmps.Text);
@@ -79,106 +87,127 @@ namespace sm70_cp_450_GUI
             if (inputsFilledIn)
             {
                 CapacityPercent = Capacity * wantedBatteryPercentage;
+                TriggerOffsetCurrent = (TriggerThresholdPercent / 100 * maxCurrent);
+                //Label_initialGuessedPercent.Text = (EstimateSOCFromVoltage(ReadVoltage, MinimumVoltage, BulkVoltage) * Capacity / 100).ToString();
 
-                Label_Capacity.Text = "Capacity: " + Capacity.ToString();
-                Label_BulkVolt.Text = "Bulk voltage: " + BulkVoltage.ToString();
-                Label_MinVolt.Text = "Minimum voltage: " + MinimumVoltage.ToString();
-                Label_MaxCurr.Text = "Max current: " + maxCurrent.ToString();
-                Label_Procent.Text = "Percent to achieve: " + wantedBatteryPercentage.ToString();
-                Label_ThresholdPercentage.Text = "Threshold Percentage: " + thresholdPercentage.ToString();
-                Label_ThresholdTime.Text = "Threshold Time: " + thresholdTime.ToString() + "s";
+                Input_Capacity.Text = Capacity.ToString();
+                Input_Watt.Text = MaxWatt.ToString();
+                Input_BulkVoltage.Text = BulkVoltage.ToString();
+                Input_CutoffVoltage.Text = MinimumVoltage.ToString();
+                Input_MaxAmps.Text = maxCurrent.ToString();
+                Input_Procent.Text = wantedBatteryPercentage.ToString();
+                Input_TriggerThreshold.Text = TriggerThresholdPercent.ToString();
+                Input_TriggerTime.Text = TriggerThresholdTime.ToString() + "s";
+
+                _commandManager?.SetOutputCurrent(maxCurrent);
+                _commandManager?.SetOutputCurrentNegative(-maxCurrent);
+                _commandManager?.SetOutputPower(MaxWatt);
+                _commandManager?.SetOutputPowerNegative(-MaxWatt);
             }
         }
 
         private void TimedFunction(object sender, EventArgs e)
         {
             ReadValues();
-            ProcessSequenceStep();
+            TriggerManager();
+            //VoltageManager();
+            //this wil handle voltage and smoothing toward voltage target
         }
+        private enum SequenceSteps
+        {
+            Charging,
+            Discharging,
+            done
+        }
+        private SequenceSteps CurrentStep = SequenceSteps.Charging;
 
-
-        private void ProcessSequenceStep()
+        private void TriggerManager()
         {
             if (!inputsFilledIn || !OutputActive) return;
 
-            if (Rad_Btn_Discharge.Checked)
+            switch (CurrentStep)
             {
-                chargeStartTime = null;
+                case SequenceSteps.Charging:
+                    HandleCharging();
+                    break;
 
-                // Discharge logic
-                if (ReadVoltage <= MinimumVoltage && OutputActive)
+                case SequenceSteps.Discharging:
+                    HandleDischarging();
+                    break;
+
+                default:
+                    _logManager?.AddDebugLogMessage("Unknown sequence step.");
+                    break;
+            }
+        }
+
+        private void HandleCharging()
+        {
+            _commandManager?.SetOutputVoltage(BulkVoltage);
+            if (ReadCurrent >= maxCurrent - TriggerOffsetCurrent)
+            {
+                if (triggerStopwatch == null)
                 {
-                    _logManager?.AddDebugLogMessage("Transition to Charge: Minimum voltage reached.");
-                    Rad_Btn_Discharge.Checked = false;
-                    Rad_Btn_Charge.Checked = true;
+                    triggerStopwatch = Stopwatch.StartNew();
                 }
-                else
+
+                if (triggerStopwatch.Elapsed >= TriggerThresholdTime)
                 {
-                    _commandManager?.SetOutputVoltage(MinimumVoltage);
-                    _commandManager?.SetOutputCurrent(0);
-                    _commandManager?.SetOutputCurrentNegative(maxCurrent);
+                    CurrentStep = SequenceSteps.Discharging;
+                    _logManager?.AddDebugLogMessage("Battery fully charged. Switching to discharge mode.");
 
-                    if (ReadCurrent <= thresholdPercentage / 100 * maxCurrent)
-                    {
-                        if (thresholdStartTime == null)
-                        {
-                            thresholdStartTime = DateTime.Now;
-                            _logManager?.AddDebugLogMessage($"Threshold timer started. Current: {ReadCurrent}, Threshold: {thresholdPercentage / 100 * maxCurrent}");
-                        }
+                    // Initialize Coulomb counting
+                    accumulatedCharge = Capacity; // Start from 100% SOC
+                    dischargeSOC = 100;
 
-                        TimeSpan thresholdElapsed = DateTime.Now - thresholdStartTime.Value;
-
-                        if (thresholdElapsed.TotalSeconds >= thresholdTime)
-                        {
-                            _logManager?.AddDebugLogMessage($"Battery empty condition met. Switching to charge mode. Threshold duration: {thresholdElapsed.TotalSeconds} seconds.");
-                            Rad_Btn_Discharge.Checked = false;
-                            Rad_Btn_Charge.Checked = true;
-
-                            thresholdStartTime = null;
-                        }
-                    }
-                    else
-                    {
-                        if (thresholdStartTime != null)
-                        {
-                            _logManager?.AddDebugLogMessage($"Threshold timer reset. Current: {ReadCurrent}, Threshold: {thresholdPercentage / 100 * maxCurrent}");
-                        }
-                        thresholdStartTime = null;
-                    }
+                    coulombCountStopwatch?.Reset();
+                    coulombCountStopwatch = Stopwatch.StartNew();
                 }
             }
-
-            if (Rad_Btn_Charge.Checked)
+            else
             {
-                if (chargeStartTime == null)
-                {
-                    chargeStartTime = DateTime.Now;
-                }
-
-                TimeSpan elapsed = DateTime.Now - chargeStartTime.Value;
-
-                totalChargeTime += elapsed;
-
-                chargeStartTime = DateTime.Now;
-
-                accumulatedCharge += (ReadCurrent * elapsed.TotalHours);
-
-                double currentSOC = accumulatedCharge / Capacity * 100;
-
-                if (currentSOC >= wantedBatteryPercentage)
-                {
-                    HandleCommand("Stop");
-                }
-                else
-                {
-                    _commandManager?.SetOutputVoltage(BulkVoltage);
-                    _commandManager?.SetOutputCurrent(maxCurrent);
-                    _commandManager?.SetOutputCurrentNegative(0);
-                }
+                triggerStopwatch?.Reset();
             }
         }
 
 
+        private void HandleDischarging()
+        {
+            _commandManager?.SetOutputVoltage(MinimumVoltage);
+
+            // Stop if target SOC is reached
+            if (dischargeSOC <= wantedBatteryPercentage)
+            {
+                coulombCountStopwatch?.Stop();
+                totalDischargeTime += coulombCountStopwatch?.Elapsed ?? TimeSpan.Zero; // Add any remaining stopwatch time
+                _logManager?.AddDebugLogMessage($"Target SOC {wantedBatteryPercentage}% reached. Total discharge time: {totalDischargeTime.TotalMinutes:F2} minutes.");
+                HandleCommand("Stop");
+                return;
+            }
+
+            // Start stopwatch if not already running
+            if (coulombCountStopwatch == null)
+            {
+                coulombCountStopwatch = Stopwatch.StartNew();
+            }
+
+            // Calculate elapsed time for this interval in hours
+            double elapsedHours = coulombCountStopwatch.Elapsed.TotalHours;
+
+            // Update accumulated charge and SOC
+            accumulatedCharge -= ReadCurrent * elapsedHours;
+            dischargeSOC = (accumulatedCharge / Capacity) * 100;
+
+            // Update total discharge time
+            totalDischargeTime += coulombCountStopwatch.Elapsed;
+
+            // Display updated SOC and discharge progress
+            Label_SOC.Text = $"SOC: {dischargeSOC:F2}%";
+            _logManager?.AddDebugLogMessage($"Discharging: Voltage={ReadVoltage:F2}, Current={ReadCurrent:F2}, SOC={dischargeSOC:F2}%, Elapsed Time: {totalDischargeTime.TotalMinutes:F2} minutes.");
+
+            // Restart stopwatch for the next interval
+            coulombCountStopwatch.Restart();
+        }
 
         private void HandleCommand(string command)
         {
@@ -187,10 +216,7 @@ namespace sm70_cp_450_GUI
                 case "stop":
                     OutputActive = false;
                     _commandManager?.SetOutputState(false);
-
-                    // Reset charge timing fields
-                    chargeStartTime = null;
-                    MessageBox.Show($"Charging stopped. Total charge time: {totalChargeTime.TotalMinutes} minutes.");
+                    MessageBox.Show($"Charging stopped. Total charge time: {totalDischargeTime.TotalMinutes} minutes.");
                     break;
 
                 case "start":

@@ -71,15 +71,21 @@ namespace sm70_cp_450_GUI
                 return false;
             }
         }
-        public void CloseConnection()
+        public async Task CloseConnectionAsync()
         {
             EnqueueCommand("SYSTem:REMote:CV: Front");
             EnqueueCommand("SYSTem:REMote:CC: Front");
             EnqueueCommand("SYSTem:REMote:CP: Front");
 
+            await Task.Delay(1000);
+
+            // Close the network stream and TCP client asynchronously
             _networkStream?.Close();
+            await Task.Delay(100); // Small delay to ensure stream closure before client closes
             _tcpClient?.Close();
+
             OnConnectionLost?.Invoke();
+            MessageBox.Show("closed connection");
         }
 
         #region queries

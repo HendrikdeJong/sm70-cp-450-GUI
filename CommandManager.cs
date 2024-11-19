@@ -225,7 +225,7 @@ namespace sm70_cp_450_GUI
 
         public void SetOutputPowerNegative(double outputPowerNegative)
         {
-            string String = outputPowerNegative.ToString().Replace(',', '.');
+            string String = (-Math.Abs(outputPowerNegative)).ToString().Replace(',', '.');
             _logManager.AddDebugLogMessage($"⚠️ trying to enqueue command: SOURce:POWer:NEGative {String}");
             _tcpHandler.EnqueueCommand($"SOURce:POWer:NEGative {String}");
         }
