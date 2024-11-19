@@ -67,6 +67,7 @@ namespace sm70_cp_450_GUI
             ReadCurrent = _mainForm.currentCurrent;
             Label_LiveVoltage.Text = "Voltage: " + ReadVoltage.ToString();
             Label_LiveCurrent.Text = "Current: " + ReadCurrent.ToString();
+            Label_Status.Text = "Status: " + CurrentStep;
         }
 
 
@@ -84,11 +85,11 @@ namespace sm70_cp_450_GUI
             wantedBatteryPercentage = UtilityBase.ParseInput(Input_Procent.Text);
 
             inputsFilledIn = Capacity != 0 && BulkVoltage != 0 && MinimumVoltage != 0 && maxCurrent != 0 && wantedBatteryPercentage != 0;
+
             if (inputsFilledIn)
             {
                 CapacityPercent = Capacity * wantedBatteryPercentage;
                 TriggerOffsetCurrent = (TriggerThresholdPercent / 100 * maxCurrent);
-                //Label_initialGuessedPercent.Text = (EstimateSOCFromVoltage(ReadVoltage, MinimumVoltage, BulkVoltage) * Capacity / 100).ToString();
 
                 Input_Capacity.Text = Capacity.ToString();
                 Input_Watt.Text = MaxWatt.ToString();
@@ -98,6 +99,13 @@ namespace sm70_cp_450_GUI
                 Input_Procent.Text = wantedBatteryPercentage.ToString();
                 Input_TriggerThreshold.Text = TriggerThresholdPercent.ToString();
                 Input_TriggerTime.Text = TriggerThresholdTime.ToString() + "s";
+
+                label1.Text = "TriggerOffsetCurr: " + TriggerOffsetCurrent.ToString() + "A";
+                label2.Text = "accumulatedCharge: " + accumulatedCharge.ToString();
+                label3.Text = "totalDischargeTime:" + totalDischargeTime.ToString() + "s";
+
+
+
 
                 _commandManager?.SetOutputCurrent(maxCurrent);
                 _commandManager?.SetOutputCurrentNegative(-maxCurrent);
@@ -110,16 +118,14 @@ namespace sm70_cp_450_GUI
         {
             ReadValues();
             TriggerManager();
-            //VoltageManager();
-            //this wil handle voltage and smoothing toward voltage target
         }
         private enum SequenceSteps
         {
-            Charging,
+            Charging_CC,
+            Charging_CV,
             Discharging,
-            done
         }
-        private SequenceSteps CurrentStep = SequenceSteps.Charging;
+        private SequenceSteps CurrentStep = SequenceSteps.Charging_CC;
 
         private void TriggerManager()
         {
@@ -127,8 +133,12 @@ namespace sm70_cp_450_GUI
 
             switch (CurrentStep)
             {
-                case SequenceSteps.Charging:
-                    HandleCharging();
+                case SequenceSteps.Charging_CC:
+                    HandleCharging_CC();
+                    break;
+
+                case SequenceSteps.Charging_CV:
+                    HandleCharging_CV();
                     break;
 
                 case SequenceSteps.Discharging:
@@ -141,7 +151,13 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void HandleCharging()
+        private void HandleCharging_CV()
+        {
+            _commandManager?.SetOutputVoltage(BulkVoltage);
+           
+        }
+
+        private void HandleCharging_CC()
         {
             _commandManager?.SetOutputVoltage(BulkVoltage);
             if (ReadCurrent >= maxCurrent - TriggerOffsetCurrent)
@@ -179,7 +195,7 @@ namespace sm70_cp_450_GUI
             if (dischargeSOC <= wantedBatteryPercentage)
             {
                 coulombCountStopwatch?.Stop();
-                totalDischargeTime += coulombCountStopwatch?.Elapsed ?? TimeSpan.Zero; // Add any remaining stopwatch time
+                totalDischargeTime += coulombCountStopwatch?.Elapsed ?? TimeSpan.Zero; // Add remaining stopwatch time
                 _logManager?.AddDebugLogMessage($"Target SOC {wantedBatteryPercentage}% reached. Total discharge time: {totalDischargeTime.TotalMinutes:F2} minutes.");
                 HandleCommand("Stop");
                 return;
@@ -195,19 +211,23 @@ namespace sm70_cp_450_GUI
             double elapsedHours = coulombCountStopwatch.Elapsed.TotalHours;
 
             // Update accumulated charge and SOC
-            accumulatedCharge -= ReadCurrent * elapsedHours;
+            accumulatedCharge = Math.Max(0, accumulatedCharge - (Math.Abs(ReadCurrent) * elapsedHours));
             dischargeSOC = (accumulatedCharge / Capacity) * 100;
+
+            // Log SOC and progress
+            label5.Text = $"SOC: {dischargeSOC:F2}%";
+            _logManager?.AddDebugLogMessage($"Discharging: Voltage={ReadVoltage:F2}, Current={ReadCurrent:F2}, SOC={dischargeSOC:F2}%, Elapsed Time: {totalDischargeTime.TotalMinutes:F2} minutes.");
 
             // Update total discharge time
             totalDischargeTime += coulombCountStopwatch.Elapsed;
 
-            // Display updated SOC and discharge progress
-            Label_SOC.Text = $"SOC: {dischargeSOC:F2}%";
-            _logManager?.AddDebugLogMessage($"Discharging: Voltage={ReadVoltage:F2}, Current={ReadCurrent:F2}, SOC={dischargeSOC:F2}%, Elapsed Time: {totalDischargeTime.TotalMinutes:F2} minutes.");
-
-            // Restart stopwatch for the next interval
+            // Restart stopwatch for next interval
             coulombCountStopwatch.Restart();
         }
+
+
+
+
 
         private void HandleCommand(string command)
         {
@@ -222,7 +242,10 @@ namespace sm70_cp_450_GUI
                 case "start":
                     OutputActive = true;
                     _commandManager?.SetOutputState(true);
-                    MessageBox.Show($"Charging started.");
+                    break;
+
+                case "reset":
+                    CurrentStep = SequenceSteps.Charging_CC;
                     break;
 
                 default:
@@ -249,8 +272,8 @@ namespace sm70_cp_450_GUI
                 case "Button_Stop":
                     HandleCommand("Stop");
                     break;
-                case "Button_Pause":
-                    HandleCommand("Pause");
+                case "Button_Reset":
+                    HandleCommand("Reset");
                     break;
                 case "Button_Start":
                     HandleCommand("Start");

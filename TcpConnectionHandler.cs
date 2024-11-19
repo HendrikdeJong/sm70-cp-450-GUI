@@ -73,11 +73,14 @@ namespace sm70_cp_450_GUI
         }
         public async Task CloseConnectionAsync()
         {
+            EnqueueCommand("OUTPut OFF");
+            EnqueueCommand("SOUR:POW 0");
+            EnqueueCommand("SOUR:POW:NEG 0");
             EnqueueCommand("SYSTem:REMote:CV: Front");
             EnqueueCommand("SYSTem:REMote:CC: Front");
             EnqueueCommand("SYSTem:REMote:CP: Front");
 
-            await Task.Delay(1000);
+            await Task.Delay(5000);
 
             // Close the network stream and TCP client asynchronously
             _networkStream?.Close();

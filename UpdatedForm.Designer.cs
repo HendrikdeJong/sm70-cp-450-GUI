@@ -36,7 +36,7 @@
             Input_Procent = new TextBox();
             Button_Save = new Button();
             Button_Stop = new Button();
-            Button_Pause = new Button();
+            Button_Reset = new Button();
             Button_Start = new Button();
             UpdateTimer = new System.Windows.Forms.Timer(components);
             Label_Capacity = new Label();
@@ -46,20 +46,18 @@
             Label_Procent = new Label();
             Label_LiveVoltage = new Label();
             Label_LiveCurrent = new Label();
-            Rad_Btn_Charge = new RadioButton();
-            Rad_Btn_Discharge = new RadioButton();
             Label_TriggerTime = new Label();
             Label_TriggerThreshold = new Label();
             Input_TriggerTime = new TextBox();
             Input_TriggerThreshold = new TextBox();
             Input_CRating = new TextBox();
-            Label_ThresholdTimeRemaining = new Label();
-            Label_thresholdPercent = new Label();
-            Label_Timer1 = new Label();
-            Label_SOC = new Label();
-            Label_initialGuessedPercent = new Label();
             Input_Watt = new TextBox();
-            Label_Watt = new Label();
+            Label_Status = new Label();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            label4 = new Label();
+            label5 = new Label();
             SuspendLayout();
             // 
             // Input_BulkVoltage
@@ -122,14 +120,14 @@
             Button_Stop.UseVisualStyleBackColor = true;
             Button_Stop.Click += ButtonHandler;
             // 
-            // Button_Pause
+            // Button_Reset
             // 
-            Button_Pause.Location = new Point(272, 410);
-            Button_Pause.Name = "Button_Pause";
-            Button_Pause.Size = new Size(78, 23);
-            Button_Pause.TabIndex = 11;
-            Button_Pause.Text = "Pause";
-            Button_Pause.UseVisualStyleBackColor = true;
+            Button_Reset.Location = new Point(272, 410);
+            Button_Reset.Name = "Button_Reset";
+            Button_Reset.Size = new Size(78, 23);
+            Button_Reset.TabIndex = 11;
+            Button_Reset.Text = "Reset";
+            Button_Reset.UseVisualStyleBackColor = true;
             // 
             // Button_Start
             // 
@@ -150,53 +148,53 @@
             // Label_Capacity
             // 
             Label_Capacity.AutoSize = true;
-            Label_Capacity.Location = new Point(44, 153);
+            Label_Capacity.Location = new Point(36, 153);
             Label_Capacity.Name = "Label_Capacity";
-            Label_Capacity.Size = new Size(86, 15);
+            Label_Capacity.Size = new Size(53, 15);
             Label_Capacity.TabIndex = 21;
-            Label_Capacity.Text = "Label_Capacity";
+            Label_Capacity.Text = "Capacity";
             // 
             // Label_BulkVolt
             // 
             Label_BulkVolt.AutoSize = true;
-            Label_BulkVolt.Location = new Point(44, 182);
+            Label_BulkVolt.Location = new Point(36, 182);
             Label_BulkVolt.Name = "Label_BulkVolt";
-            Label_BulkVolt.Size = new Size(83, 15);
+            Label_BulkVolt.Size = new Size(72, 15);
             Label_BulkVolt.TabIndex = 22;
-            Label_BulkVolt.Text = "Label_BulkVolt";
+            Label_BulkVolt.Text = "Bulk Voltage";
             // 
             // Label_MinVolt
             // 
             Label_MinVolt.AutoSize = true;
-            Label_MinVolt.Location = new Point(44, 211);
+            Label_MinVolt.Location = new Point(36, 211);
             Label_MinVolt.Name = "Label_MinVolt";
-            Label_MinVolt.Size = new Size(81, 15);
+            Label_MinVolt.Size = new Size(86, 15);
             Label_MinVolt.TabIndex = 23;
-            Label_MinVolt.Text = "Label_MinVolt";
+            Label_MinVolt.Text = "Cut off voltage";
             // 
             // Label_MaxCurr
             // 
             Label_MaxCurr.AutoSize = true;
-            Label_MaxCurr.Location = new Point(44, 240);
+            Label_MaxCurr.Location = new Point(36, 240);
             Label_MaxCurr.Name = "Label_MaxCurr";
-            Label_MaxCurr.Size = new Size(86, 15);
+            Label_MaxCurr.Size = new Size(71, 15);
             Label_MaxCurr.TabIndex = 24;
-            Label_MaxCurr.Text = "Label_MaxCurr";
+            Label_MaxCurr.Text = "max current";
             // 
             // Label_Procent
             // 
             Label_Procent.AutoSize = true;
-            Label_Procent.Location = new Point(44, 269);
+            Label_Procent.Location = new Point(36, 269);
             Label_Procent.Name = "Label_Procent";
-            Label_Procent.Size = new Size(81, 15);
+            Label_Procent.Size = new Size(137, 15);
             Label_Procent.TabIndex = 25;
-            Label_Procent.Text = "Label_Procent";
+            Label_Procent.Text = "Disired state of charge %";
             // 
             // Label_LiveVoltage
             // 
             Label_LiveVoltage.AutoSize = true;
             Label_LiveVoltage.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_LiveVoltage.Location = new Point(44, 99);
+            Label_LiveVoltage.Location = new Point(36, 99);
             Label_LiveVoltage.Name = "Label_LiveVoltage";
             Label_LiveVoltage.Size = new Size(134, 21);
             Label_LiveVoltage.TabIndex = 26;
@@ -212,45 +210,23 @@
             Label_LiveCurrent.TabIndex = 27;
             Label_LiveCurrent.Text = "Label_LiveCurrent";
             // 
-            // Rad_Btn_Charge
-            // 
-            Rad_Btn_Charge.AutoSize = true;
-            Rad_Btn_Charge.Location = new Point(179, 439);
-            Rad_Btn_Charge.Name = "Rad_Btn_Charge";
-            Rad_Btn_Charge.Size = new Size(63, 19);
-            Rad_Btn_Charge.TabIndex = 13;
-            Rad_Btn_Charge.TabStop = true;
-            Rad_Btn_Charge.Text = "Charge";
-            Rad_Btn_Charge.UseVisualStyleBackColor = true;
-            // 
-            // Rad_Btn_Discharge
-            // 
-            Rad_Btn_Discharge.AutoSize = true;
-            Rad_Btn_Discharge.Location = new Point(368, 439);
-            Rad_Btn_Discharge.Name = "Rad_Btn_Discharge";
-            Rad_Btn_Discharge.Size = new Size(77, 19);
-            Rad_Btn_Discharge.TabIndex = 14;
-            Rad_Btn_Discharge.TabStop = true;
-            Rad_Btn_Discharge.Text = "Discharge";
-            Rad_Btn_Discharge.UseVisualStyleBackColor = true;
-            // 
             // Label_TriggerTime
             // 
             Label_TriggerTime.AutoSize = true;
-            Label_TriggerTime.Location = new Point(44, 327);
+            Label_TriggerTime.Location = new Point(36, 327);
             Label_TriggerTime.Name = "Label_TriggerTime";
-            Label_TriggerTime.Size = new Size(102, 15);
+            Label_TriggerTime.Size = new Size(128, 15);
             Label_TriggerTime.TabIndex = 31;
-            Label_TriggerTime.Text = "Label_TriggerTime";
+            Label_TriggerTime.Text = "Trigger time stopwatch";
             // 
             // Label_TriggerThreshold
             // 
             Label_TriggerThreshold.AutoSize = true;
-            Label_TriggerThreshold.Location = new Point(44, 298);
+            Label_TriggerThreshold.Location = new Point(36, 298);
             Label_TriggerThreshold.Name = "Label_TriggerThreshold";
-            Label_TriggerThreshold.Size = new Size(128, 15);
+            Label_TriggerThreshold.Size = new Size(118, 15);
             Label_TriggerThreshold.TabIndex = 30;
-            Label_TriggerThreshold.Text = "Label_TriggerThreshold";
+            Label_TriggerThreshold.Text = "Trigger Threshhold %";
             // 
             // Input_TriggerTime
             // 
@@ -276,51 +252,6 @@
             Input_CRating.Size = new Size(130, 23);
             Input_CRating.TabIndex = 32;
             // 
-            // Label_ThresholdTimeRemaining
-            // 
-            Label_ThresholdTimeRemaining.AutoSize = true;
-            Label_ThresholdTimeRemaining.Location = new Point(451, 327);
-            Label_ThresholdTimeRemaining.Name = "Label_ThresholdTimeRemaining";
-            Label_ThresholdTimeRemaining.Size = new Size(27, 15);
-            Label_ThresholdTimeRemaining.TabIndex = 34;
-            Label_ThresholdTimeRemaining.Text = "0.0s";
-            // 
-            // Label_thresholdPercent
-            // 
-            Label_thresholdPercent.AutoSize = true;
-            Label_thresholdPercent.Location = new Point(451, 298);
-            Label_thresholdPercent.Name = "Label_thresholdPercent";
-            Label_thresholdPercent.Size = new Size(130, 15);
-            Label_thresholdPercent.TabIndex = 35;
-            Label_thresholdPercent.Text = "Label_thresholdPercent";
-            // 
-            // Label_Timer1
-            // 
-            Label_Timer1.AutoSize = true;
-            Label_Timer1.Location = new Point(451, 269);
-            Label_Timer1.Name = "Label_Timer1";
-            Label_Timer1.Size = new Size(76, 15);
-            Label_Timer1.TabIndex = 36;
-            Label_Timer1.Text = "Label_Timer1";
-            // 
-            // Label_SOC
-            // 
-            Label_SOC.AutoSize = true;
-            Label_SOC.Location = new Point(451, 240);
-            Label_SOC.Name = "Label_SOC";
-            Label_SOC.Size = new Size(63, 15);
-            Label_SOC.TabIndex = 37;
-            Label_SOC.Text = "Label_SOC";
-            // 
-            // Label_initialGuessedPercent
-            // 
-            Label_initialGuessedPercent.AutoSize = true;
-            Label_initialGuessedPercent.Location = new Point(451, 211);
-            Label_initialGuessedPercent.Name = "Label_initialGuessedPercent";
-            Label_initialGuessedPercent.Size = new Size(77, 15);
-            Label_initialGuessedPercent.TabIndex = 38;
-            Label_initialGuessedPercent.Text = "Guessed SOC";
-            // 
             // Input_Watt
             // 
             Input_Watt.Location = new Point(315, 150);
@@ -329,34 +260,78 @@
             Input_Watt.Size = new Size(130, 23);
             Input_Watt.TabIndex = 39;
             // 
-            // Label_Watt
+            // Label_Status
             // 
-            Label_Watt.AutoSize = true;
-            Label_Watt.Location = new Point(451, 153);
-            Label_Watt.Name = "Label_Watt";
-            Label_Watt.Size = new Size(38, 15);
-            Label_Watt.TabIndex = 40;
-            Label_Watt.Text = "label1";
+            Label_Status.AutoSize = true;
+            Label_Status.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Status.Location = new Point(179, 436);
+            Label_Status.Name = "Label_Status";
+            Label_Status.Size = new Size(123, 21);
+            Label_Status.TabIndex = 42;
+            Label_Status.Text = "Status: Charging";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(475, 523);
+            label1.Name = "label1";
+            label1.Size = new Size(38, 15);
+            label1.TabIndex = 43;
+            label1.Text = "label1";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(475, 538);
+            label2.Name = "label2";
+            label2.Size = new Size(38, 15);
+            label2.TabIndex = 44;
+            label2.Text = "label2";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(475, 553);
+            label3.Name = "label3";
+            label3.Size = new Size(38, 15);
+            label3.TabIndex = 45;
+            label3.Text = "label3";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(475, 568);
+            label4.Name = "label4";
+            label4.Size = new Size(38, 15);
+            label4.TabIndex = 46;
+            label4.Text = "label4";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(475, 583);
+            label5.Name = "label5";
+            label5.Size = new Size(38, 15);
+            label5.TabIndex = 47;
+            label5.Text = "label5";
             // 
             // UpdatedForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(727, 768);
-            Controls.Add(Label_Watt);
+            Controls.Add(label5);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(Label_Status);
             Controls.Add(Input_Watt);
-            Controls.Add(Label_initialGuessedPercent);
-            Controls.Add(Label_SOC);
-            Controls.Add(Label_Timer1);
-            Controls.Add(Label_thresholdPercent);
-            Controls.Add(Label_ThresholdTimeRemaining);
             Controls.Add(Input_CRating);
             Controls.Add(Label_TriggerTime);
             Controls.Add(Label_TriggerThreshold);
             Controls.Add(Input_TriggerTime);
             Controls.Add(Input_TriggerThreshold);
-            Controls.Add(Rad_Btn_Discharge);
-            Controls.Add(Rad_Btn_Charge);
             Controls.Add(Label_LiveCurrent);
             Controls.Add(Label_LiveVoltage);
             Controls.Add(Label_Procent);
@@ -365,7 +340,7 @@
             Controls.Add(Label_BulkVolt);
             Controls.Add(Label_Capacity);
             Controls.Add(Button_Start);
-            Controls.Add(Button_Pause);
+            Controls.Add(Button_Reset);
             Controls.Add(Button_Stop);
             Controls.Add(Button_Save);
             Controls.Add(Input_Procent);
@@ -387,7 +362,7 @@
         private TextBox Input_Procent;
         private Button Button_Save;
         private Button Button_Stop;
-        private Button Button_Pause;
+        private Button Button_Reset;
         private Button Button_Start;
         private System.Windows.Forms.Timer UpdateTimer;
         private Label Label_Capacity;
@@ -397,19 +372,17 @@
         private Label Label_Procent;
         private Label Label_LiveVoltage;
         private Label Label_LiveCurrent;
-        private RadioButton Rad_Btn_Charge;
-        private RadioButton Rad_Btn_Discharge;
         private Label Label_TriggerTime;
         private Label Label_TriggerThreshold;
         private TextBox Input_TriggerTime;
         private TextBox Input_TriggerThreshold;
         private TextBox Input_CRating;
-        private Label Label_ThresholdTimeRemaining;
-        private Label Label_thresholdPercent;
-        private Label Label_Timer1;
-        private Label Label_SOC;
-        private Label Label_initialGuessedPercent;
         private TextBox Input_Watt;
-        private Label Label_Watt;
+        private Label Label_Status;
+        private Label label1;
+        private Label label2;
+        private Label label3;
+        private Label label4;
+        private Label label5;
     }
 }

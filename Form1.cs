@@ -103,7 +103,6 @@ namespace sm70_cp_450_GUI
             Label_Remote_CV_UI.Text = "N/A";
             Label_Remote_CC_UI.Text = "N/A";
             Label_Remote_CP_UI.Text = "N/A";
-            _commandToUIActions.Clear();
         }
 
         #region Time based Functions
@@ -415,7 +414,6 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
-
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Check if there is an ongoing TCP connection
@@ -424,8 +422,40 @@ namespace sm70_cp_450_GUI
                 // Show a loading indicator or disable form elements if necessary
                 Cursor = Cursors.WaitCursor;
 
-                // Close the connection and await the completion of the process
+                // Wait for the connection to close asynchronously
                 await _tcpHandler.CloseConnectionAsync();
+
+                // Ensure the connection is fully closed before proceeding
+                if (_tcpHandler.IsConnected)
+                {
+                    // Optionally, log a message or show an error if the connection is not closed successfully
+                    MessageBox.Show("Failed to close the connection before closing the form.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    e.Cancel = true;  // Prevent the form from closing if the connection could not be closed
+                    return;
+                }
+            }
+
+            // Proceed with the form closing after the connection is closed
+            Cursor = Cursors.Default;  // Reset the cursor after the operation
+        }
+
+        private async void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Check if there is an ongoing TCP connection
+            if (_tcpHandler != null && _tcpHandler.IsConnected)
+            {
+                // Show a loading indicator or disable form elements if necessary
+                Cursor = Cursors.WaitCursor;
+
+                // Wait for the connection to close asynchronously
+                await _tcpHandler.CloseConnectionAsync();
+
+                // Ensure the connection is fully closed before proceeding
+                if (_tcpHandler.IsConnected)
+                {
+                    // Optionally, log a message or show an error if the connection is not closed successfully
+                    MessageBox.Show("Failed to close the connection before closing the form.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
             // Proceed with the form closing after the connection is closed

@@ -532,7 +532,7 @@
             groupBox1.Controls.Add(textBox1);
             groupBox1.Location = new Point(12, 231);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(438, 474);
+            groupBox1.Size = new Size(438, 378);
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Status";
@@ -543,7 +543,7 @@
             ConsoleBox.Controls.Add(toolStrip1);
             ConsoleBox.Controls.Add(Console_Simple_Textbox_UI);
             ConsoleBox.Dock = DockStyle.Bottom;
-            ConsoleBox.Location = new Point(3, 421);
+            ConsoleBox.Location = new Point(3, 325);
             ConsoleBox.MaximumSize = new Size(450, 267);
             ConsoleBox.MinimumSize = new Size(300, 50);
             ConsoleBox.Name = "ConsoleBox";
@@ -708,7 +708,7 @@
             // 
             button1.Location = new Point(6, 28);
             button1.Name = "button1";
-            button1.Size = new Size(112, 137);
+            button1.Size = new Size(139, 137);
             button1.TabIndex = 29;
             button1.Tag = "OpenManualForm";
             button1.Text = "Open Manual Controller";
@@ -1128,9 +1128,9 @@
             // 
             // button2
             // 
-            button2.Location = new Point(124, 28);
+            button2.Location = new Point(288, 28);
             button2.Name = "button2";
-            button2.Size = new Size(112, 137);
+            button2.Size = new Size(139, 137);
             button2.TabIndex = 30;
             button2.Tag = "OpenSequencer";
             button2.Text = "Open Sequencer";
@@ -1188,6 +1188,7 @@
             Name = "MainForm";
             Text = "Whisper Power - Sm15k Controller";
             FormClosing += MainForm_FormClosing;
+            FormClosed += MainForm_FormClosed;
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
