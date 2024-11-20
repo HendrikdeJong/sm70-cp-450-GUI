@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+﻿using System.Diagnostics;
 
 namespace sm70_cp_450_GUI
 {
@@ -68,6 +56,11 @@ namespace sm70_cp_450_GUI
             Label_LiveVoltage.Text = "Voltage: " + ReadVoltage.ToString();
             Label_LiveCurrent.Text = "Current: " + ReadCurrent.ToString();
             Label_Status.Text = "Status: " + CurrentStep;
+
+            label1.Text = "TriggerOffsetCurrent: " + TriggerOffsetCurrent.ToString() + "A";
+            label2.Text = "accumulatedCharge: " + accumulatedCharge.ToString();
+            label3.Text = "totalDischargeTime:" + totalDischargeTime.ToString() + "s";
+            label4.Text = "triggerTime: " + triggerStopwatch?.Elapsed.Seconds.ToString() + "Sec";
         }
 
 
@@ -88,8 +81,14 @@ namespace sm70_cp_450_GUI
 
             if (inputsFilledIn)
             {
+                checkBox3.Checked = true;
                 CapacityPercent = Capacity * wantedBatteryPercentage;
                 TriggerOffsetCurrent = (TriggerThresholdPercent / 100 * maxCurrent);
+
+                // Configure ProgressBar
+                ProgressBar_Trigger.Minimum = 0; // Min value is 0 seconds
+                ProgressBar_Trigger.Maximum = (int)TriggerThresholdTime.TotalSeconds; // Max value is threshold time in seconds
+                ProgressBar_Trigger.Value = 0; // Start at 0
 
                 Input_Capacity.Text = Capacity.ToString();
                 Input_Watt.Text = MaxWatt.ToString();
@@ -100,19 +99,13 @@ namespace sm70_cp_450_GUI
                 Input_TriggerThreshold.Text = TriggerThresholdPercent.ToString();
                 Input_TriggerTime.Text = TriggerThresholdTime.ToString() + "s";
 
-                label1.Text = "TriggerOffsetCurr: " + TriggerOffsetCurrent.ToString() + "A";
-                label2.Text = "accumulatedCharge: " + accumulatedCharge.ToString();
-                label3.Text = "totalDischargeTime:" + totalDischargeTime.ToString() + "s";
-
-
-
-
                 _commandManager?.SetOutputCurrent(maxCurrent);
                 _commandManager?.SetOutputCurrentNegative(-maxCurrent);
                 _commandManager?.SetOutputPower(MaxWatt);
                 _commandManager?.SetOutputPowerNegative(-MaxWatt);
             }
         }
+
 
         private void TimedFunction(object sender, EventArgs e)
         {
@@ -121,11 +114,10 @@ namespace sm70_cp_450_GUI
         }
         private enum SequenceSteps
         {
-            Charging_CC,
-            Charging_CV,
+            Charging,
             Discharging,
         }
-        private SequenceSteps CurrentStep = SequenceSteps.Charging_CC;
+        private SequenceSteps CurrentStep = SequenceSteps.Charging;
 
         private void TriggerManager()
         {
@@ -133,12 +125,8 @@ namespace sm70_cp_450_GUI
 
             switch (CurrentStep)
             {
-                case SequenceSteps.Charging_CC:
-                    HandleCharging_CC();
-                    break;
-
-                case SequenceSteps.Charging_CV:
-                    HandleCharging_CV();
+                case SequenceSteps.Charging:
+                    HandleCharging();
                     break;
 
                 case SequenceSteps.Discharging:
@@ -151,40 +139,74 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void HandleCharging_CV()
-        {
-            _commandManager?.SetOutputVoltage(BulkVoltage);
-           
-        }
 
-        private void HandleCharging_CC()
+
+        private void HandleCharging()
         {
             _commandManager?.SetOutputVoltage(BulkVoltage);
-            if (ReadCurrent >= maxCurrent - TriggerOffsetCurrent)
+
+            if (ReadVoltage >= BulkVoltage) // Constant voltage phase
             {
-                if (triggerStopwatch == null)
+                checkBox4.Checked = true; // Indicate voltage threshold met
+
+                if (ReadCurrent <= TriggerOffsetCurrent) // Check if current is below threshold
                 {
-                    triggerStopwatch = Stopwatch.StartNew();
+                    checkBox5.Checked = true; // Indicate current below threshold
+
+                    if (triggerStopwatch == null)
+                    {
+                        triggerStopwatch = new Stopwatch();
+                    }
+
+                    if (!triggerStopwatch.IsRunning)
+                    {
+                        triggerStopwatch.Start();
+                        _logManager?.AddDebugLogMessage($"Current below threshold. Timer started. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
+                    }
+
+                    // Update ProgressBar
+                    ProgressBar_Trigger.Value = Math.Min((int)triggerStopwatch.Elapsed.TotalSeconds, ProgressBar_Trigger.Maximum);
+
+                    // If the current remains below the threshold for the specified duration
+                    if (triggerStopwatch.Elapsed >= TriggerThresholdTime)
+                    {
+                        CurrentStep = SequenceSteps.Discharging; // Transition to Discharging
+                        MessageBox.Show("Battery fully charged. Switching to discharge mode.");
+                        _logManager?.AddDebugLogMessage($"Battery fully charged. Current: {ReadCurrent:F2} A, Timer: {triggerStopwatch.Elapsed.TotalSeconds:F2} seconds.");
+
+                        // Initialize Coulomb counting
+                        accumulatedCharge = Capacity; // Full SOC
+                        dischargeSOC = 100;
+
+                        // Reset ProgressBar and stopwatch
+                        ProgressBar_Trigger.Value = 0;
+                        triggerStopwatch.Reset();
+
+                        // Start Coulomb counting timer
+                        coulombCountStopwatch?.Reset();
+                        coulombCountStopwatch = Stopwatch.StartNew();
+                    }
                 }
-
-                if (triggerStopwatch.Elapsed >= TriggerThresholdTime)
+                else
                 {
-                    CurrentStep = SequenceSteps.Discharging;
-                    _logManager?.AddDebugLogMessage("Battery fully charged. Switching to discharge mode.");
+                    checkBox5.Checked = false;
 
-                    // Initialize Coulomb counting
-                    accumulatedCharge = Capacity; // Start from 100% SOC
-                    dischargeSOC = 100;
-
-                    coulombCountStopwatch?.Reset();
-                    coulombCountStopwatch = Stopwatch.StartNew();
+                    // Reset ProgressBar and stopwatch if current rises above the threshold
+                    if (triggerStopwatch != null && triggerStopwatch.IsRunning)
+                    {
+                        ProgressBar_Trigger.Value = 0;
+                        triggerStopwatch.Reset();
+                        _logManager?.AddDebugLogMessage($"Current above threshold. Timer reset. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
+                    }
                 }
             }
             else
             {
-                triggerStopwatch?.Reset();
+                checkBox4.Checked = false; // Indicate voltage threshold not met
             }
         }
+
+
 
 
         private void HandleDischarging()
@@ -195,17 +217,19 @@ namespace sm70_cp_450_GUI
             if (dischargeSOC <= wantedBatteryPercentage)
             {
                 coulombCountStopwatch?.Stop();
+                checkBox2.Checked = true;
                 totalDischargeTime += coulombCountStopwatch?.Elapsed ?? TimeSpan.Zero; // Add remaining stopwatch time
                 _logManager?.AddDebugLogMessage($"Target SOC {wantedBatteryPercentage}% reached. Total discharge time: {totalDischargeTime.TotalMinutes:F2} minutes.");
+                _commandManager?.SetOutputCurrent(0);
+                _commandManager?.SetOutputCurrentNegative(-0);
+                _commandManager?.SetOutputPower(0);
+                _commandManager?.SetOutputPowerNegative(-0);
                 HandleCommand("Stop");
                 return;
             }
 
             // Start stopwatch if not already running
-            if (coulombCountStopwatch == null)
-            {
-                coulombCountStopwatch = Stopwatch.StartNew();
-            }
+            coulombCountStopwatch ??= Stopwatch.StartNew();
 
             // Calculate elapsed time for this interval in hours
             double elapsedHours = coulombCountStopwatch.Elapsed.TotalHours;
@@ -228,7 +252,6 @@ namespace sm70_cp_450_GUI
 
 
 
-
         private void HandleCommand(string command)
         {
             switch (command.ToLower())
@@ -236,6 +259,7 @@ namespace sm70_cp_450_GUI
                 case "stop":
                     OutputActive = false;
                     _commandManager?.SetOutputState(false);
+                    ProgressBar_Trigger.Value = 0; // Reset ProgressBar
                     MessageBox.Show($"Charging stopped. Total charge time: {totalDischargeTime.TotalMinutes} minutes.");
                     break;
 
@@ -245,7 +269,7 @@ namespace sm70_cp_450_GUI
                     break;
 
                 case "reset":
-                    CurrentStep = SequenceSteps.Charging_CC;
+                    CurrentStep = SequenceSteps.Charging;
                     break;
 
                 default:
