@@ -51,8 +51,8 @@ namespace sm70_cp_450_GUI
         private void ReadValues()
         {
             if (_mainForm == null) return;
-            ReadVoltage = _mainForm.currentVoltage;
-            ReadCurrent = _mainForm.currentCurrent;
+            //ReadVoltage = _mainForm.currentVoltage;
+            //ReadCurrent = _mainForm.currentCurrent;
             Label_LiveVoltage.Text = "Voltage: " + ReadVoltage.ToString();
             Label_LiveCurrent.Text = "Current: " + ReadCurrent.ToString();
             Label_Status.Text = "Status: " + CurrentStep;

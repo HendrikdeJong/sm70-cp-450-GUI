@@ -35,10 +35,8 @@
             Label_MachineAppliedVoltage_UI = new Label();
             Label_Remote_CV_UI = new Label();
             tableLayoutPanel8 = new TableLayoutPanel();
-            Button_Toggle_ValueEditor = new Button();
-            splitContainer1 = new SplitContainer();
-            InputField_StoredValueVoltageMIN = new TextBox();
-            InputField_StoredValueVoltageMAX = new TextBox();
+            InputField_StoredValueVoltage = new TextBox();
+            Button_ValueEditor = new Button();
             tableLayoutPanel7 = new TableLayoutPanel();
             InputField_StoredValuePowerMin = new TextBox();
             InputField_StoredValuePowerPlus = new TextBox();
@@ -57,34 +55,6 @@
             InputField_StoredValueCurrentMin = new TextBox();
             InputField_StoredValueCurrentPlus = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            groupBox1 = new GroupBox();
-            ConsoleBox = new GroupBox();
-            toolStrip1 = new ToolStrip();
-            ToggleConsole_Btn = new ToolStripButton();
-            ConsoleClear_Btn = new ToolStripButton();
-            Console_DownloadBtn = new ToolStripButton();
-            toolStripSeparator4 = new ToolStripSeparator();
-            Console_Short_ErrorLabel = new ToolStripLabel();
-            Console_Simple_Textbox_UI = new RichTextBox();
-            Operation_ConnectBattery_Override = new CheckBox();
-            StatusCurrentOperation_UI = new TextBox();
-            label7 = new Label();
-            label4 = new Label();
-            Label_Elapsed_Time_UI = new TextBox();
-            textBox2 = new TextBox();
-            textBox1 = new TextBox();
-            button1 = new Button();
-            FactoryInformationBox = new GroupBox();
-            BatteryChemistryType = new ComboBox();
-            ApplyBatteryDataButton = new Button();
-            Discharge_cRating = new TextBox();
-            Charge_cRating = new TextBox();
-            RatedBatteryVoltageUI = new TextBox();
-            label11 = new Label();
-            label1 = new Label();
-            label6 = new Label();
-            label2 = new Label();
-            RatedBatteryAmperageUI = new TextBox();
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             ToolStripMenu_ImportSettings = new ToolStripMenuItem();
@@ -120,31 +90,62 @@
             LinkToDeltaElectronica = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripTextBox1 = new ToolStripMenuItem();
+            openManualFormToolStripMenuItem = new ToolStripMenuItem();
+            openSequencerToolStripMenuItem = new ToolStripMenuItem();
             OperationsBox_UI = new GroupBox();
             ControlPanel = new GroupBox();
             button2 = new Button();
-            Operation_NoneORStop_Selection = new Button();
-            Operation_Charge_selection = new Button();
-            Operation_Discharge_selection = new Button();
+            button1 = new Button();
+            Operation_Start = new Button();
+            FactoryInformationBox = new GroupBox();
+            Label_Soc = new Label();
+            Label_CutVolt = new Label();
+            Label_TriggerTime = new Label();
+            Label_trigger = new Label();
+            Label_Volt = new Label();
+            Label_MaxCurr = new Label();
+            Label_Cap = new Label();
+            label7 = new Label();
+            Textbox_ExpectedSoc = new TextBox();
+            Textbox_TriggerTime = new TextBox();
+            Textbox_CutoffVoltage = new TextBox();
+            label3 = new Label();
+            label4 = new Label();
+            label5 = new Label();
+            Textbox_TriggerProcent = new TextBox();
+            ApplyBatteryDataButton = new Button();
+            Textbox_MaxCurrent = new TextBox();
+            Textbox_BulkVoltage = new TextBox();
+            label1 = new Label();
+            label6 = new Label();
+            label2 = new Label();
+            Textbox_Cappacity = new TextBox();
+            ConsoleBox = new GroupBox();
+            toolStrip1 = new ToolStrip();
+            ToggleConsole_Btn = new ToolStripButton();
+            ConsoleClear_Btn = new ToolStripButton();
+            Console_DownloadBtn = new ToolStripButton();
+            toolStripSeparator4 = new ToolStripSeparator();
+            Console_Short_ErrorLabel = new ToolStripLabel();
+            Console_Simple_Textbox_UI = new RichTextBox();
+            checkBox1 = new CheckBox();
+            Label_TriggerActualTime = new Label();
+            Label_AccumulatedCharge = new Label();
+            Label_KnownSOC = new Label();
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
             tableLayoutPanel7.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
-            groupBox1.SuspendLayout();
-            ConsoleBox.SuspendLayout();
-            toolStrip1.SuspendLayout();
-            FactoryInformationBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
             ControlPanel.SuspendLayout();
+            FactoryInformationBox.SuspendLayout();
+            ConsoleBox.SuspendLayout();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -230,8 +231,8 @@
             // 
             tableLayoutPanel8.ColumnCount = 1;
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.Controls.Add(Button_Toggle_ValueEditor, 0, 1);
-            tableLayoutPanel8.Controls.Add(splitContainer1, 0, 0);
+            tableLayoutPanel8.Controls.Add(InputField_StoredValueVoltage, 0, 0);
+            tableLayoutPanel8.Controls.Add(Button_ValueEditor, 0, 1);
             tableLayoutPanel8.Dock = DockStyle.Fill;
             tableLayoutPanel8.Location = new Point(3, 104);
             tableLayoutPanel8.Name = "tableLayoutPanel8";
@@ -241,59 +242,30 @@
             tableLayoutPanel8.Size = new Size(286, 63);
             tableLayoutPanel8.TabIndex = 12;
             // 
-            // Button_Toggle_ValueEditor
+            // InputField_StoredValueVoltage
             // 
-            Button_Toggle_ValueEditor.AutoSize = true;
-            Button_Toggle_ValueEditor.Dock = DockStyle.Fill;
-            Button_Toggle_ValueEditor.Location = new Point(3, 34);
-            Button_Toggle_ValueEditor.Name = "Button_Toggle_ValueEditor";
-            Button_Toggle_ValueEditor.Size = new Size(280, 26);
-            Button_Toggle_ValueEditor.TabIndex = 1;
-            Button_Toggle_ValueEditor.Tag = "ToggleEditing";
-            Button_Toggle_ValueEditor.Text = "Edit values";
-            Button_Toggle_ValueEditor.UseVisualStyleBackColor = true;
-            Button_Toggle_ValueEditor.Click += ButtonHandler;
+            InputField_StoredValueVoltage.Dock = DockStyle.Fill;
+            InputField_StoredValueVoltage.Location = new Point(3, 3);
+            InputField_StoredValueVoltage.Name = "InputField_StoredValueVoltage";
+            InputField_StoredValueVoltage.PlaceholderText = "0 V+";
+            InputField_StoredValueVoltage.ReadOnly = true;
+            InputField_StoredValueVoltage.Size = new Size(280, 29);
+            InputField_StoredValueVoltage.TabIndex = 32;
+            InputField_StoredValueVoltage.Tag = "";
+            InputField_StoredValueVoltage.TextAlign = HorizontalAlignment.Center;
             // 
-            // splitContainer1
+            // Button_ValueEditor
             // 
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(3, 3);
-            splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            splitContainer1.Panel1.Controls.Add(InputField_StoredValueVoltageMIN);
-            // 
-            // splitContainer1.Panel2
-            // 
-            splitContainer1.Panel2.Controls.Add(InputField_StoredValueVoltageMAX);
-            splitContainer1.Size = new Size(280, 25);
-            splitContainer1.SplitterDistance = 141;
-            splitContainer1.TabIndex = 2;
-            // 
-            // InputField_StoredValueVoltageMIN
-            // 
-            InputField_StoredValueVoltageMIN.Dock = DockStyle.Fill;
-            InputField_StoredValueVoltageMIN.Location = new Point(0, 0);
-            InputField_StoredValueVoltageMIN.Name = "InputField_StoredValueVoltageMIN";
-            InputField_StoredValueVoltageMIN.PlaceholderText = "0 V-";
-            InputField_StoredValueVoltageMIN.ReadOnly = true;
-            InputField_StoredValueVoltageMIN.Size = new Size(141, 29);
-            InputField_StoredValueVoltageMIN.TabIndex = 2;
-            InputField_StoredValueVoltageMIN.Tag = "";
-            InputField_StoredValueVoltageMIN.TextAlign = HorizontalAlignment.Center;
-            // 
-            // InputField_StoredValueVoltageMAX
-            // 
-            InputField_StoredValueVoltageMAX.Dock = DockStyle.Fill;
-            InputField_StoredValueVoltageMAX.Location = new Point(0, 0);
-            InputField_StoredValueVoltageMAX.Name = "InputField_StoredValueVoltageMAX";
-            InputField_StoredValueVoltageMAX.PlaceholderText = "0 V+";
-            InputField_StoredValueVoltageMAX.ReadOnly = true;
-            InputField_StoredValueVoltageMAX.Size = new Size(135, 29);
-            InputField_StoredValueVoltageMAX.TabIndex = 31;
-            InputField_StoredValueVoltageMAX.Tag = "";
-            InputField_StoredValueVoltageMAX.TextAlign = HorizontalAlignment.Center;
+            Button_ValueEditor.AutoSize = true;
+            Button_ValueEditor.Dock = DockStyle.Fill;
+            Button_ValueEditor.Location = new Point(3, 34);
+            Button_ValueEditor.Name = "Button_ValueEditor";
+            Button_ValueEditor.Size = new Size(280, 26);
+            Button_ValueEditor.TabIndex = 1;
+            Button_ValueEditor.Tag = "ManualSetValues";
+            Button_ValueEditor.Text = "Mannually set values";
+            Button_ValueEditor.UseVisualStyleBackColor = true;
+            Button_ValueEditor.Click += ButtonHandler;
             // 
             // tableLayoutPanel7
             // 
@@ -518,330 +490,9 @@
             InputField_StoredValueCurrentPlus.Tag = "";
             InputField_StoredValueCurrentPlus.TextAlign = HorizontalAlignment.Center;
             // 
-            // groupBox1
-            // 
-            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            groupBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            groupBox1.Controls.Add(ConsoleBox);
-            groupBox1.Controls.Add(Operation_ConnectBattery_Override);
-            groupBox1.Controls.Add(StatusCurrentOperation_UI);
-            groupBox1.Controls.Add(label7);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Controls.Add(Label_Elapsed_Time_UI);
-            groupBox1.Controls.Add(textBox2);
-            groupBox1.Controls.Add(textBox1);
-            groupBox1.Location = new Point(12, 231);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(438, 378);
-            groupBox1.TabIndex = 16;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Status";
-            // 
-            // ConsoleBox
-            // 
-            ConsoleBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ConsoleBox.Controls.Add(toolStrip1);
-            ConsoleBox.Controls.Add(Console_Simple_Textbox_UI);
-            ConsoleBox.Dock = DockStyle.Bottom;
-            ConsoleBox.Location = new Point(3, 325);
-            ConsoleBox.MaximumSize = new Size(450, 267);
-            ConsoleBox.MinimumSize = new Size(300, 50);
-            ConsoleBox.Name = "ConsoleBox";
-            ConsoleBox.Size = new Size(432, 50);
-            ConsoleBox.TabIndex = 22;
-            ConsoleBox.TabStop = false;
-            ConsoleBox.Text = "Console";
-            // 
-            // toolStrip1
-            // 
-            toolStrip1.Dock = DockStyle.Bottom;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { ToggleConsole_Btn, ConsoleClear_Btn, Console_DownloadBtn, toolStripSeparator4, Console_Short_ErrorLabel });
-            toolStrip1.Location = new Point(3, 22);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(426, 25);
-            toolStrip1.TabIndex = 27;
-            toolStrip1.Text = "toolStrip1";
-            // 
-            // ToggleConsole_Btn
-            // 
-            ToggleConsole_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ToggleConsole_Btn.Image = Properties.Resources.Console;
-            ToggleConsole_Btn.ImageTransparentColor = Color.Magenta;
-            ToggleConsole_Btn.Name = "ToggleConsole_Btn";
-            ToggleConsole_Btn.Size = new Size(23, 22);
-            ToggleConsole_Btn.Tag = "ToggleConsole";
-            ToggleConsole_Btn.Text = "Close Console";
-            ToggleConsole_Btn.Click += ButtonHandler;
-            // 
-            // ConsoleClear_Btn
-            // 
-            ConsoleClear_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ConsoleClear_Btn.Image = Properties.Resources.CleanData;
-            ConsoleClear_Btn.ImageTransparentColor = Color.Magenta;
-            ConsoleClear_Btn.Name = "ConsoleClear_Btn";
-            ConsoleClear_Btn.Size = new Size(23, 22);
-            ConsoleClear_Btn.Tag = "ClearConsole";
-            ConsoleClear_Btn.Text = "Clear console";
-            ConsoleClear_Btn.Click += ButtonHandler;
-            // 
-            // Console_DownloadBtn
-            // 
-            Console_DownloadBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            Console_DownloadBtn.Image = Properties.Resources.Save;
-            Console_DownloadBtn.ImageTransparentColor = Color.Magenta;
-            Console_DownloadBtn.Name = "Console_DownloadBtn";
-            Console_DownloadBtn.Size = new Size(23, 22);
-            Console_DownloadBtn.Tag = "SaveLOG";
-            Console_DownloadBtn.Text = "Download Log";
-            Console_DownloadBtn.Click += ButtonHandler;
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 25);
-            // 
-            // Console_Short_ErrorLabel
-            // 
-            Console_Short_ErrorLabel.ForeColor = Color.DarkRed;
-            Console_Short_ErrorLabel.Name = "Console_Short_ErrorLabel";
-            Console_Short_ErrorLabel.Overflow = ToolStripItemOverflow.Never;
-            Console_Short_ErrorLabel.RightToLeft = RightToLeft.No;
-            Console_Short_ErrorLabel.Size = new Size(259, 22);
-            Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
-            // 
-            // Console_Simple_Textbox_UI
-            // 
-            Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
-            Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
-            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
-            Console_Simple_Textbox_UI.Location = new Point(3, 25);
-            Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
-            Console_Simple_Textbox_UI.ReadOnly = true;
-            Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
-            Console_Simple_Textbox_UI.Size = new Size(426, 22);
-            Console_Simple_Textbox_UI.TabIndex = 5;
-            Console_Simple_Textbox_UI.TabStop = false;
-            Console_Simple_Textbox_UI.Text = "";
-            // 
-            // Operation_ConnectBattery_Override
-            // 
-            Operation_ConnectBattery_Override.AutoSize = true;
-            Operation_ConnectBattery_Override.Location = new Point(17, 153);
-            Operation_ConnectBattery_Override.Name = "Operation_ConnectBattery_Override";
-            Operation_ConnectBattery_Override.Size = new Size(272, 25);
-            Operation_ConnectBattery_Override.TabIndex = 28;
-            Operation_ConnectBattery_Override.Text = "Confirm Battery Battery connection";
-            Operation_ConnectBattery_Override.UseVisualStyleBackColor = true;
-            // 
-            // StatusCurrentOperation_UI
-            // 
-            StatusCurrentOperation_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            StatusCurrentOperation_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            StatusCurrentOperation_UI.Location = new Point(152, 25);
-            StatusCurrentOperation_UI.Margin = new Padding(0);
-            StatusCurrentOperation_UI.Name = "StatusCurrentOperation_UI";
-            StatusCurrentOperation_UI.ReadOnly = true;
-            StatusCurrentOperation_UI.Size = new Size(144, 36);
-            StatusCurrentOperation_UI.TabIndex = 17;
-            StatusCurrentOperation_UI.Text = "None";
-            StatusCurrentOperation_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            label7.Location = new Point(6, 25);
-            label7.Name = "label7";
-            label7.Size = new Size(142, 36);
-            label7.TabIndex = 16;
-            label7.Text = "Current Operation:";
-            label7.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // label4
-            // 
-            label4.Location = new Point(6, 68);
-            label4.Name = "label4";
-            label4.Size = new Size(142, 36);
-            label4.TabIndex = 23;
-            label4.Text = "Time Elapsed:";
-            label4.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // Label_Elapsed_Time_UI
-            // 
-            Label_Elapsed_Time_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            Label_Elapsed_Time_UI.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            Label_Elapsed_Time_UI.Location = new Point(152, 66);
-            Label_Elapsed_Time_UI.Margin = new Padding(0);
-            Label_Elapsed_Time_UI.Name = "Label_Elapsed_Time_UI";
-            Label_Elapsed_Time_UI.ReadOnly = true;
-            Label_Elapsed_Time_UI.Size = new Size(144, 36);
-            Label_Elapsed_Time_UI.TabIndex = 24;
-            Label_Elapsed_Time_UI.Text = "00:00:00";
-            Label_Elapsed_Time_UI.TextAlign = HorizontalAlignment.Center;
-            // 
-            // textBox2
-            // 
-            textBox2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textBox2.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox2.Location = new Point(152, 107);
-            textBox2.Margin = new Padding(0);
-            textBox2.Name = "textBox2";
-            textBox2.ReadOnly = true;
-            textBox2.Size = new Size(144, 36);
-            textBox2.TabIndex = 26;
-            textBox2.Text = "SOC +";
-            textBox2.TextAlign = HorizontalAlignment.Center;
-            // 
-            // textBox1
-            // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textBox1.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            textBox1.Location = new Point(8, 107);
-            textBox1.Margin = new Padding(0);
-            textBox1.Name = "textBox1";
-            textBox1.ReadOnly = true;
-            textBox1.Size = new Size(144, 36);
-            textBox1.TabIndex = 26;
-            textBox1.Text = "SOC -";
-            textBox1.TextAlign = HorizontalAlignment.Center;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(6, 28);
-            button1.Name = "button1";
-            button1.Size = new Size(139, 137);
-            button1.TabIndex = 29;
-            button1.Tag = "OpenManualForm";
-            button1.Text = "Open Manual Controller";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += ButtonHandler;
-            // 
-            // FactoryInformationBox
-            // 
-            FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            FactoryInformationBox.Controls.Add(BatteryChemistryType);
-            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
-            FactoryInformationBox.Controls.Add(Discharge_cRating);
-            FactoryInformationBox.Controls.Add(Charge_cRating);
-            FactoryInformationBox.Controls.Add(RatedBatteryVoltageUI);
-            FactoryInformationBox.Controls.Add(label11);
-            FactoryInformationBox.Controls.Add(label1);
-            FactoryInformationBox.Controls.Add(label6);
-            FactoryInformationBox.Controls.Add(label2);
-            FactoryInformationBox.Controls.Add(RatedBatteryAmperageUI);
-            FactoryInformationBox.Dock = DockStyle.Top;
-            FactoryInformationBox.Location = new Point(3, 25);
-            FactoryInformationBox.Name = "FactoryInformationBox";
-            FactoryInformationBox.Size = new Size(433, 200);
-            FactoryInformationBox.TabIndex = 18;
-            FactoryInformationBox.TabStop = false;
-            FactoryInformationBox.Text = "Factory Information";
-            // 
-            // BatteryChemistryType
-            // 
-            BatteryChemistryType.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            BatteryChemistryType.AutoCompleteMode = AutoCompleteMode.Suggest;
-            BatteryChemistryType.FormattingEnabled = true;
-            BatteryChemistryType.Items.AddRange(new object[] { "Lithium-Ion", "Lead-Acid" });
-            BatteryChemistryType.Location = new Point(304, 18);
-            BatteryChemistryType.Name = "BatteryChemistryType";
-            BatteryChemistryType.Size = new Size(123, 29);
-            BatteryChemistryType.TabIndex = 2;
-            // 
-            // ApplyBatteryDataButton
-            // 
-            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ApplyBatteryDataButton.Location = new Point(6, 158);
-            ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
-            ApplyBatteryDataButton.Size = new Size(421, 36);
-            ApplyBatteryDataButton.TabIndex = 7;
-            ApplyBatteryDataButton.Tag = "setData";
-            ApplyBatteryDataButton.Text = "Apply";
-            ApplyBatteryDataButton.UseVisualStyleBackColor = true;
-            ApplyBatteryDataButton.Click += ButtonHandler;
-            // 
-            // Discharge_cRating
-            // 
-            Discharge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Discharge_cRating.Location = new Point(304, 123);
-            Discharge_cRating.Name = "Discharge_cRating";
-            Discharge_cRating.PlaceholderText = "Discharge Rating";
-            Discharge_cRating.Size = new Size(123, 29);
-            Discharge_cRating.TabIndex = 6;
-            // 
-            // Charge_cRating
-            // 
-            Charge_cRating.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Charge_cRating.Location = new Point(175, 123);
-            Charge_cRating.Name = "Charge_cRating";
-            Charge_cRating.PlaceholderText = "Charge Rating";
-            Charge_cRating.Size = new Size(123, 29);
-            Charge_cRating.TabIndex = 5;
-            // 
-            // RatedBatteryVoltageUI
-            // 
-            RatedBatteryVoltageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            RatedBatteryVoltageUI.Location = new Point(304, 53);
-            RatedBatteryVoltageUI.Name = "RatedBatteryVoltageUI";
-            RatedBatteryVoltageUI.PlaceholderText = "Voltage";
-            RatedBatteryVoltageUI.Size = new Size(123, 29);
-            RatedBatteryVoltageUI.TabIndex = 3;
-            // 
-            // label11
-            // 
-            label11.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label11.AutoSize = true;
-            label11.Location = new Point(12, 26);
-            label11.Name = "label11";
-            label11.Size = new Size(95, 21);
-            label11.TabIndex = 6;
-            label11.Text = "Battery Type";
-            label11.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 57);
-            label1.Name = "label1";
-            label1.Size = new Size(106, 21);
-            label1.TabIndex = 6;
-            label1.Text = "Rated Voltage";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label6
-            // 
-            label6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label6.AutoSize = true;
-            label6.Location = new Point(12, 126);
-            label6.Name = "label6";
-            label6.Size = new Size(69, 21);
-            label6.TabIndex = 9;
-            label6.Text = "C Rating";
-            label6.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label2.AutoSize = true;
-            label2.Location = new Point(12, 92);
-            label2.Name = "label2";
-            label2.Size = new Size(110, 21);
-            label2.TabIndex = 8;
-            label2.Text = "Rated capacity";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // RatedBatteryAmperageUI
-            // 
-            RatedBatteryAmperageUI.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            RatedBatteryAmperageUI.Location = new Point(304, 88);
-            RatedBatteryAmperageUI.Name = "RatedBatteryAmperageUI";
-            RatedBatteryAmperageUI.PlaceholderText = "Amps / Hour";
-            RatedBatteryAmperageUI.Size = new Size(123, 29);
-            RatedBatteryAmperageUI.TabIndex = 4;
-            // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5, openManualFormToolStripMenuItem, openSequencerToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(907, 24);
@@ -1098,6 +749,24 @@
             toolStripTextBox1.Text = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
             toolStripTextBox1.Click += ButtonHandler;
             // 
+            // openManualFormToolStripMenuItem
+            // 
+            openManualFormToolStripMenuItem.Name = "openManualFormToolStripMenuItem";
+            openManualFormToolStripMenuItem.Size = new Size(116, 20);
+            openManualFormToolStripMenuItem.Tag = "OpenManualForm";
+            openManualFormToolStripMenuItem.Text = "OpenManualForm";
+            openManualFormToolStripMenuItem.Click += ButtonHandler;
+            // 
+            // openSequencerToolStripMenuItem
+            // 
+            openSequencerToolStripMenuItem.Enabled = false;
+            openSequencerToolStripMenuItem.Name = "openSequencerToolStripMenuItem";
+            openSequencerToolStripMenuItem.ShowShortcutKeys = false;
+            openSequencerToolStripMenuItem.Size = new Size(103, 20);
+            openSequencerToolStripMenuItem.Tag = "OpenSequencer";
+            openSequencerToolStripMenuItem.Text = "OpenSequencer";
+            openSequencerToolStripMenuItem.Click += ButtonHandler;
+            // 
             // OperationsBox_UI
             // 
             OperationsBox_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1115,71 +784,455 @@
             // 
             ControlPanel.Controls.Add(button2);
             ControlPanel.Controls.Add(button1);
-            ControlPanel.Controls.Add(Operation_NoneORStop_Selection);
-            ControlPanel.Controls.Add(Operation_Charge_selection);
-            ControlPanel.Controls.Add(Operation_Discharge_selection);
+            ControlPanel.Controls.Add(Operation_Start);
             ControlPanel.Dock = DockStyle.Bottom;
-            ControlPanel.Location = new Point(3, 231);
+            ControlPanel.Location = new Point(3, 354);
             ControlPanel.Name = "ControlPanel";
-            ControlPanel.Size = new Size(433, 237);
+            ControlPanel.Size = new Size(433, 114);
             ControlPanel.TabIndex = 20;
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
             // 
             // button2
             // 
-            button2.Location = new Point(288, 28);
+            button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            button2.Location = new Point(288, 48);
             button2.Name = "button2";
-            button2.Size = new Size(139, 137);
-            button2.TabIndex = 30;
-            button2.Tag = "OpenSequencer";
-            button2.Text = "Open Sequencer";
+            button2.Size = new Size(139, 60);
+            button2.TabIndex = 29;
+            button2.Tag = "Stop";
+            button2.Text = "Stop";
             button2.UseVisualStyleBackColor = true;
             button2.Click += ButtonHandler;
             // 
-            // Operation_NoneORStop_Selection
+            // button1
             // 
-            Operation_NoneORStop_Selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_NoneORStop_Selection.Location = new Point(151, 171);
-            Operation_NoneORStop_Selection.Name = "Operation_NoneORStop_Selection";
-            Operation_NoneORStop_Selection.Size = new Size(132, 60);
-            Operation_NoneORStop_Selection.TabIndex = 27;
-            Operation_NoneORStop_Selection.Tag = "SetStateIdle";
-            Operation_NoneORStop_Selection.Text = "Idle / stop output";
-            Operation_NoneORStop_Selection.UseVisualStyleBackColor = true;
-            Operation_NoneORStop_Selection.Click += ButtonHandler;
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            button1.Location = new Point(148, 48);
+            button1.Name = "button1";
+            button1.Size = new Size(134, 60);
+            button1.TabIndex = 28;
+            button1.Tag = "Start";
+            button1.Text = "Restart";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += ButtonHandler;
             // 
-            // Operation_Charge_selection
+            // Operation_Start
             // 
-            Operation_Charge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Charge_selection.Location = new Point(288, 171);
-            Operation_Charge_selection.Name = "Operation_Charge_selection";
-            Operation_Charge_selection.Size = new Size(139, 60);
-            Operation_Charge_selection.TabIndex = 27;
-            Operation_Charge_selection.Tag = "SetStateCharge";
-            Operation_Charge_selection.Text = "Charge";
-            Operation_Charge_selection.UseVisualStyleBackColor = true;
-            Operation_Charge_selection.Click += ButtonHandler;
+            Operation_Start.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Operation_Start.Location = new Point(3, 48);
+            Operation_Start.Name = "Operation_Start";
+            Operation_Start.Size = new Size(139, 60);
+            Operation_Start.TabIndex = 27;
+            Operation_Start.Tag = "Start";
+            Operation_Start.Text = "Start";
+            Operation_Start.UseVisualStyleBackColor = true;
+            Operation_Start.Click += ButtonHandler;
             // 
-            // Operation_Discharge_selection
+            // FactoryInformationBox
             // 
-            Operation_Discharge_selection.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Operation_Discharge_selection.Location = new Point(6, 171);
-            Operation_Discharge_selection.Name = "Operation_Discharge_selection";
-            Operation_Discharge_selection.Size = new Size(139, 60);
-            Operation_Discharge_selection.TabIndex = 27;
-            Operation_Discharge_selection.Tag = "SetStateDischarge";
-            Operation_Discharge_selection.Text = "Discharge";
-            Operation_Discharge_selection.UseVisualStyleBackColor = true;
-            Operation_Discharge_selection.Click += ButtonHandler;
+            FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            FactoryInformationBox.Controls.Add(Label_Soc);
+            FactoryInformationBox.Controls.Add(Label_CutVolt);
+            FactoryInformationBox.Controls.Add(Label_TriggerTime);
+            FactoryInformationBox.Controls.Add(Label_trigger);
+            FactoryInformationBox.Controls.Add(Label_Volt);
+            FactoryInformationBox.Controls.Add(Label_MaxCurr);
+            FactoryInformationBox.Controls.Add(Label_Cap);
+            FactoryInformationBox.Controls.Add(label7);
+            FactoryInformationBox.Controls.Add(Textbox_ExpectedSoc);
+            FactoryInformationBox.Controls.Add(Textbox_TriggerTime);
+            FactoryInformationBox.Controls.Add(Textbox_CutoffVoltage);
+            FactoryInformationBox.Controls.Add(label3);
+            FactoryInformationBox.Controls.Add(label4);
+            FactoryInformationBox.Controls.Add(label5);
+            FactoryInformationBox.Controls.Add(Textbox_TriggerProcent);
+            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
+            FactoryInformationBox.Controls.Add(Textbox_MaxCurrent);
+            FactoryInformationBox.Controls.Add(Textbox_BulkVoltage);
+            FactoryInformationBox.Controls.Add(label1);
+            FactoryInformationBox.Controls.Add(label6);
+            FactoryInformationBox.Controls.Add(label2);
+            FactoryInformationBox.Controls.Add(Textbox_Cappacity);
+            FactoryInformationBox.Dock = DockStyle.Top;
+            FactoryInformationBox.Location = new Point(3, 25);
+            FactoryInformationBox.Name = "FactoryInformationBox";
+            FactoryInformationBox.Size = new Size(433, 323);
+            FactoryInformationBox.TabIndex = 18;
+            FactoryInformationBox.TabStop = false;
+            FactoryInformationBox.Text = "Factory Information";
+            // 
+            // Label_Soc
+            // 
+            Label_Soc.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_Soc.AutoSize = true;
+            Label_Soc.Location = new Point(342, 172);
+            Label_Soc.Name = "Label_Soc";
+            Label_Soc.Size = new Size(115, 21);
+            Label_Soc.TabIndex = 24;
+            Label_Soc.Text = "Wanted SOC %";
+            Label_Soc.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_CutVolt
+            // 
+            Label_CutVolt.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_CutVolt.AutoSize = true;
+            Label_CutVolt.Location = new Point(342, 67);
+            Label_CutVolt.Name = "Label_CutVolt";
+            Label_CutVolt.Size = new Size(109, 21);
+            Label_CutVolt.TabIndex = 21;
+            Label_CutVolt.Text = "Cutoff Voltage";
+            Label_CutVolt.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_TriggerTime
+            // 
+            Label_TriggerTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_TriggerTime.AutoSize = true;
+            Label_TriggerTime.Location = new Point(342, 241);
+            Label_TriggerTime.Name = "Label_TriggerTime";
+            Label_TriggerTime.Size = new Size(97, 21);
+            Label_TriggerTime.TabIndex = 23;
+            Label_TriggerTime.Text = "Trigger Time";
+            Label_TriggerTime.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_trigger
+            // 
+            Label_trigger.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_trigger.AutoSize = true;
+            Label_trigger.Location = new Point(342, 207);
+            Label_trigger.Name = "Label_trigger";
+            Label_trigger.Size = new Size(76, 21);
+            Label_trigger.TabIndex = 22;
+            Label_trigger.Text = "Trigger %";
+            Label_trigger.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Volt
+            // 
+            Label_Volt.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_Volt.AutoSize = true;
+            Label_Volt.Location = new Point(342, 32);
+            Label_Volt.Name = "Label_Volt";
+            Label_Volt.Size = new Size(106, 21);
+            Label_Volt.TabIndex = 18;
+            Label_Volt.Text = "Rated Voltage";
+            Label_Volt.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_MaxCurr
+            // 
+            Label_MaxCurr.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_MaxCurr.AutoSize = true;
+            Label_MaxCurr.Location = new Point(342, 136);
+            Label_MaxCurr.Name = "Label_MaxCurr";
+            Label_MaxCurr.Size = new Size(175, 21);
+            Label_MaxCurr.TabIndex = 20;
+            Label_MaxCurr.Text = "Max current or C Rating";
+            Label_MaxCurr.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Cap
+            // 
+            Label_Cap.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_Cap.AutoSize = true;
+            Label_Cap.Location = new Point(342, 102);
+            Label_Cap.Name = "Label_Cap";
+            Label_Cap.Size = new Size(110, 21);
+            Label_Cap.TabIndex = 19;
+            Label_Cap.Text = "Rated capacity";
+            Label_Cap.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label7.AutoSize = true;
+            label7.Location = new Point(12, 172);
+            label7.Name = "label7";
+            label7.Size = new Size(115, 21);
+            label7.TabIndex = 17;
+            label7.Text = "Wanted SOC %";
+            label7.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_ExpectedSoc
+            // 
+            Textbox_ExpectedSoc.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_ExpectedSoc.Location = new Point(213, 169);
+            Textbox_ExpectedSoc.Name = "Textbox_ExpectedSoc";
+            Textbox_ExpectedSoc.PlaceholderText = "State of Charge";
+            Textbox_ExpectedSoc.Size = new Size(123, 29);
+            Textbox_ExpectedSoc.TabIndex = 7;
+            // 
+            // Textbox_TriggerTime
+            // 
+            Textbox_TriggerTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_TriggerTime.Location = new Point(213, 239);
+            Textbox_TriggerTime.Name = "Textbox_TriggerTime";
+            Textbox_TriggerTime.PlaceholderText = "Trigger";
+            Textbox_TriggerTime.Size = new Size(123, 29);
+            Textbox_TriggerTime.TabIndex = 9;
+            // 
+            // Textbox_CutoffVoltage
+            // 
+            Textbox_CutoffVoltage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_CutoffVoltage.Location = new Point(213, 64);
+            Textbox_CutoffVoltage.Name = "Textbox_CutoffVoltage";
+            Textbox_CutoffVoltage.PlaceholderText = "lowest Voltage";
+            Textbox_CutoffVoltage.Size = new Size(123, 29);
+            Textbox_CutoffVoltage.TabIndex = 4;
+            // 
+            // label3
+            // 
+            label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label3.AutoSize = true;
+            label3.Location = new Point(12, 67);
+            label3.Name = "label3";
+            label3.Size = new Size(109, 21);
+            label3.TabIndex = 13;
+            label3.Text = "Cutoff Voltage";
+            label3.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label4.AutoSize = true;
+            label4.Location = new Point(12, 241);
+            label4.Name = "label4";
+            label4.Size = new Size(97, 21);
+            label4.TabIndex = 15;
+            label4.Text = "Trigger Time";
+            label4.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label5
+            // 
+            label5.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 207);
+            label5.Name = "label5";
+            label5.Size = new Size(76, 21);
+            label5.TabIndex = 14;
+            label5.Text = "Trigger %";
+            label5.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_TriggerProcent
+            // 
+            Textbox_TriggerProcent.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_TriggerProcent.Location = new Point(213, 204);
+            Textbox_TriggerProcent.Name = "Textbox_TriggerProcent";
+            Textbox_TriggerProcent.PlaceholderText = "Trigger";
+            Textbox_TriggerProcent.Size = new Size(123, 29);
+            Textbox_TriggerProcent.TabIndex = 8;
+            // 
+            // ApplyBatteryDataButton
+            // 
+            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ApplyBatteryDataButton.Location = new Point(6, 281);
+            ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
+            ApplyBatteryDataButton.Size = new Size(421, 36);
+            ApplyBatteryDataButton.TabIndex = 10;
+            ApplyBatteryDataButton.Tag = "setData";
+            ApplyBatteryDataButton.Text = "Apply";
+            ApplyBatteryDataButton.UseVisualStyleBackColor = true;
+            ApplyBatteryDataButton.Click += ButtonHandler;
+            // 
+            // Textbox_MaxCurrent
+            // 
+            Textbox_MaxCurrent.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_MaxCurrent.Location = new Point(213, 134);
+            Textbox_MaxCurrent.Name = "Textbox_MaxCurrent";
+            Textbox_MaxCurrent.PlaceholderText = "Max Current";
+            Textbox_MaxCurrent.Size = new Size(123, 29);
+            Textbox_MaxCurrent.TabIndex = 6;
+            // 
+            // Textbox_BulkVoltage
+            // 
+            Textbox_BulkVoltage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_BulkVoltage.Location = new Point(213, 29);
+            Textbox_BulkVoltage.Name = "Textbox_BulkVoltage";
+            Textbox_BulkVoltage.PlaceholderText = "Voltage";
+            Textbox_BulkVoltage.Size = new Size(123, 29);
+            Textbox_BulkVoltage.TabIndex = 3;
+            // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 32);
+            label1.Name = "label1";
+            label1.Size = new Size(106, 21);
+            label1.TabIndex = 6;
+            label1.Text = "Rated Voltage";
+            label1.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label6
+            // 
+            label6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label6.AutoSize = true;
+            label6.Location = new Point(12, 136);
+            label6.Name = "label6";
+            label6.Size = new Size(175, 21);
+            label6.TabIndex = 9;
+            label6.Text = "Max current or C Rating";
+            label6.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label2.AutoSize = true;
+            label2.Location = new Point(12, 102);
+            label2.Name = "label2";
+            label2.Size = new Size(110, 21);
+            label2.TabIndex = 8;
+            label2.Text = "Rated capacity";
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_Cappacity
+            // 
+            Textbox_Cappacity.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Textbox_Cappacity.Location = new Point(213, 99);
+            Textbox_Cappacity.Name = "Textbox_Cappacity";
+            Textbox_Cappacity.PlaceholderText = "Amps / Hour";
+            Textbox_Cappacity.Size = new Size(123, 29);
+            Textbox_Cappacity.TabIndex = 5;
+            // 
+            // ConsoleBox
+            // 
+            ConsoleBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ConsoleBox.Controls.Add(toolStrip1);
+            ConsoleBox.Controls.Add(Console_Simple_Textbox_UI);
+            ConsoleBox.Dock = DockStyle.Bottom;
+            ConsoleBox.Location = new Point(0, 664);
+            ConsoleBox.MaximumSize = new Size(450, 267);
+            ConsoleBox.MinimumSize = new Size(300, 50);
+            ConsoleBox.Name = "ConsoleBox";
+            ConsoleBox.Size = new Size(450, 50);
+            ConsoleBox.TabIndex = 23;
+            ConsoleBox.TabStop = false;
+            ConsoleBox.Text = "Console";
+            // 
+            // toolStrip1
+            // 
+            toolStrip1.Dock = DockStyle.Bottom;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { ToggleConsole_Btn, ConsoleClear_Btn, Console_DownloadBtn, toolStripSeparator4, Console_Short_ErrorLabel });
+            toolStrip1.Location = new Point(3, 22);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(444, 25);
+            toolStrip1.TabIndex = 27;
+            toolStrip1.Text = "toolStrip1";
+            // 
+            // ToggleConsole_Btn
+            // 
+            ToggleConsole_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ToggleConsole_Btn.Image = Properties.Resources.Console;
+            ToggleConsole_Btn.ImageTransparentColor = Color.Magenta;
+            ToggleConsole_Btn.Name = "ToggleConsole_Btn";
+            ToggleConsole_Btn.Size = new Size(23, 22);
+            ToggleConsole_Btn.Tag = "ToggleConsole";
+            ToggleConsole_Btn.Text = "Close Console";
+            ToggleConsole_Btn.Click += ButtonHandler;
+            // 
+            // ConsoleClear_Btn
+            // 
+            ConsoleClear_Btn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            ConsoleClear_Btn.Image = Properties.Resources.CleanData;
+            ConsoleClear_Btn.ImageTransparentColor = Color.Magenta;
+            ConsoleClear_Btn.Name = "ConsoleClear_Btn";
+            ConsoleClear_Btn.Size = new Size(23, 22);
+            ConsoleClear_Btn.Tag = "ClearConsole";
+            ConsoleClear_Btn.Text = "Clear console";
+            // 
+            // Console_DownloadBtn
+            // 
+            Console_DownloadBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            Console_DownloadBtn.Image = Properties.Resources.Save;
+            Console_DownloadBtn.ImageTransparentColor = Color.Magenta;
+            Console_DownloadBtn.Name = "Console_DownloadBtn";
+            Console_DownloadBtn.Size = new Size(23, 22);
+            Console_DownloadBtn.Tag = "SaveLOG";
+            Console_DownloadBtn.Text = "Download Log";
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 25);
+            // 
+            // Console_Short_ErrorLabel
+            // 
+            Console_Short_ErrorLabel.ForeColor = Color.DarkRed;
+            Console_Short_ErrorLabel.Name = "Console_Short_ErrorLabel";
+            Console_Short_ErrorLabel.Overflow = ToolStripItemOverflow.Never;
+            Console_Short_ErrorLabel.RightToLeft = RightToLeft.No;
+            Console_Short_ErrorLabel.Size = new Size(259, 22);
+            Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
+            // 
+            // Console_Simple_Textbox_UI
+            // 
+            Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
+            Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
+            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
+            Console_Simple_Textbox_UI.Location = new Point(3, 25);
+            Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
+            Console_Simple_Textbox_UI.ReadOnly = true;
+            Console_Simple_Textbox_UI.ScrollBars = RichTextBoxScrollBars.Vertical;
+            Console_Simple_Textbox_UI.Size = new Size(444, 22);
+            Console_Simple_Textbox_UI.TabIndex = 5;
+            Console_Simple_Textbox_UI.TabStop = false;
+            Console_Simple_Textbox_UI.Text = "";
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Enabled = false;
+            checkBox1.Location = new Point(12, 231);
+            checkBox1.Name = "checkBox1";
+            checkBox1.RightToLeft = RightToLeft.Yes;
+            checkBox1.Size = new Size(137, 25);
+            checkBox1.TabIndex = 26;
+            checkBox1.TabStop = false;
+            checkBox1.Text = "Trigger reached";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // Label_TriggerActualTime
+            // 
+            Label_TriggerActualTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_TriggerActualTime.AutoSize = true;
+            Label_TriggerActualTime.Location = new Point(155, 232);
+            Label_TriggerActualTime.Name = "Label_TriggerActualTime";
+            Label_TriggerActualTime.Size = new Size(51, 21);
+            Label_TriggerActualTime.TabIndex = 27;
+            Label_TriggerActualTime.Text = "Time: ";
+            Label_TriggerActualTime.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Label_AccumulatedCharge
+            // 
+            Label_AccumulatedCharge.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_AccumulatedCharge.AutoSize = true;
+            Label_AccumulatedCharge.Location = new Point(12, 259);
+            Label_AccumulatedCharge.Name = "Label_AccumulatedCharge";
+            Label_AccumulatedCharge.Size = new Size(172, 21);
+            Label_AccumulatedCharge.TabIndex = 28;
+            Label_AccumulatedCharge.Text = "accumulatedCharge: ?A";
+            Label_AccumulatedCharge.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Label_KnownSOC
+            // 
+            Label_KnownSOC.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_KnownSOC.AutoSize = true;
+            Label_KnownSOC.Location = new Point(12, 280);
+            Label_KnownSOC.Name = "Label_KnownSOC";
+            Label_KnownSOC.Size = new Size(114, 21);
+            Label_KnownSOC.TabIndex = 29;
+            Label_KnownSOC.Text = "Known Soc: ?%";
+            Label_KnownSOC.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(907, 714);
+            Controls.Add(Label_KnownSOC);
+            Controls.Add(Label_AccumulatedCharge);
+            Controls.Add(Label_TriggerActualTime);
+            Controls.Add(checkBox1);
+            Controls.Add(ConsoleBox);
             Controls.Add(OperationsBox_UI);
-            Controls.Add(groupBox1);
             Controls.Add(LiveInfoData);
             Controls.Add(menuStrip1);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
@@ -1188,7 +1241,6 @@
             Name = "MainForm";
             Text = "Whisper Power - Sm15k Controller";
             FormClosing += MainForm_FormClosing;
-            FormClosed += MainForm_FormClosed;
             LiveInfoData.ResumeLayout(false);
             LiveInfoData.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -1197,12 +1249,6 @@
             tableLayoutPanel9.PerformLayout();
             tableLayoutPanel8.ResumeLayout(false);
             tableLayoutPanel8.PerformLayout();
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel1.PerformLayout();
-            splitContainer1.Panel2.ResumeLayout(false);
-            splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
             tableLayoutPanel7.ResumeLayout(false);
             tableLayoutPanel7.PerformLayout();
             tableLayoutPanel5.ResumeLayout(false);
@@ -1211,18 +1257,16 @@
             tableLayoutPanel3.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
-            ConsoleBox.ResumeLayout(false);
-            ConsoleBox.PerformLayout();
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
-            FactoryInformationBox.ResumeLayout(false);
-            FactoryInformationBox.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             OperationsBox_UI.ResumeLayout(false);
             ControlPanel.ResumeLayout(false);
+            FactoryInformationBox.ResumeLayout(false);
+            FactoryInformationBox.PerformLayout();
+            ConsoleBox.ResumeLayout(false);
+            ConsoleBox.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1249,19 +1293,12 @@
         private Label Label_Remote_CC_UI;
         private Label Label_MachineAppliedCurrentMin_UI;
         private TableLayoutPanel tableLayoutPanel8;
-        private Button Button_Toggle_ValueEditor;
+        private Button Button_ValueEditor;
         private TableLayoutPanel tableLayoutPanel9;
         private Label Label_MachineAppliedVoltage_UI;
         private Label Label_Remote_CV_UI;
-        private GroupBox groupBox1;
-        private TextBox StatusCurrentOperation_UI;
-        private Label label7;
-        private GroupBox ConsoleBox;
-        private TextBox Label_Elapsed_Time_UI;
-        private Label label4;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem toolStripMenuItem1;
-        private RichTextBox Console_Simple_Textbox_UI;
         private ToolStripMenuItem ToolStripMenu_SaveSettings;
         private ToolStripMenuItem ToolStripMenu_ImportSettings;
         private ToolStripMenuItem toolStripMenuItem5;
@@ -1276,12 +1313,6 @@
         private ToolStripMenuItem SocketTab_Disconnect_Btn;
         private ToolStripMenuItem toolStripTextBox1;
         private ToolStripMenuItem toolStripMenuItem3;
-        private ToolStrip toolStrip1;
-        private ToolStripButton ToggleConsole_Btn;
-        private ToolStripButton ConsoleClear_Btn;
-        private ToolStripButton Console_DownloadBtn;
-        private ToolStripSeparator toolStripSeparator4;
-        public ToolStripLabel Console_Short_ErrorLabel;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripMenuItem RuntimeCSV_ToolstripItem;
         private ToolStripSeparator toolStripSeparator5;
@@ -1289,14 +1320,6 @@
         private ToolStripMenuItem toolStripMenuItem8;
         private ToolStripMenuItem toolStripMenuItem2;
         private ToolStripMenuItem toolStripMenuSetting_keepSessionData;
-        private TextBox RatedBatteryAmperageUI;
-        private Label label2;
-        private Label label6;
-        private Label label1;
-        private TextBox RatedBatteryVoltageUI;
-        private TextBox Charge_cRating;
-        private Button ApplyBatteryDataButton;
-        private GroupBox FactoryInformationBox;
         private GroupBox OperationsBox_UI;
         private ToolStripMenuItem toolStripMenuItem7;
         private ToolStripTextBox LimitLabel_01;
@@ -1311,20 +1334,47 @@
         private ToolStripMenuItem toolStripMenuItem6;
         private ToolStripTextBox toolStripTextBox2;
         private ToolStripTextBox toolStripTextBox3;
-        private CheckBox Operation_ConnectBattery_Override;
-        private TextBox Discharge_cRating;
         private GroupBox ControlPanel;
-        private Button Operation_NoneORStop_Selection;
-        private Button Operation_Charge_selection;
-        private Button Operation_Discharge_selection;
-        private ComboBox BatteryChemistryType;
-        private Label label11;
-        private TextBox textBox2;
-        private TextBox textBox1;
-        private Button button1;
-        private SplitContainer splitContainer1;
-        private TextBox InputField_StoredValueVoltageMIN;
-        private TextBox InputField_StoredValueVoltageMAX;
+        private Button Operation_Start;
+        private GroupBox ConsoleBox;
+        private ToolStrip toolStrip1;
+        private ToolStripButton ToggleConsole_Btn;
+        private ToolStripButton ConsoleClear_Btn;
+        private ToolStripButton Console_DownloadBtn;
+        private ToolStripSeparator toolStripSeparator4;
+        public ToolStripLabel Console_Short_ErrorLabel;
+        private RichTextBox Console_Simple_Textbox_UI;
+        private ToolStripMenuItem openManualFormToolStripMenuItem;
+        private ToolStripMenuItem openSequencerToolStripMenuItem;
+        private GroupBox FactoryInformationBox;
+        private Button ApplyBatteryDataButton;
+        private TextBox Textbox_MaxCurrent;
+        private TextBox Textbox_BulkVoltage;
+        private Label label1;
+        private Label label6;
+        private Label label2;
+        private TextBox Textbox_Cappacity;
+        private TextBox Textbox_TriggerTime;
+        private TextBox Textbox_CutoffVoltage;
+        private Label label3;
+        private Label label4;
+        private Label label5;
+        private TextBox Textbox_TriggerProcent;
+        private Label label7;
+        private TextBox Textbox_ExpectedSoc;
         private Button button2;
+        private Button button1;
+        private Label Label_Soc;
+        private Label Label_CutVolt;
+        private Label Label_TriggerTime;
+        private Label Label_trigger;
+        private Label Label_Volt;
+        private Label Label_MaxCurr;
+        private Label Label_Cap;
+        private TextBox InputField_StoredValueVoltage;
+        private CheckBox checkBox1;
+        private Label Label_TriggerActualTime;
+        private Label Label_AccumulatedCharge;
+        private Label Label_KnownSOC;
     }
 }

@@ -30,16 +30,6 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        //public bool IsConnectionEstablished()
-        //{
-        //    if (!_tcpHandler.IsConnected)
-        //    {
-        //        _logManager.AddDebugLogMessage("❌ TCP connection is not established.");
-        //        return false;
-        //    }
-        //    return true;
-        //}
-
         #region queries
 
         public void Request_Measure_Voltage()

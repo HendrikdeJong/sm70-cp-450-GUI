@@ -247,32 +247,34 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
-        private void SaveSettings(object sender, EventArgs e)
-        {
-            if(MainForm.Instance == null)
-            {
-                return;
-            }
-            SaveFileDialog? saveFileDialog = new()
-            {
-                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
-                Title = "Save Factory Settings",
-                FileName = "factory_settings.txt"
-            };
+        
+        //private void SaveSettings(object sender, EventArgs e)
+        //{
+        //    if(MainForm.Instance == null)
+        //    {
+        //        return;
+        //    }
+        //    SaveFileDialog? saveFileDialog = new()
+        //    {
+        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
+        //        Title = "Save Factory Settings",
+        //        FileName = "factory_settings.txt"
+        //    };
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filePath = saveFileDialog.FileName;
+        //    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        //    {
+        //        string filePath = saveFileDialog.FileName;
 
-                using (StreamWriter? writer = new(filePath))
-                {
-                    // Save the settings in comma-separated format (CSV-like)
-                    writer.WriteLine($"{MainForm.Instance._CutOffDischargeVoltage},{MainForm.Instance._MaxChargeVoltage},{MainForm.Instance._MaxCurrent},{MainForm.Instance._MaxPower},{MainForm.Instance._MinCurrent},{MainForm.Instance._MinPower}");
-                }
+        //        using (StreamWriter? writer = new(filePath))
+        //        {
+        //            // Save the settings in comma-separated format (CSV-like)
+        //            writer.WriteLine($"{MainForm.Instance._CutOffDischargeVoltage},{MainForm.Instance._MaxChargeVoltage},{MainForm.Instance._MaxCurrent},{MainForm.Instance._MaxPower},{MainForm.Instance._MinCurrent},{MainForm.Instance._MinPower}");
+        //        }
 
-                _ = MessageBox.Show("Settings successfully saved to " + filePath);
-            }
-        }
+        //        _ = MessageBox.Show("Settings successfully saved to " + filePath);
+        //    }
+        //}
+
         //private void LoadSettings(object sender, EventArgs e)
         //{
         //    OpenFileDialog? openFileDialog = new()

@@ -11,110 +11,127 @@ namespace sm70_cp_450_GUI
         private string? _SaveLocationCSV;
         private string? _SaveLocationLOG;
 
-
         public static MainForm? Instance { get; set; }
 
         private Timer? errorCleanupTimer;
         private readonly Stopwatch _stopwatch = new();
-        private enum AvailableState
+
+        private enum SequenceSteps
         {
-            None,
-            Charge,
-            Discharge,
+            idle,
+            Charging,
+            Discharging,
         }
-        private bool _started = false;
-        private bool _EditingValues = false;
+
+        private SequenceSteps CurrentStep = SequenceSteps.idle;
+
         public bool _ConsoleState = false;
-
-        public double currentVoltage = 0;
-        public double currentCurrent = 0;
-
-        public double currentPower = 0;
-
-        public double _MaxChargeVoltage;
-        public double _MaxPower;
-        public double _MaxCurrent;
-        public double Charge_C_Rating;
-
-        public double _CutOffDischargeVoltage;
-        public double _MinPower;
-        public double _MinCurrent;
-        public double Discharge_C_Rating;
-
-        private double _ratedVoltage = 0;
-        private double _ratedCapacity = 0;
-
         private bool DataSet = false;
 
-        private double SOC_Charge = 0;
-        private double SOC_Discharge = 0;
-        private AvailableState currentState;
-        public Dictionary<string, Action<string>> _commandToUIActions;
+        private double _ReadVoltage;
+        private double _ReadCurrent;
+        private double _ReadPower;
+
+        private double _BulkVoltage;
+        private double _CutoffVoltage;
+        private double _Capacity;
+        private double _MaxCurrent;
+        private double _MinCurrent;
+        private double _MaxPower;
+        private double _MinPower;
+
+        private double _ExpectedSoc;
+        private double _TriggerPercentValue;
+        private double _TriggerPercent;
+        private TimeSpan _TriggerTime;
 
         public MainForm()
         {
             InitializeComponent();
             Instance = this;
-            _commandToUIActions = new Dictionary<string, Action<string>>();
-            TcpConnectionHandler.Instance.OnConnectionEstablished += InitializeUIActions;
-            TcpConnectionHandler.Instance.OnConnectionLost += HandleConnectionLost;
             Load += MainForm_Load;
         }
+
         private void MainForm_Load(object? sender, EventArgs? e)
         {
             _commandManager = CommandManager.Instance;
             logManager = LogManager.Instance;
             _tcpHandler = TcpConnectionHandler.Instance;
-            logManager.OnLogUpdate += LogManager_OnLogUpdate;
+
+            if (_tcpHandler != null)
+            {
+                _tcpHandler.OnConnectionLost += HandleConnectionLost;
+            }
+
+            if (logManager != null)
+            {
+                logManager.OnLogUpdate += LogManager_OnLogUpdate;
+            }
+
             toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
             _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
             _SaveLocationLOG = Properties.Settings.Default.SaveLocationLOG;
+
             InitTimers();
             Show();
         }
-        private void InitializeUIActions()
-        {
-            // UI actions associated with commands
-            _commandToUIActions = new Dictionary<string, Action<string>>
-            {
-                { "MEASure:VOLtage?", (response) => {VoltageDisplay.Text = response + " V"; currentVoltage = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
-                { "MEASure:CURrent?", (response) => {AmperageDisplay.Text = response + " A"; currentCurrent = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
-                { "MEASure:POWer?", (response) => {WattageDisplay.Text = response + " W"; currentPower = double.Parse(response, System.Globalization.CultureInfo.InvariantCulture);}},
-                { "SOURce:VOLtage?", (response) => Label_MachineAppliedVoltage_UI.Text = response + " V" },
-                { "SOURce:CURrent?", (response) => Label_MachineAppliedCurrentPlus_UI.Text = response + " A" },
-                { "SOURce:POWer?", (response) => Label_MachineAppliedPowerPlus_UI.Text = response + " W" },
-                { "SOURce:CURrent:NEGative?", (response) => Label_MachineAppliedCurrentMin_UI.Text = response + " A" },
-                { "SOURce:POWer:NEGative?", (response) => Label_MachineAppliedPowerMin_UI.Text = response + " W" },
-                { "SYSTem:REMote:CV?", (response) => Label_Remote_CV_UI.Text = response},
-                { "SYSTem:REMote:CC?", (response) => Label_Remote_CC_UI.Text = response},
-                { "SYSTem:REMote:CP?", (response) => Label_Remote_CP_UI.Text = response},
-                { "SYSTem:LIMits:VOLtage?", (response) => LimitLabel_01.Text = response  + " V" },
-                { "SYSTem:LIMits:CURrent?", (response) => LimitLabel_02.Text = response  + " A" },
-                { "SYSTem:LIMits:POWer?", (response) => LimitLabel_03.Text = response  + " W" },
-                { "SYSTem:LIMits:CURrent:NEGative?", (response) => LimitLabel_04.Text = "-" + response  + " A" },
-                { "SYSTem:LIMits:POWer:NEGative?", (response) => LimitLabel_05.Text = "-" + response + " W"},
-            };
-        }
+
         private void HandleConnectionLost()
         {
-            VoltageDisplay.Text = "N/A";
-            AmperageDisplay.Text = "N/A";
-            WattageDisplay.Text = "N/A";
-            Label_Remote_CV_UI.Text = "N/A";
-            Label_Remote_CC_UI.Text = "N/A";
-            Label_Remote_CP_UI.Text = "N/A";
+            if (InvokeRequired)
+            {
+                Invoke(new Action(HandleConnectionLost));
+            }
+            else
+            {
+                VoltageDisplay.Text = "N/A";
+                AmperageDisplay.Text = "N/A";
+                WattageDisplay.Text = "N/A";
+                Label_Remote_CV_UI.Text = "N/A";
+                Label_Remote_CC_UI.Text = "N/A";
+                Label_Remote_CP_UI.Text = "N/A";
+            }
         }
 
-        #region Time based Functions
+        public void UpdateAllUIFields()
+        {
+            if (_tcpHandler == null) return;
+
+            if (InvokeRequired)
+            {
+                Invoke(new Action(UpdateAllUIFields));
+            }
+            else
+            {
+                // Update the UI fields with the current values from TcpConnectionHandler
+                _ReadVoltage = _tcpHandler.MeasuredVoltage;
+                _ReadCurrent = _tcpHandler.MeasuredCurrent;
+                _ReadPower = _tcpHandler.MeasuredPower;
+
+                Label_Remote_CV_UI.Text = _tcpHandler.SystemRemoteSettingVoltage;
+                Label_Remote_CC_UI.Text = _tcpHandler.SystemRemoteSettingCurrent;
+                Label_Remote_CP_UI.Text = _tcpHandler.SystemRemoteSettingPower;
+
+                VoltageDisplay.Text = $"{_ReadVoltage} V";
+                AmperageDisplay.Text = $"{_ReadCurrent} A";
+                WattageDisplay.Text = $"{_ReadPower} W";
+                Label_MachineAppliedVoltage_UI.Text = $"{_tcpHandler.SourceVoltage} V";
+                Label_MachineAppliedCurrentPlus_UI.Text = $"{_tcpHandler.SourceCurrent} A";
+                Label_MachineAppliedPowerPlus_UI.Text = $"{_tcpHandler.SourcePower} W";
+                Label_MachineAppliedCurrentMin_UI.Text = $"{_tcpHandler.SourceNegativeCurrent} A";
+                Label_MachineAppliedPowerMin_UI.Text = $"{_tcpHandler.SourceNegativePower} W";
+            }
+        }
+
         private void InitTimers()
         {
             Timer? updateTimer = new() { Interval = 1000 };
             updateTimer.Tick += (sender, e) => StandardUpdate();
             updateTimer.Start();
 
-            Timer? LateUpdateTimer = new() { Interval = 10000 };
-            LateUpdateTimer.Tick += (sender, e) => LateUpdate();
-            LateUpdateTimer.Start();
+            Timer? lateUpdateTimer = new() { Interval = 5000 };
+            lateUpdateTimer.Tick += (sender, e) => LateUpdate();
+            lateUpdateTimer.Start();
 
             if (logManager != null)
             {
@@ -123,8 +140,11 @@ namespace sm70_cp_450_GUI
                 errorCleanupTimer.Start();
             }
         }
+
         private void StandardUpdate()
         {
+            if (_tcpHandler == null || !_tcpHandler.IsConnected) return;
+
             _commandManager?.Request_Measure_Voltage();
             _commandManager?.Request_Measure_Current();
             _commandManager?.Request_Measure_Power();
@@ -133,121 +153,106 @@ namespace sm70_cp_450_GUI
             _commandManager?.Request_Source_Power();
             _commandManager?.Request_Source_Current_Negative();
             _commandManager?.Request_Source_Power_Negative();
+
             StateManager();
-            if (_stopwatch.IsRunning) { TimeSpan elapsed = _stopwatch.Elapsed; Label_Elapsed_Time_UI.Text = $"{elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}"; }
-            Operation_NoneORStop_Selection.BackColor = currentState != AvailableState.None ? Color.Red : SystemColors.Control;
-            _started = currentState != AvailableState.None;
-            if (currentState != AvailableState.None) _stopwatch.Start(); else _stopwatch.Stop();
         }
+
         private void LateUpdate()
-        {
-            LiveInfoData.Text = $"SM70-CP-450 Controller Status:{(_tcpHandler == null ? " Not initialized" : (_tcpHandler.IsConnected ? " Connected" : " Not Connected"))}";
-            _commandManager?.RequestRemoteSetting_CV();
-            _commandManager?.RequestRemoteSetting_CC();
-            _commandManager?.RequestRemoteSetting_CP();
-            _commandManager?.RequestSystemVoltageLimit();
-            _commandManager?.RequestSystemCurrentLimit();
-            _commandManager?.RequestSystemPowerLimit();
-            _commandManager?.RequestSystemNegCurrentLimit();
-            _commandManager?.RequestSystemNegPowerLimit();
-            CalculateSOC();
-            if (_stopwatch.IsRunning) logManager?.CollectBatteryMetrics(currentVoltage, currentCurrent, currentPower);
-        }
-        private void LogManager_OnLogUpdate(string logMessage) { if (InvokeRequired) Invoke(new Action(() => LogManager_OnLogUpdate(logMessage))); else Console_Simple_Textbox_UI.Text = logMessage; }
-        //handle the state of the machine
-        private bool _isPreChargeInProgress = false;
-        private bool batteryConnected = false;
-        private async void StateManager()
         {
             if (_tcpHandler == null) return;
 
-            if (!DataSet || !_tcpHandler.IsConnected) return;
+            LiveInfoData.Text = $"SM70-CP-450 Controller Status: {(_tcpHandler.IsConnected ? "Connected" : "Not Connected")}";
 
-            //step 1: check battery connection
-            if (!_isPreChargeInProgress)
+            _commandManager?.RequestRemoteSetting_CV();
+            _commandManager?.RequestRemoteSetting_CC();
+            _commandManager?.RequestRemoteSetting_CP();
+        }
+
+        private void LogManager_OnLogUpdate(string logMessage)
+        {
+            if (InvokeRequired)
             {
-                _isPreChargeInProgress = true;
-                batteryConnected = await TryPreChargePulse();
-                if (!batteryConnected)
-                {
-                    MessageBox.Show("Failed to connect the battery after 3 attempts.");
-                    return;
-                }
+                Invoke(new Action(() => LogManager_OnLogUpdate(logMessage)));
             }
-
-            if (currentState == AvailableState.Charge && batteryConnected)
+            else
             {
-                if (UtilityBase.IsApproximatelyEqual(currentVoltage, _MaxChargeVoltage, 1))
+                Console_Simple_Textbox_UI.Text = logMessage;
+            }
+        }
+
+        private void StateManager()
+        {
+            if (_tcpHandler == null || !_tcpHandler.IsConnected || !DataSet) return;
+
+            Label_TriggerActualTime.Text = _stopwatch.Elapsed.Seconds.ToString();
+
+            switch (CurrentStep)
+            {
+                case SequenceSteps.idle:
+                    SetValuesToMachine(_BulkVoltage, 2, 2, 2, 2);
+                    break;
+                case SequenceSteps.Charging:
+                    HandleCharging();
+                    break;
+                case SequenceSteps.Discharging:
+                    HandleDischarging();
+                    break;
+                default:
+                    logManager?.AddDebugLogMessage("Unknown sequence step.");
+                    break;
+            }
+        }
+
+        private void HandleCharging()
+        {
+            SetValuesToMachine(_BulkVoltage);
+
+            if (_ReadVoltage >= _BulkVoltage)
+            {
+                if (_ReadCurrent <= _TriggerPercentValue)
                 {
-                    if (UtilityBase.IsApproximatelyEqual(currentCurrent, 0, 1))
+                    checkBox1.Checked = true;
+                    if (_stopwatch.IsRunning && _stopwatch.Elapsed >= _TriggerTime)
                     {
-                        _commandManager?.SetOutputState(false);
-                        currentState = AvailableState.None;
-                        MessageBox.Show("Battery is fully charged");
+                        CurrentStep = SequenceSteps.Discharging;
+                        MessageBox.Show("Battery fully charged. Switching to discharge mode.");
+                        _stopwatch.Restart();
+                        checkBox1.Checked = false;
                     }
                 }
+                else
+                {
+                    checkBox1.Checked = false;
+                    _stopwatch.Restart();
+                }
             }
-            else if (currentState == AvailableState.Discharge && batteryConnected)
+        }
+
+        private void HandleDischarging()
+        {
+            SetValuesToMachine(_CutoffVoltage);
+
+            double elapsedHours = _stopwatch.Elapsed.TotalHours;
+            double accumulatedCharge = Math.Max(0, _Capacity - (Math.Abs(_ReadCurrent) * elapsedHours));
+            double dischargeSOC = (accumulatedCharge / _Capacity) * 100;
+
+            Label_AccumulatedCharge.Text = ($"AccumulatedCharge: {accumulatedCharge}A");
+            Label_KnownSOC.Text = ($"Soc: {dischargeSOC}%");
+
+            if (dischargeSOC <= _ExpectedSoc)
             {
-                // not handling discharging yet, so this part can be developed later
+                _stopwatch.Stop();
+                CurrentStep = SequenceSteps.idle;
+                MessageBox.Show($"Target SOC {_ExpectedSoc}% reached. Stopping discharge.");
             }
-        }
-        private async Task<bool> TryPreChargePulse()
-        {
-            const int maxRetries = 3;
-            int attempts = 0;
-            bool batteryConnected = false;
-            while (attempts < maxRetries)
-            {
-                attempts++;
-
-                // PreCharge pulse with max voltage
-                _commandManager?.SetOutputVoltage(_MaxChargeVoltage);
-                _commandManager?.SetOutputState(true); // Turn on
-
-                // Wait briefly to allow the system to stabilize
-                await Task.Delay(2500); // Adjust delay as needed for system response time
-                double _preChargeActiveVoltage = currentVoltage;
-
-                // Turn off
-                _commandManager?.SetOutputState(false);
-
-                await Task.Delay(2500);
-
-                //Step 2: Check if the voltage is stabilized (i.e., battery is connected)
-                if (CheckBatteryConnection(_preChargeActiveVoltage)) { batteryConnected = true; break; }
-                MessageBox.Show($"Attempt {attempts} trying to check for battery connection");
-
-                await Task.Delay(1000); // Delay between retries
-            }
-
-            return batteryConnected;
-        }
-        private bool CheckBatteryConnection(double V)
-        {
-            if (UtilityBase.IsApproximatelyEqual(currentVoltage, V, 1)) return false; // If the voltage does not stabilize, return false
-            if (UtilityBase.IsApproximatelyEqual(currentVoltage, 0, 5)) return false; //this voltage is too low to be a correct connection
-            return true; // If the voltage is stable (not dropping to zero), the battery is connected
-        }
-        #endregion
-
-        private void CalculateSOC()
-        {
-            if (!_started) return;
-            // Calculate the state of charge (SoC) in percentage
-            SOC_Charge = (currentCurrent / _ratedCapacity) * 100;
-            SOC_Discharge = (1 - (currentCurrent * _stopwatch.Elapsed.TotalHours) / _ratedCapacity) * 100;
-
-            textBox1.Text = SOC_Charge.ToString() + " %";
-            textBox2.Text = SOC_Discharge.ToString() + " %";
         }
 
         private void SetValuesToMachine(double voltage, double amp = 0, double ampNeg = 0, double power = 0, double powerNeg = 0)
         {
             amp = amp == 0 ? _MaxCurrent : amp;
-            ampNeg = ampNeg != 0 ? _MinCurrent : ampNeg;
-            power = power != 0 ? _MaxPower : power;
-            powerNeg = powerNeg != 0 ? _MinPower : powerNeg;
+            ampNeg = ampNeg == 0 ? _MinCurrent : ampNeg;
+            power = power == 0 ? _MaxPower : power;
+            powerNeg = powerNeg == 0 ? _MinPower : powerNeg;
 
             _commandManager?.SetOutputVoltage(voltage);
             _commandManager?.SetOutputCurrent(amp);
@@ -255,63 +260,77 @@ namespace sm70_cp_450_GUI
             _commandManager?.SetOutputPower(power);
             _commandManager?.SetOutputPowerNegative(powerNeg);
         }
-        private void UpdateBatterySettings()
+
+        
+        private void ManualSetValues()
         {
-            _CutOffDischargeVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltageMAX.Text);
-            _MaxChargeVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltageMIN.Text);
+            _BulkVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltage.Text);
             _MaxCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentPlus.Text);
-            _MaxPower = UtilityBase.ParseInput(InputField_StoredValuePowerPlus.Text);
             _MinCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentMin.Text);
+            _MaxPower = UtilityBase.ParseInput(InputField_StoredValuePowerPlus.Text);
             _MinPower = UtilityBase.ParseInput(InputField_StoredValuePowerMin.Text);
-            MessageBox.Show($"Values saved: {_CutOffDischargeVoltage}, {_MaxChargeVoltage}, {_MaxCurrent}, {_MaxPower}, {_MinCurrent}, {_MinPower}");
-        }
-
-        private void InitializeBatterySettings()
-        {
-            double typicalVoltagePerCell;
-            double numberOfCells;
-            _ratedVoltage = UtilityBase.ParseInput(RatedBatteryVoltageUI.Text);
-            _ratedCapacity = UtilityBase.ParseInput(RatedBatteryAmperageUI.Text);
-            Charge_C_Rating = UtilityBase.ParseInput(Charge_cRating.Text);
-            Discharge_C_Rating = UtilityBase.ParseInput(Discharge_cRating.Text);
-
-            if (string.IsNullOrEmpty(RatedBatteryVoltageUI.Text) || string.IsNullOrEmpty(RatedBatteryAmperageUI.Text) || string.IsNullOrEmpty(Charge_cRating.Text))
-            {
-                DataSet = false;
-                return;
-            }
-
-            _MaxCurrent = _ratedCapacity * Charge_C_Rating;
-            _MaxPower = _MaxCurrent * _ratedVoltage;
-            _MinCurrent = _ratedCapacity * Discharge_C_Rating;
-            _MinPower = _MinCurrent * _ratedVoltage;
-
-            if (BatteryChemistryType.SelectedIndex == 0)
-            {
-                typicalVoltagePerCell = 3.6; // Nominal voltage for a Lithium-Ion cell
-                numberOfCells = Math.Round(_ratedVoltage / typicalVoltagePerCell);
-
-                _MaxChargeVoltage = numberOfCells * 4.2;
-                _CutOffDischargeVoltage = numberOfCells * 3.0;
-            }
-            else if (BatteryChemistryType.SelectedIndex == 1)// this is Lead-Acid
-            {
-                typicalVoltagePerCell = 2.0; // Nominal voltage for a Lead-Acid cell
-                numberOfCells = Math.Round(_ratedVoltage / typicalVoltagePerCell);
-
-                _MaxChargeVoltage = numberOfCells * 2.4;
-                _CutOffDischargeVoltage = numberOfCells * 1.75;
-            }
-
-            InputField_StoredValueVoltageMAX.Text = ($"{_MaxChargeVoltage} V");
-            InputField_StoredValueVoltageMIN.Text = ($"{_CutOffDischargeVoltage} V");
-            InputField_StoredValueCurrentPlus.Text = ($"{_MaxCurrent} A");
-            InputField_StoredValuePowerPlus.Text = ($"{_MaxPower} W");
-            InputField_StoredValueCurrentMin.Text = ($" - {_MinCurrent} A");
-            InputField_StoredValuePowerMin.Text = ($" - {_MinPower} W");
             DataSet = true;
         }
 
+        private void SaveInitialBatterySettings()
+        {
+            _BulkVoltage = UtilityBase.ParseInput(Textbox_BulkVoltage.Text);
+            _CutoffVoltage = UtilityBase.ParseInput(Textbox_CutoffVoltage.Text);
+            _Capacity = UtilityBase.ParseInput(Textbox_Cappacity.Text);
+            _MaxCurrent = UtilityBase.ParseInput(Textbox_MaxCurrent.Text);
+            _MinCurrent = -Math.Abs(UtilityBase.ParseInput(Textbox_MaxCurrent.Text));
+            _MaxPower = 5000;
+            _MinPower = -5000;
+            _ExpectedSoc = UtilityBase.ParseInput(Textbox_ExpectedSoc.Text);
+            _TriggerPercent = UtilityBase.ParseInput(Textbox_TriggerProcent.Text);
+            _TriggerTime = TimeSpan.FromSeconds(UtilityBase.ParseInput(Textbox_TriggerTime.Text));
+            _TriggerPercentValue = (_MaxCurrent / 100 * _TriggerPercent);
+
+            // Update UI Labels with new settings
+            Label_Volt.Text = _BulkVoltage.ToString();
+            Label_CutVolt.Text = _CutoffVoltage.ToString();
+            Label_Cap.Text = _Capacity.ToString();
+            Label_MaxCurr.Text = _MaxCurrent.ToString();
+            Label_Soc.Text = _ExpectedSoc.ToString();
+            Label_trigger.Text = $"{_TriggerPercentValue}A - {_TriggerPercent}%";
+            Label_TriggerTime.Text = _TriggerTime.ToString();
+
+            DataSet = true;
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_tcpHandler != null && _tcpHandler.IsConnected)
+            {
+                // Notify user that the application is attempting to close the connection first
+                var result = MessageBox.Show("Closing the application will terminate the connection. Do you want to proceed?", "Confirm Close", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (result == DialogResult.No)
+                {
+                    // Cancel the closing action
+                    e.Cancel = true;
+                    return;
+                }
+
+                // Prevent the application from closing until the connection is properly terminated
+                e.Cancel = true; // Cancel the initial closing
+
+                // Attempt to close the TCP connection
+                try
+                {
+                    await _tcpHandler.CloseConnectionAsync();
+                    
+
+                    // After closing the connection, proceed to close the form
+                    e.Cancel = false; // Allow the application to close
+                    Close(); // Programmatically close the form
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to close the connection: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
         private async void ButtonHandler(object sender, EventArgs e)
         {
             string? tag = null;
@@ -332,39 +351,31 @@ namespace sm70_cp_450_GUI
             {
                 switch (tag)
                 {
-                    case "ToggleEditing":
-                        _EditingValues = !_EditingValues;
-                        InputField_StoredValueVoltageMAX.ReadOnly = !_EditingValues;
-                        InputField_StoredValueVoltageMIN.ReadOnly = !_EditingValues;
-                        InputField_StoredValueCurrentPlus.ReadOnly = !_EditingValues;
-                        InputField_StoredValuePowerPlus.ReadOnly = !_EditingValues;
-                        InputField_StoredValueCurrentMin.ReadOnly = !_EditingValues;
-                        InputField_StoredValuePowerMin.ReadOnly = !_EditingValues;
-                        Button_Toggle_ValueEditor.Text = _EditingValues ? "Save And Update Values" : "Edit Values";
-                        if (!_EditingValues) UpdateBatterySettings();
+                    case "ManualSetValues":
+                        ManualSetValues();
                         break;
                     case "setData":
-                        InitializeBatterySettings();
+                        SaveInitialBatterySettings();
                         break;
                     case "OpenManualForm":
-                        ManualForm manualForm = new();
-                        manualForm.Show();
+                        new ManualForm().Show();
                         break;
                     case "OpenSequencer":
-                        UpdatedForm updatedForm = new();
-                        updatedForm.Show();
+                        new UpdatedForm().Show();
                         break;
-                    case "SetStateIdle":
-                        currentState = AvailableState.None;
-                        SetValuesToMachine(_ratedVoltage); _commandManager?.SetOutputState(false);
+                    case "Start":
+                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        {
+                            CurrentStep = SequenceSteps.Charging;
+                            _commandManager?.SetOutputState(true);
+                        }
                         break;
-                    case "SetStateCharge":
-                        currentState = AvailableState.Charge;
-                        SetValuesToMachine(_MaxChargeVoltage); _commandManager?.SetOutputState(true);
-                        break;
-                    case "SetStateDischarge":
-                        currentState = AvailableState.Discharge;
-                        SetValuesToMachine(_CutOffDischargeVoltage); _commandManager?.SetOutputState(true);
+                    case "Stop":
+                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        {
+                            CurrentStep = SequenceSteps.idle;
+                            _commandManager?.SetOutputState(false);
+                        }
                         break;
                     case "SaveCSV":
                         logManager?.ExportToCsv(false, _SaveLocationCSV);
@@ -380,86 +391,42 @@ namespace sm70_cp_450_GUI
                         break;
                     case "ToggleConsole":
                         _ConsoleState = !_ConsoleState;
-                        ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "close button";
+                        ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "Close console";
                         ConsoleBox.Height = _ConsoleState ? ConsoleBox.MaximumSize.Height : ConsoleBox.MinimumSize.Height;
                         Console_Simple_Textbox_UI.Visible = _ConsoleState;
                         break;
                     case "ClearConsole":
                         Console_Simple_Textbox_UI.Text = "";
-                        Console_Short_ErrorLabel.Text = "this is where error should appear if there are any";
+                        Console_Short_ErrorLabel.Text = "This is where error should appear if there are any";
                         break;
                     case "TryConnectSocket":
                         if (_tcpHandler != null && !_tcpHandler.IsConnected)
                         {
-                            _ = await _tcpHandler.InitializeTcpClient();
-                            InitializeUIActions();
+                            await _tcpHandler.InitializeTcpClient();
                         }
                         break;
                     case "DisconnectSocket":
-                        if (_tcpHandler != null && _tcpHandler.IsConnected) _tcpHandler?.CloseConnectionAsync();
+                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        {
+                            await _tcpHandler.CloseConnectionAsync();
+                        }
                         break;
                     case "ToggleSessionData":
                         Properties.Settings.Default._KeepMemory = toolStripMenuSetting_keepSessionData.Checked;
                         Properties.Settings.Default.Save();
                         break;
                     case "OpenDeltaURL":
-                        if (name != null) UtilityBase.OpenURL(name);
-                        break;
                     case "OpenGitURL":
-                        if (name != null) UtilityBase.OpenURL(name);
+                        if (name != null)
+                        {
+                            UtilityBase.OpenURL(name);
+                        }
                         break;
                     default:
-                        MessageBox.Show($"Tag: {tag},  not recognized");
+                        MessageBox.Show($"Tag: {tag}, not recognized");
                         break;
                 }
             }
-        }
-        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Check if there is an ongoing TCP connection
-            if (_tcpHandler != null && _tcpHandler.IsConnected)
-            {
-                // Show a loading indicator or disable form elements if necessary
-                Cursor = Cursors.WaitCursor;
-
-                // Wait for the connection to close asynchronously
-                await _tcpHandler.CloseConnectionAsync();
-
-                // Ensure the connection is fully closed before proceeding
-                if (_tcpHandler.IsConnected)
-                {
-                    // Optionally, log a message or show an error if the connection is not closed successfully
-                    MessageBox.Show("Failed to close the connection before closing the form.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    e.Cancel = true;  // Prevent the form from closing if the connection could not be closed
-                    return;
-                }
-            }
-
-            // Proceed with the form closing after the connection is closed
-            Cursor = Cursors.Default;  // Reset the cursor after the operation
-        }
-
-        private async void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            // Check if there is an ongoing TCP connection
-            if (_tcpHandler != null && _tcpHandler.IsConnected)
-            {
-                // Show a loading indicator or disable form elements if necessary
-                Cursor = Cursors.WaitCursor;
-
-                // Wait for the connection to close asynchronously
-                await _tcpHandler.CloseConnectionAsync();
-
-                // Ensure the connection is fully closed before proceeding
-                if (_tcpHandler.IsConnected)
-                {
-                    // Optionally, log a message or show an error if the connection is not closed successfully
-                    MessageBox.Show("Failed to close the connection before closing the form.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-
-            // Proceed with the form closing after the connection is closed
-            Cursor = Cursors.Default;  // Reset the cursor after the operation
         }
     }
 }

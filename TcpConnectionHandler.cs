@@ -34,6 +34,20 @@ namespace sm70_cp_450_GUI
         public event Action? OnConnectionEstablished;
         public event Action? OnConnectionLost;
 
+        public double MeasuredVoltage { get; private set; } = 0;
+        public double MeasuredCurrent { get; private set; } = 0;
+        public double MeasuredPower { get; private set; } = 0;
+
+        public double SourceVoltage { get; private set; } = 0;
+        public double SourceCurrent { get; private set; } = 0;
+        public double SourcePower { get; private set; } = 0;
+        public double SourceNegativeCurrent { get; private set; } = 0;
+        public double SourceNegativePower { get; private set; } = 0;
+
+        public string SystemRemoteSettingVoltage { get; private set; } = "Voltage Control";
+        public string SystemRemoteSettingCurrent { get; private set; } = "Current Control";
+        public string SystemRemoteSettingPower { get; private set; } = "Power Control";
+
         private TcpConnectionHandler()
         {
             _logManager = LogManager.Instance;
@@ -80,7 +94,7 @@ namespace sm70_cp_450_GUI
             EnqueueCommand("SYSTem:REMote:CC: Front");
             EnqueueCommand("SYSTem:REMote:CP: Front");
 
-            await Task.Delay(5000);
+            await Task.Delay(4000);
 
             // Close the network stream and TCP client asynchronously
             _networkStream?.Close();
@@ -88,8 +102,87 @@ namespace sm70_cp_450_GUI
             _tcpClient?.Close();
 
             OnConnectionLost?.Invoke();
-            MessageBox.Show("closed connection");
+            MessageBox.Show("Connection closed.", "Connection Closed", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void UpdateInternalState(string query, string response)
+        {
+            // Define a set of queries that expect double values.
+            var numericQueries = new HashSet<string>
+            {
+                "MEASure:VOLtage?",
+                "MEASure:CURrent?",
+                "MEASure:POWer?",
+                "SOURce:VOLtage?",
+                "SOURce:CURrent?",
+                "SOURce:POWer?",
+                "SOURce:CURrent:NEGative?",
+                "SOURce:POWer:NEGative?"
+            };
+
+            // Check if the query expects a numeric value
+            if (numericQueries.Contains(query))
+            {
+                if (!double.TryParse(response, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsedValue))
+                {
+                    _logManager?.AddDebugLogMessage($"❌ Failed to parse response for query: {query}, Response: {response}");
+                    return;
+                }
+
+                // Set the appropriate numeric value
+                switch (query)
+                {
+                    case "MEASure:VOLtage?":
+                        MeasuredVoltage = parsedValue;
+                        break;
+                    case "MEASure:CURrent?":
+                        MeasuredCurrent = parsedValue;
+                        break;
+                    case "MEASure:POWer?":
+                        MeasuredPower = parsedValue;
+                        break;
+                    case "SOURce:VOLtage?":
+                        SourceVoltage = parsedValue;
+                        break;
+                    case "SOURce:CURrent?":
+                        SourceCurrent = parsedValue;
+                        break;
+                    case "SOURce:POWer?":
+                        SourcePower = parsedValue;
+                        break;
+                    case "SOURce:CURrent:NEGative?":
+                        SourceNegativeCurrent = parsedValue;
+                        break;
+                    case "SOURce:POWer:NEGative?":
+                        SourceNegativePower = parsedValue;
+                        break;
+                    default:
+                        _logManager?.AddDebugLogMessage($"❌ Unrecognized numeric query: {query}");
+                        break;
+                }
+            }
+            else
+            {
+                // Handle string queries that do not expect numeric values
+                switch (query)
+                {
+                    case "SYSTem:REMote:CV?":
+                        SystemRemoteSettingVoltage = response;
+                        break;
+                    case "SYSTem:REMote:CC?":
+                        SystemRemoteSettingCurrent = response;
+                        break;
+                    case "SYSTem:REMote:CP?":
+                        SystemRemoteSettingPower = response;
+                        break;
+                    default:
+                        _logManager?.AddDebugLogMessage($"❌ Unrecognized query for string response: {query}");
+                        break;
+                }
+            }
+        }
+
+
 
         #region queries
 
@@ -120,28 +213,30 @@ namespace sm70_cp_450_GUI
 
                     // Log the query and response
                     _logManager?.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
-                    if (MainForm.Instance != null)
-                    {
-                        if (response != null && MainForm.Instance._commandToUIActions.TryGetValue(query, out var uiAction))
-                        {
-                            // Log that we found the matching action
-                            _logManager?.AddDebugLogMessage($"⚠️ Found action for query: {query}");
 
-                            // Invoke the corresponding UI action
-                            MainForm.Instance.Invoke(new Action(() => uiAction(response)));
-                        }
-                        else
+                    if (!string.IsNullOrEmpty(response))
+                    {
+                        // Update the internal state based on the query
+                        UpdateInternalState(query, response);
+
+                        // Now update the UI
+                        if (MainForm.Instance != null)
                         {
-                            // Log if there was no matching action
-                            _logManager?.AddDebugLogMessage($"❌ No matching action for query: {query}");
+                            MainForm.Instance.Invoke(new Action(() => MainForm.Instance.UpdateAllUIFields()));
                         }
+                    }
+                    else
+                    {
+                        // Log if there was no response or error
+                        _logManager?.AddDebugLogMessage($"❌ Failed to process query or received empty response: {query}");
                     }
                 }
 
                 _isProcessingQueryQueue = false;
             }
-           
         }
+
+
 
 
         public async Task<string?> SendQueryAsync(string? query, int timeoutMilliseconds = 10000)
