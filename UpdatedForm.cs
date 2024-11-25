@@ -134,7 +134,7 @@ namespace sm70_cp_450_GUI
                     break;
 
                 default:
-                    _logManager?.AddDebugLogMessage("Unknown sequence step.");
+                    _logManager?.AddInfoLogMessage("Unknown sequence step.");
                     break;
             }
         }
@@ -161,7 +161,7 @@ namespace sm70_cp_450_GUI
                     if (!triggerStopwatch.IsRunning)
                     {
                         triggerStopwatch.Start();
-                        _logManager?.AddDebugLogMessage($"Current below threshold. Timer started. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
+                        _logManager?.AddInfoLogMessage($"Current below threshold. Timer started. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
                     }
 
                     // Update ProgressBar
@@ -172,7 +172,7 @@ namespace sm70_cp_450_GUI
                     {
                         CurrentStep = SequenceSteps.Discharging; // Transition to Discharging
                         MessageBox.Show("Battery fully charged. Switching to discharge mode.");
-                        _logManager?.AddDebugLogMessage($"Battery fully charged. Current: {ReadCurrent:F2} A, Timer: {triggerStopwatch.Elapsed.TotalSeconds:F2} seconds.");
+                        _logManager?.AddInfoLogMessage($"Battery fully charged. Current: {ReadCurrent:F2} A, Timer: {triggerStopwatch.Elapsed.TotalSeconds:F2} seconds.");
 
                         // Initialize Coulomb counting
                         accumulatedCharge = Capacity; // Full SOC
@@ -196,7 +196,7 @@ namespace sm70_cp_450_GUI
                     {
                         ProgressBar_Trigger.Value = 0;
                         triggerStopwatch.Reset();
-                        _logManager?.AddDebugLogMessage($"Current above threshold. Timer reset. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
+                        _logManager?.AddInfoLogMessage($"Current above threshold. Timer reset. Current: {ReadCurrent:F2} A, Threshold: {TriggerOffsetCurrent:F2} A.");
                     }
                 }
             }
@@ -219,7 +219,7 @@ namespace sm70_cp_450_GUI
                 coulombCountStopwatch?.Stop();
                 checkBox2.Checked = true;
                 totalDischargeTime += coulombCountStopwatch?.Elapsed ?? TimeSpan.Zero; // Add remaining stopwatch time
-                _logManager?.AddDebugLogMessage($"Target SOC {wantedBatteryPercentage}% reached. Total discharge time: {totalDischargeTime.TotalMinutes:F2} minutes.");
+                _logManager?.AddInfoLogMessage($"Target SOC {wantedBatteryPercentage}% reached. Total discharge time: {totalDischargeTime.TotalMinutes:F2} minutes.");
                 _commandManager?.SetOutputCurrent(0);
                 _commandManager?.SetOutputCurrentNegative(-0);
                 _commandManager?.SetOutputPower(0);
@@ -240,7 +240,7 @@ namespace sm70_cp_450_GUI
 
             // Log SOC and progress
             label5.Text = $"SOC: {dischargeSOC:F2}%";
-            _logManager?.AddDebugLogMessage($"Discharging: Voltage={ReadVoltage:F2}, Current={ReadCurrent:F2}, SOC={dischargeSOC:F2}%, Elapsed Time: {totalDischargeTime.TotalMinutes:F2} minutes.");
+            _logManager?.AddInfoLogMessage($"Discharging: Voltage={ReadVoltage:F2}, Current={ReadCurrent:F2}, SOC={dischargeSOC:F2}%, Elapsed Time: {totalDischargeTime.TotalMinutes:F2} minutes.");
 
             // Update total discharge time
             totalDischargeTime += coulombCountStopwatch.Elapsed;
@@ -273,7 +273,7 @@ namespace sm70_cp_450_GUI
                     break;
 
                 default:
-                    _logManager?.AddDebugLogMessage($"Command '{command}' not recognized.");
+                    _logManager?.AddInfoLogMessage($"Command '{command}' not recognized.");
                     break;
             }
         }

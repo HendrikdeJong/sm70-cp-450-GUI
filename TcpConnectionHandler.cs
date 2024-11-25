@@ -102,7 +102,7 @@ namespace sm70_cp_450_GUI
             _tcpClient?.Close();
 
             OnConnectionLost?.Invoke();
-            MessageBox.Show("Connection closed.", "Connection Closed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            _logManager?.AddInfoLogMessage("CloseConnectionAsync: Connection closed.");
         }
 
         private void UpdateInternalState(string query, string response)
@@ -125,7 +125,7 @@ namespace sm70_cp_450_GUI
             {
                 if (!double.TryParse(response, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsedValue))
                 {
-                    _logManager?.AddDebugLogMessage($"❌ Failed to parse response for query: {query}, Response: {response}");
+                    _logManager?.AddErrorLogMessage($"UpdateInternalState: Failed to parse response for query: {query}, Response: {response}");
                     return;
                 }
 
@@ -157,7 +157,7 @@ namespace sm70_cp_450_GUI
                         SourceNegativePower = parsedValue;
                         break;
                     default:
-                        _logManager?.AddDebugLogMessage($"❌ Unrecognized numeric query: {query}");
+                        _logManager?.AddErrorLogMessage($"UpdateInternalState: Unrecognized numeric query: {query}");
                         break;
                 }
             }
@@ -176,7 +176,7 @@ namespace sm70_cp_450_GUI
                         SystemRemoteSettingPower = response;
                         break;
                     default:
-                        _logManager?.AddDebugLogMessage($"❌ Unrecognized query for string response: {query}");
+                        _logManager?.AddErrorLogMessage($"UpdateInternalState: Unrecognized query for string response: {query}");
                         break;
                 }
             }
@@ -192,7 +192,8 @@ namespace sm70_cp_450_GUI
             {
                 _queryQueue?.Enqueue(query);
                 _ = _pendingQueries?.Add(query);
-                _logManager?.AddDebugLogMessage($"⚠️ Enqueued query: {query}");
+                //FOR DEBUGGING
+                //_logManager?.AddInfoLogMessage($"⚠️ Enqueued query: {query}");
                 ProcessQueryQueue();
             }
         }
@@ -212,7 +213,7 @@ namespace sm70_cp_450_GUI
                     _ = _pendingQueries?.Remove(query);
 
                     // Log the query and response
-                    _logManager?.AddDebugLogMessage($"⚠️ Processing query: {query}, Response: {response}");
+                    //_logManager?.AddInfoLogMessage($"⚠️ Processing query: {query}, Response: {response}");
 
                     if (!string.IsNullOrEmpty(response))
                     {
@@ -220,15 +221,12 @@ namespace sm70_cp_450_GUI
                         UpdateInternalState(query, response);
 
                         // Now update the UI
-                        if (MainForm.Instance != null)
-                        {
-                            MainForm.Instance.Invoke(new Action(() => MainForm.Instance.UpdateAllUIFields()));
-                        }
+                        MainForm.Instance?.Invoke(new Action(() => MainForm.Instance.UpdateAllUIFields()));
                     }
                     else
                     {
                         // Log if there was no response or error
-                        _logManager?.AddDebugLogMessage($"❌ Failed to process query or received empty response: {query}");
+                        _logManager?.AddErrorLogMessage($"ProcessQueryQueue: Failed to process query or received empty response: {query}");
                     }
                 }
 
@@ -247,7 +245,7 @@ namespace sm70_cp_450_GUI
             }
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager?.AddDebugLogMessage("❌ TCP connection is not open.");
+                _logManager?.AddErrorLogMessage("SendQueryAsync: TCP connection is not open.");
                 return null;
             }
 
@@ -277,7 +275,7 @@ namespace sm70_cp_450_GUI
             }
             catch (Exception ex)
             {
-                _logManager?.AddDebugLogMessage($"❌ Failed to send query: {ex.Message}");
+                _logManager?.AddErrorLogMessage($"SendQueryAsync: Failed to send query: {ex.Message}");
                 return null;
             }
         }
@@ -293,7 +291,7 @@ namespace sm70_cp_450_GUI
             }
             if (_networkStream == null || !_tcpClient.Connected)
             {
-                _logManager?.AddDebugLogMessage("❌ TCP connection is not open.");
+                _logManager?.AddErrorLogMessage("SendCommandAsync: TCP connection is not open.");
                 return false;
             }
 
@@ -306,7 +304,7 @@ namespace sm70_cp_450_GUI
             }
             catch (Exception ex)
             {
-                _logManager?.AddDebugLogMessage($"❌ Failed to send command: {ex.Message}");
+                _logManager?.AddErrorLogMessage($"SendCommandAsync: Failed to send command: {ex.Message}");
                 return false;
             }
         }

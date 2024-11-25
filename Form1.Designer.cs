@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             LiveInfoData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
@@ -58,7 +59,7 @@
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             ToolStripMenu_ImportSettings = new ToolStripMenuItem();
-            toolStripMenuItem3 = new ToolStripMenuItem();
+            ToolStripMenu_ExportSettings = new ToolStripMenuItem();
             toolStripSeparator6 = new ToolStripSeparator();
             toolStripMenuItem8 = new ToolStripMenuItem();
             RuntimeCSV_ToolstripItem = new ToolStripMenuItem();
@@ -93,33 +94,23 @@
             openManualFormToolStripMenuItem = new ToolStripMenuItem();
             openSequencerToolStripMenuItem = new ToolStripMenuItem();
             OperationsBox_UI = new GroupBox();
+            flowLayoutPanel3 = new FlowLayoutPanel();
+            ComboBox_SettingConfigSelect = new ComboBox();
+            button3 = new Button();
+            tabControl1 = new TabControl();
+            Tab_IdlePage = new TabPage();
+            Tab_ChargePage = new TabPage();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            checkBox1 = new CheckBox();
+            Label_TriggerActualTime = new Label();
+            Tab_DischargePage = new TabPage();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            Label_AccumulatedCharge = new Label();
+            Label_KnownSOC = new Label();
             ControlPanel = new GroupBox();
             button2 = new Button();
             button1 = new Button();
             Operation_Start = new Button();
-            FactoryInformationBox = new GroupBox();
-            Label_Soc = new Label();
-            Label_CutVolt = new Label();
-            Label_TriggerTime = new Label();
-            Label_trigger = new Label();
-            Label_Volt = new Label();
-            Label_MaxCurr = new Label();
-            Label_Cap = new Label();
-            label7 = new Label();
-            Textbox_ExpectedSoc = new TextBox();
-            Textbox_TriggerTime = new TextBox();
-            Textbox_CutoffVoltage = new TextBox();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            Textbox_TriggerProcent = new TextBox();
-            ApplyBatteryDataButton = new Button();
-            Textbox_MaxCurrent = new TextBox();
-            Textbox_BulkVoltage = new TextBox();
-            label1 = new Label();
-            label6 = new Label();
-            label2 = new Label();
-            Textbox_Cappacity = new TextBox();
             ConsoleBox = new GroupBox();
             toolStrip1 = new ToolStrip();
             ToggleConsole_Btn = new ToolStripButton();
@@ -128,10 +119,34 @@
             toolStripSeparator4 = new ToolStripSeparator();
             Console_Short_ErrorLabel = new ToolStripLabel();
             Console_Simple_Textbox_UI = new RichTextBox();
-            checkBox1 = new CheckBox();
-            Label_TriggerActualTime = new Label();
-            Label_AccumulatedCharge = new Label();
-            Label_KnownSOC = new Label();
+            Textbox_Capacity = new TextBox();
+            label2 = new Label();
+            label6 = new Label();
+            label1 = new Label();
+            Textbox_BulkVoltage = new TextBox();
+            Textbox_MaxCurrent = new TextBox();
+            ApplyBatteryDataButton = new Button();
+            Textbox_TriggerPercent = new TextBox();
+            label5 = new Label();
+            label4 = new Label();
+            label3 = new Label();
+            Textbox_CutoffVoltage = new TextBox();
+            Textbox_TriggerTime = new TextBox();
+            Textbox_ExpectedSoc = new TextBox();
+            label7 = new Label();
+            Label_Cap = new Label();
+            Label_MaxCurr = new Label();
+            Label_Volt = new Label();
+            Label_trigger = new Label();
+            Label_TriggerTime = new Label();
+            Label_CutVolt = new Label();
+            Label_Soc = new Label();
+            FactoryInformationBox = new GroupBox();
+            Label_MinCurr = new Label();
+            Textbox_MinCurrent = new TextBox();
+            label9 = new Label();
+            Timer_Update = new System.Windows.Forms.Timer(components);
+            Timer_LateUpdate = new System.Windows.Forms.Timer(components);
             LiveInfoData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
@@ -142,10 +157,16 @@
             tableLayoutPanel6.SuspendLayout();
             menuStrip1.SuspendLayout();
             OperationsBox_UI.SuspendLayout();
+            flowLayoutPanel3.SuspendLayout();
+            tabControl1.SuspendLayout();
+            Tab_ChargePage.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
+            Tab_DischargePage.SuspendLayout();
+            flowLayoutPanel2.SuspendLayout();
             ControlPanel.SuspendLayout();
-            FactoryInformationBox.SuspendLayout();
             ConsoleBox.SuspendLayout();
             toolStrip1.SuspendLayout();
+            FactoryInformationBox.SuspendLayout();
             SuspendLayout();
             // 
             // LiveInfoData
@@ -248,7 +269,6 @@
             InputField_StoredValueVoltage.Location = new Point(3, 3);
             InputField_StoredValueVoltage.Name = "InputField_StoredValueVoltage";
             InputField_StoredValueVoltage.PlaceholderText = "0 V+";
-            InputField_StoredValueVoltage.ReadOnly = true;
             InputField_StoredValueVoltage.Size = new Size(280, 29);
             InputField_StoredValueVoltage.TabIndex = 32;
             InputField_StoredValueVoltage.Tag = "";
@@ -263,7 +283,7 @@
             Button_ValueEditor.Size = new Size(280, 26);
             Button_ValueEditor.TabIndex = 1;
             Button_ValueEditor.Tag = "ManualSetValues";
-            Button_ValueEditor.Text = "Mannually set values";
+            Button_ValueEditor.Text = "Manually set values";
             Button_ValueEditor.UseVisualStyleBackColor = true;
             Button_ValueEditor.Click += ButtonHandler;
             // 
@@ -288,7 +308,6 @@
             InputField_StoredValuePowerMin.Location = new Point(3, 34);
             InputField_StoredValuePowerMin.Name = "InputField_StoredValuePowerMin";
             InputField_StoredValuePowerMin.PlaceholderText = "0 W-";
-            InputField_StoredValuePowerMin.ReadOnly = true;
             InputField_StoredValuePowerMin.Size = new Size(281, 29);
             InputField_StoredValuePowerMin.TabIndex = 2;
             InputField_StoredValuePowerMin.Tag = "";
@@ -300,7 +319,6 @@
             InputField_StoredValuePowerPlus.Location = new Point(3, 3);
             InputField_StoredValuePowerPlus.Name = "InputField_StoredValuePowerPlus";
             InputField_StoredValuePowerPlus.PlaceholderText = "0 W";
-            InputField_StoredValuePowerPlus.ReadOnly = true;
             InputField_StoredValuePowerPlus.Size = new Size(281, 29);
             InputField_StoredValuePowerPlus.TabIndex = 1;
             InputField_StoredValuePowerPlus.Tag = "";
@@ -472,7 +490,6 @@
             InputField_StoredValueCurrentMin.Location = new Point(3, 34);
             InputField_StoredValueCurrentMin.Name = "InputField_StoredValueCurrentMin";
             InputField_StoredValueCurrentMin.PlaceholderText = "0 A-";
-            InputField_StoredValueCurrentMin.ReadOnly = true;
             InputField_StoredValueCurrentMin.Size = new Size(280, 29);
             InputField_StoredValueCurrentMin.TabIndex = 1;
             InputField_StoredValueCurrentMin.Tag = "";
@@ -484,7 +501,6 @@
             InputField_StoredValueCurrentPlus.Location = new Point(3, 3);
             InputField_StoredValueCurrentPlus.Name = "InputField_StoredValueCurrentPlus";
             InputField_StoredValueCurrentPlus.PlaceholderText = "0 A";
-            InputField_StoredValueCurrentPlus.ReadOnly = true;
             InputField_StoredValueCurrentPlus.Size = new Size(280, 29);
             InputField_StoredValueCurrentPlus.TabIndex = 0;
             InputField_StoredValueCurrentPlus.Tag = "";
@@ -501,7 +517,7 @@
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_ImportSettings, toolStripMenuItem3, toolStripSeparator6, toolStripMenuItem8, RuntimeCSV_ToolstripItem, toolStripSeparator5, toolStripMenuItem2, errorLogToolStripMenuItem });
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { ToolStripMenu_ImportSettings, ToolStripMenu_ExportSettings, toolStripSeparator6, toolStripMenuItem8, RuntimeCSV_ToolstripItem, toolStripSeparator5, toolStripMenuItem2, errorLogToolStripMenuItem });
             toolStripMenuItem1.Name = "toolStripMenuItem1";
             toolStripMenuItem1.Size = new Size(37, 20);
             toolStripMenuItem1.Text = "&File";
@@ -513,12 +529,12 @@
             ToolStripMenu_ImportSettings.Size = new Size(186, 22);
             ToolStripMenu_ImportSettings.Text = "Import Settings";
             // 
-            // toolStripMenuItem3
+            // ToolStripMenu_ExportSettings
             // 
-            toolStripMenuItem3.Image = Properties.Resources.ExportSettings;
-            toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new Size(186, 22);
-            toolStripMenuItem3.Text = "Export Settings";
+            ToolStripMenu_ExportSettings.Image = Properties.Resources.ExportSettings;
+            ToolStripMenu_ExportSettings.Name = "ToolStripMenu_ExportSettings";
+            ToolStripMenu_ExportSettings.Size = new Size(186, 22);
+            ToolStripMenu_ExportSettings.Text = "Export Settings";
             // 
             // toolStripSeparator6
             // 
@@ -771,14 +787,159 @@
             // 
             OperationsBox_UI.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             OperationsBox_UI.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            OperationsBox_UI.Controls.Add(flowLayoutPanel3);
+            OperationsBox_UI.Controls.Add(tabControl1);
             OperationsBox_UI.Controls.Add(ControlPanel);
-            OperationsBox_UI.Controls.Add(FactoryInformationBox);
-            OperationsBox_UI.Location = new Point(456, 231);
+            OperationsBox_UI.Location = new Point(475, 231);
             OperationsBox_UI.Name = "OperationsBox_UI";
-            OperationsBox_UI.Size = new Size(439, 471);
+            OperationsBox_UI.Size = new Size(420, 471);
             OperationsBox_UI.TabIndex = 18;
             OperationsBox_UI.TabStop = false;
             OperationsBox_UI.Text = "Operations";
+            // 
+            // flowLayoutPanel3
+            // 
+            flowLayoutPanel3.AutoSize = true;
+            flowLayoutPanel3.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            flowLayoutPanel3.Controls.Add(ComboBox_SettingConfigSelect);
+            flowLayoutPanel3.Controls.Add(button3);
+            flowLayoutPanel3.Location = new Point(6, 313);
+            flowLayoutPanel3.Name = "flowLayoutPanel3";
+            flowLayoutPanel3.Size = new Size(405, 35);
+            flowLayoutPanel3.TabIndex = 35;
+            // 
+            // ComboBox_SettingConfigSelect
+            // 
+            ComboBox_SettingConfigSelect.FormattingEnabled = true;
+            ComboBox_SettingConfigSelect.Location = new Point(3, 3);
+            ComboBox_SettingConfigSelect.Name = "ComboBox_SettingConfigSelect";
+            ComboBox_SettingConfigSelect.Size = new Size(318, 29);
+            ComboBox_SettingConfigSelect.TabIndex = 34;
+            // 
+            // button3
+            // 
+            button3.Dock = DockStyle.Fill;
+            button3.Location = new Point(327, 3);
+            button3.Name = "button3";
+            button3.Size = new Size(75, 29);
+            button3.TabIndex = 35;
+            button3.Text = "Load config";
+            button3.UseVisualStyleBackColor = true;
+            // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(Tab_IdlePage);
+            tabControl1.Controls.Add(Tab_ChargePage);
+            tabControl1.Controls.Add(Tab_DischargePage);
+            tabControl1.ItemSize = new Size(130, 32);
+            tabControl1.Location = new Point(6, 29);
+            tabControl1.Name = "tabControl1";
+            tabControl1.RightToLeft = RightToLeft.No;
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(408, 180);
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
+            tabControl1.TabIndex = 33;
+            tabControl1.TabStop = false;
+            // 
+            // Tab_IdlePage
+            // 
+            Tab_IdlePage.Location = new Point(4, 36);
+            Tab_IdlePage.Name = "Tab_IdlePage";
+            Tab_IdlePage.Padding = new Padding(3);
+            Tab_IdlePage.Size = new Size(400, 140);
+            Tab_IdlePage.TabIndex = 0;
+            Tab_IdlePage.Text = "Idle";
+            Tab_IdlePage.UseVisualStyleBackColor = true;
+            // 
+            // Tab_ChargePage
+            // 
+            Tab_ChargePage.Controls.Add(flowLayoutPanel1);
+            Tab_ChargePage.Location = new Point(4, 36);
+            Tab_ChargePage.Name = "Tab_ChargePage";
+            Tab_ChargePage.Padding = new Padding(3);
+            Tab_ChargePage.Size = new Size(400, 140);
+            Tab_ChargePage.TabIndex = 1;
+            Tab_ChargePage.Text = "Charging";
+            Tab_ChargePage.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Controls.Add(checkBox1);
+            flowLayoutPanel1.Controls.Add(Label_TriggerActualTime);
+            flowLayoutPanel1.Dock = DockStyle.Fill;
+            flowLayoutPanel1.Location = new Point(3, 3);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(394, 134);
+            flowLayoutPanel1.TabIndex = 34;
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Enabled = false;
+            checkBox1.Location = new Point(3, 3);
+            checkBox1.Name = "checkBox1";
+            checkBox1.RightToLeft = RightToLeft.Yes;
+            checkBox1.Size = new Size(137, 25);
+            checkBox1.TabIndex = 26;
+            checkBox1.TabStop = false;
+            checkBox1.Text = "Trigger reached";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // Label_TriggerActualTime
+            // 
+            Label_TriggerActualTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_TriggerActualTime.AutoSize = true;
+            Label_TriggerActualTime.Location = new Point(146, 7);
+            Label_TriggerActualTime.Margin = new Padding(3);
+            Label_TriggerActualTime.Name = "Label_TriggerActualTime";
+            Label_TriggerActualTime.Size = new Size(51, 21);
+            Label_TriggerActualTime.TabIndex = 27;
+            Label_TriggerActualTime.Text = "Time: ";
+            Label_TriggerActualTime.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Tab_DischargePage
+            // 
+            Tab_DischargePage.Controls.Add(flowLayoutPanel2);
+            Tab_DischargePage.Location = new Point(4, 36);
+            Tab_DischargePage.Name = "Tab_DischargePage";
+            Tab_DischargePage.Padding = new Padding(3);
+            Tab_DischargePage.Size = new Size(400, 140);
+            Tab_DischargePage.TabIndex = 2;
+            Tab_DischargePage.Text = "Discharging";
+            Tab_DischargePage.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.Controls.Add(Label_AccumulatedCharge);
+            flowLayoutPanel2.Controls.Add(Label_KnownSOC);
+            flowLayoutPanel2.Dock = DockStyle.Fill;
+            flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanel2.Location = new Point(3, 3);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(394, 134);
+            flowLayoutPanel2.TabIndex = 34;
+            // 
+            // Label_AccumulatedCharge
+            // 
+            Label_AccumulatedCharge.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_AccumulatedCharge.AutoSize = true;
+            Label_AccumulatedCharge.Location = new Point(3, 0);
+            Label_AccumulatedCharge.Name = "Label_AccumulatedCharge";
+            Label_AccumulatedCharge.Size = new Size(172, 21);
+            Label_AccumulatedCharge.TabIndex = 28;
+            Label_AccumulatedCharge.Text = "accumulatedCharge: ?A";
+            Label_AccumulatedCharge.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // Label_KnownSOC
+            // 
+            Label_KnownSOC.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Label_KnownSOC.AutoSize = true;
+            Label_KnownSOC.Location = new Point(3, 21);
+            Label_KnownSOC.Name = "Label_KnownSOC";
+            Label_KnownSOC.Size = new Size(114, 21);
+            Label_KnownSOC.TabIndex = 29;
+            Label_KnownSOC.Text = "Known Soc: ?%";
+            Label_KnownSOC.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // ControlPanel
             // 
@@ -788,7 +949,7 @@
             ControlPanel.Dock = DockStyle.Bottom;
             ControlPanel.Location = new Point(3, 354);
             ControlPanel.Name = "ControlPanel";
-            ControlPanel.Size = new Size(433, 114);
+            ControlPanel.Size = new Size(414, 114);
             ControlPanel.TabIndex = 20;
             ControlPanel.TabStop = false;
             ControlPanel.Text = "Controls";
@@ -828,268 +989,6 @@
             Operation_Start.Text = "Start";
             Operation_Start.UseVisualStyleBackColor = true;
             Operation_Start.Click += ButtonHandler;
-            // 
-            // FactoryInformationBox
-            // 
-            FactoryInformationBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            FactoryInformationBox.Controls.Add(Label_Soc);
-            FactoryInformationBox.Controls.Add(Label_CutVolt);
-            FactoryInformationBox.Controls.Add(Label_TriggerTime);
-            FactoryInformationBox.Controls.Add(Label_trigger);
-            FactoryInformationBox.Controls.Add(Label_Volt);
-            FactoryInformationBox.Controls.Add(Label_MaxCurr);
-            FactoryInformationBox.Controls.Add(Label_Cap);
-            FactoryInformationBox.Controls.Add(label7);
-            FactoryInformationBox.Controls.Add(Textbox_ExpectedSoc);
-            FactoryInformationBox.Controls.Add(Textbox_TriggerTime);
-            FactoryInformationBox.Controls.Add(Textbox_CutoffVoltage);
-            FactoryInformationBox.Controls.Add(label3);
-            FactoryInformationBox.Controls.Add(label4);
-            FactoryInformationBox.Controls.Add(label5);
-            FactoryInformationBox.Controls.Add(Textbox_TriggerProcent);
-            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
-            FactoryInformationBox.Controls.Add(Textbox_MaxCurrent);
-            FactoryInformationBox.Controls.Add(Textbox_BulkVoltage);
-            FactoryInformationBox.Controls.Add(label1);
-            FactoryInformationBox.Controls.Add(label6);
-            FactoryInformationBox.Controls.Add(label2);
-            FactoryInformationBox.Controls.Add(Textbox_Cappacity);
-            FactoryInformationBox.Dock = DockStyle.Top;
-            FactoryInformationBox.Location = new Point(3, 25);
-            FactoryInformationBox.Name = "FactoryInformationBox";
-            FactoryInformationBox.Size = new Size(433, 323);
-            FactoryInformationBox.TabIndex = 18;
-            FactoryInformationBox.TabStop = false;
-            FactoryInformationBox.Text = "Factory Information";
-            // 
-            // Label_Soc
-            // 
-            Label_Soc.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_Soc.AutoSize = true;
-            Label_Soc.Location = new Point(342, 172);
-            Label_Soc.Name = "Label_Soc";
-            Label_Soc.Size = new Size(115, 21);
-            Label_Soc.TabIndex = 24;
-            Label_Soc.Text = "Wanted SOC %";
-            Label_Soc.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_CutVolt
-            // 
-            Label_CutVolt.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_CutVolt.AutoSize = true;
-            Label_CutVolt.Location = new Point(342, 67);
-            Label_CutVolt.Name = "Label_CutVolt";
-            Label_CutVolt.Size = new Size(109, 21);
-            Label_CutVolt.TabIndex = 21;
-            Label_CutVolt.Text = "Cutoff Voltage";
-            Label_CutVolt.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_TriggerTime
-            // 
-            Label_TriggerTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_TriggerTime.AutoSize = true;
-            Label_TriggerTime.Location = new Point(342, 241);
-            Label_TriggerTime.Name = "Label_TriggerTime";
-            Label_TriggerTime.Size = new Size(97, 21);
-            Label_TriggerTime.TabIndex = 23;
-            Label_TriggerTime.Text = "Trigger Time";
-            Label_TriggerTime.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_trigger
-            // 
-            Label_trigger.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_trigger.AutoSize = true;
-            Label_trigger.Location = new Point(342, 207);
-            Label_trigger.Name = "Label_trigger";
-            Label_trigger.Size = new Size(76, 21);
-            Label_trigger.TabIndex = 22;
-            Label_trigger.Text = "Trigger %";
-            Label_trigger.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_Volt
-            // 
-            Label_Volt.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_Volt.AutoSize = true;
-            Label_Volt.Location = new Point(342, 32);
-            Label_Volt.Name = "Label_Volt";
-            Label_Volt.Size = new Size(106, 21);
-            Label_Volt.TabIndex = 18;
-            Label_Volt.Text = "Rated Voltage";
-            Label_Volt.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_MaxCurr
-            // 
-            Label_MaxCurr.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_MaxCurr.AutoSize = true;
-            Label_MaxCurr.Location = new Point(342, 136);
-            Label_MaxCurr.Name = "Label_MaxCurr";
-            Label_MaxCurr.Size = new Size(175, 21);
-            Label_MaxCurr.TabIndex = 20;
-            Label_MaxCurr.Text = "Max current or C Rating";
-            Label_MaxCurr.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Label_Cap
-            // 
-            Label_Cap.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_Cap.AutoSize = true;
-            Label_Cap.Location = new Point(342, 102);
-            Label_Cap.Name = "Label_Cap";
-            Label_Cap.Size = new Size(110, 21);
-            Label_Cap.TabIndex = 19;
-            Label_Cap.Text = "Rated capacity";
-            Label_Cap.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label7
-            // 
-            label7.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label7.AutoSize = true;
-            label7.Location = new Point(12, 172);
-            label7.Name = "label7";
-            label7.Size = new Size(115, 21);
-            label7.TabIndex = 17;
-            label7.Text = "Wanted SOC %";
-            label7.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Textbox_ExpectedSoc
-            // 
-            Textbox_ExpectedSoc.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_ExpectedSoc.Location = new Point(213, 169);
-            Textbox_ExpectedSoc.Name = "Textbox_ExpectedSoc";
-            Textbox_ExpectedSoc.PlaceholderText = "State of Charge";
-            Textbox_ExpectedSoc.Size = new Size(123, 29);
-            Textbox_ExpectedSoc.TabIndex = 7;
-            // 
-            // Textbox_TriggerTime
-            // 
-            Textbox_TriggerTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_TriggerTime.Location = new Point(213, 239);
-            Textbox_TriggerTime.Name = "Textbox_TriggerTime";
-            Textbox_TriggerTime.PlaceholderText = "Trigger";
-            Textbox_TriggerTime.Size = new Size(123, 29);
-            Textbox_TriggerTime.TabIndex = 9;
-            // 
-            // Textbox_CutoffVoltage
-            // 
-            Textbox_CutoffVoltage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_CutoffVoltage.Location = new Point(213, 64);
-            Textbox_CutoffVoltage.Name = "Textbox_CutoffVoltage";
-            Textbox_CutoffVoltage.PlaceholderText = "lowest Voltage";
-            Textbox_CutoffVoltage.Size = new Size(123, 29);
-            Textbox_CutoffVoltage.TabIndex = 4;
-            // 
-            // label3
-            // 
-            label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label3.AutoSize = true;
-            label3.Location = new Point(12, 67);
-            label3.Name = "label3";
-            label3.Size = new Size(109, 21);
-            label3.TabIndex = 13;
-            label3.Text = "Cutoff Voltage";
-            label3.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label4
-            // 
-            label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label4.AutoSize = true;
-            label4.Location = new Point(12, 241);
-            label4.Name = "label4";
-            label4.Size = new Size(97, 21);
-            label4.TabIndex = 15;
-            label4.Text = "Trigger Time";
-            label4.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label5
-            // 
-            label5.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label5.AutoSize = true;
-            label5.Location = new Point(12, 207);
-            label5.Name = "label5";
-            label5.Size = new Size(76, 21);
-            label5.TabIndex = 14;
-            label5.Text = "Trigger %";
-            label5.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Textbox_TriggerProcent
-            // 
-            Textbox_TriggerProcent.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_TriggerProcent.Location = new Point(213, 204);
-            Textbox_TriggerProcent.Name = "Textbox_TriggerProcent";
-            Textbox_TriggerProcent.PlaceholderText = "Trigger";
-            Textbox_TriggerProcent.Size = new Size(123, 29);
-            Textbox_TriggerProcent.TabIndex = 8;
-            // 
-            // ApplyBatteryDataButton
-            // 
-            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ApplyBatteryDataButton.Location = new Point(6, 281);
-            ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
-            ApplyBatteryDataButton.Size = new Size(421, 36);
-            ApplyBatteryDataButton.TabIndex = 10;
-            ApplyBatteryDataButton.Tag = "setData";
-            ApplyBatteryDataButton.Text = "Apply";
-            ApplyBatteryDataButton.UseVisualStyleBackColor = true;
-            ApplyBatteryDataButton.Click += ButtonHandler;
-            // 
-            // Textbox_MaxCurrent
-            // 
-            Textbox_MaxCurrent.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_MaxCurrent.Location = new Point(213, 134);
-            Textbox_MaxCurrent.Name = "Textbox_MaxCurrent";
-            Textbox_MaxCurrent.PlaceholderText = "Max Current";
-            Textbox_MaxCurrent.Size = new Size(123, 29);
-            Textbox_MaxCurrent.TabIndex = 6;
-            // 
-            // Textbox_BulkVoltage
-            // 
-            Textbox_BulkVoltage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_BulkVoltage.Location = new Point(213, 29);
-            Textbox_BulkVoltage.Name = "Textbox_BulkVoltage";
-            Textbox_BulkVoltage.PlaceholderText = "Voltage";
-            Textbox_BulkVoltage.Size = new Size(123, 29);
-            Textbox_BulkVoltage.TabIndex = 3;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 32);
-            label1.Name = "label1";
-            label1.Size = new Size(106, 21);
-            label1.TabIndex = 6;
-            label1.Text = "Rated Voltage";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label6
-            // 
-            label6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label6.AutoSize = true;
-            label6.Location = new Point(12, 136);
-            label6.Name = "label6";
-            label6.Size = new Size(175, 21);
-            label6.TabIndex = 9;
-            label6.Text = "Max current or C Rating";
-            label6.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label2.AutoSize = true;
-            label2.Location = new Point(12, 102);
-            label2.Name = "label2";
-            label2.Size = new Size(110, 21);
-            label2.TabIndex = 8;
-            label2.Text = "Rated capacity";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // Textbox_Cappacity
-            // 
-            Textbox_Cappacity.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Textbox_Cappacity.Location = new Point(213, 99);
-            Textbox_Cappacity.Name = "Textbox_Cappacity";
-            Textbox_Cappacity.PlaceholderText = "Amps / Hour";
-            Textbox_Cappacity.Size = new Size(123, 29);
-            Textbox_Cappacity.TabIndex = 5;
             // 
             // ConsoleBox
             // 
@@ -1176,65 +1075,297 @@
             Console_Simple_Textbox_UI.TabStop = false;
             Console_Simple_Textbox_UI.Text = "";
             // 
-            // checkBox1
+            // Textbox_Capacity
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Enabled = false;
-            checkBox1.Location = new Point(12, 231);
-            checkBox1.Name = "checkBox1";
-            checkBox1.RightToLeft = RightToLeft.Yes;
-            checkBox1.Size = new Size(137, 25);
-            checkBox1.TabIndex = 26;
-            checkBox1.TabStop = false;
-            checkBox1.Text = "Trigger reached";
-            checkBox1.UseVisualStyleBackColor = true;
+            Textbox_Capacity.Location = new Point(210, 117);
+            Textbox_Capacity.Name = "Textbox_Capacity";
+            Textbox_Capacity.PlaceholderText = "Amps / Hour";
+            Textbox_Capacity.Size = new Size(123, 29);
+            Textbox_Capacity.TabIndex = 5;
             // 
-            // Label_TriggerActualTime
+            // label2
             // 
-            Label_TriggerActualTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_TriggerActualTime.AutoSize = true;
-            Label_TriggerActualTime.Location = new Point(155, 232);
-            Label_TriggerActualTime.Name = "Label_TriggerActualTime";
-            Label_TriggerActualTime.Size = new Size(51, 21);
-            Label_TriggerActualTime.TabIndex = 27;
-            Label_TriggerActualTime.Text = "Time: ";
-            Label_TriggerActualTime.TextAlign = ContentAlignment.MiddleLeft;
+            label2.AutoSize = true;
+            label2.Location = new Point(9, 120);
+            label2.Name = "label2";
+            label2.Size = new Size(110, 21);
+            label2.TabIndex = 8;
+            label2.Text = "Rated capacity";
+            label2.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // Label_AccumulatedCharge
+            // label6
             // 
-            Label_AccumulatedCharge.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_AccumulatedCharge.AutoSize = true;
-            Label_AccumulatedCharge.Location = new Point(12, 259);
-            Label_AccumulatedCharge.Name = "Label_AccumulatedCharge";
-            Label_AccumulatedCharge.Size = new Size(172, 21);
-            Label_AccumulatedCharge.TabIndex = 28;
-            Label_AccumulatedCharge.Text = "accumulatedCharge: ?A";
-            Label_AccumulatedCharge.TextAlign = ContentAlignment.MiddleLeft;
+            label6.AutoSize = true;
+            label6.Location = new Point(9, 154);
+            label6.Name = "label6";
+            label6.Size = new Size(144, 21);
+            label6.TabIndex = 9;
+            label6.Text = "Max charge current";
+            label6.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // Label_KnownSOC
+            // label1
             // 
-            Label_KnownSOC.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label_KnownSOC.AutoSize = true;
-            Label_KnownSOC.Location = new Point(12, 280);
-            Label_KnownSOC.Name = "Label_KnownSOC";
-            Label_KnownSOC.Size = new Size(114, 21);
-            Label_KnownSOC.TabIndex = 29;
-            Label_KnownSOC.Text = "Known Soc: ?%";
-            Label_KnownSOC.TextAlign = ContentAlignment.MiddleLeft;
+            label1.AutoSize = true;
+            label1.Location = new Point(9, 50);
+            label1.Name = "label1";
+            label1.Size = new Size(106, 21);
+            label1.TabIndex = 6;
+            label1.Text = "Rated Voltage";
+            label1.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_BulkVoltage
+            // 
+            Textbox_BulkVoltage.Location = new Point(210, 47);
+            Textbox_BulkVoltage.Name = "Textbox_BulkVoltage";
+            Textbox_BulkVoltage.PlaceholderText = "Voltage";
+            Textbox_BulkVoltage.Size = new Size(123, 29);
+            Textbox_BulkVoltage.TabIndex = 3;
+            // 
+            // Textbox_MaxCurrent
+            // 
+            Textbox_MaxCurrent.Location = new Point(210, 152);
+            Textbox_MaxCurrent.Name = "Textbox_MaxCurrent";
+            Textbox_MaxCurrent.PlaceholderText = "Max Current";
+            Textbox_MaxCurrent.Size = new Size(123, 29);
+            Textbox_MaxCurrent.TabIndex = 6;
+            // 
+            // ApplyBatteryDataButton
+            // 
+            ApplyBatteryDataButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ApplyBatteryDataButton.Location = new Point(6, 339);
+            ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
+            ApplyBatteryDataButton.Size = new Size(421, 36);
+            ApplyBatteryDataButton.TabIndex = 11;
+            ApplyBatteryDataButton.Tag = "setData";
+            ApplyBatteryDataButton.Text = "Apply";
+            ApplyBatteryDataButton.UseVisualStyleBackColor = true;
+            ApplyBatteryDataButton.Click += ButtonHandler;
+            // 
+            // Textbox_TriggerPercent
+            // 
+            Textbox_TriggerPercent.Location = new Point(210, 257);
+            Textbox_TriggerPercent.Name = "Textbox_TriggerPercent";
+            Textbox_TriggerPercent.PlaceholderText = "Trigger";
+            Textbox_TriggerPercent.Size = new Size(123, 29);
+            Textbox_TriggerPercent.TabIndex = 9;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(9, 260);
+            label5.Name = "label5";
+            label5.Size = new Size(149, 21);
+            label5.TabIndex = 14;
+            label5.Text = "Trigger Threshold %";
+            label5.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(9, 294);
+            label4.Name = "label4";
+            label4.Size = new Size(170, 21);
+            label4.TabIndex = 15;
+            label4.Text = "Trigger Threshold Time";
+            label4.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(9, 85);
+            label3.Name = "label3";
+            label3.Size = new Size(134, 21);
+            label3.TabIndex = 13;
+            label3.Text = "Minimum Voltage";
+            label3.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_CutoffVoltage
+            // 
+            Textbox_CutoffVoltage.Location = new Point(210, 82);
+            Textbox_CutoffVoltage.Name = "Textbox_CutoffVoltage";
+            Textbox_CutoffVoltage.PlaceholderText = "lowest Voltage";
+            Textbox_CutoffVoltage.Size = new Size(123, 29);
+            Textbox_CutoffVoltage.TabIndex = 4;
+            // 
+            // Textbox_TriggerTime
+            // 
+            Textbox_TriggerTime.Location = new Point(210, 292);
+            Textbox_TriggerTime.Name = "Textbox_TriggerTime";
+            Textbox_TriggerTime.PlaceholderText = "Trigger";
+            Textbox_TriggerTime.Size = new Size(123, 29);
+            Textbox_TriggerTime.TabIndex = 10;
+            // 
+            // Textbox_ExpectedSoc
+            // 
+            Textbox_ExpectedSoc.Location = new Point(210, 222);
+            Textbox_ExpectedSoc.Name = "Textbox_ExpectedSoc";
+            Textbox_ExpectedSoc.PlaceholderText = "State of Charge";
+            Textbox_ExpectedSoc.Size = new Size(123, 29);
+            Textbox_ExpectedSoc.TabIndex = 8;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(9, 225);
+            label7.Name = "label7";
+            label7.Size = new Size(115, 21);
+            label7.TabIndex = 17;
+            label7.Text = "Wanted SOC %";
+            label7.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Cap
+            // 
+            Label_Cap.AutoSize = true;
+            Label_Cap.Location = new Point(339, 120);
+            Label_Cap.Name = "Label_Cap";
+            Label_Cap.Size = new Size(110, 21);
+            Label_Cap.TabIndex = 19;
+            Label_Cap.Text = "Rated capacity";
+            Label_Cap.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_MaxCurr
+            // 
+            Label_MaxCurr.AutoSize = true;
+            Label_MaxCurr.Location = new Point(339, 154);
+            Label_MaxCurr.Name = "Label_MaxCurr";
+            Label_MaxCurr.Size = new Size(175, 21);
+            Label_MaxCurr.TabIndex = 20;
+            Label_MaxCurr.Text = "Plus current or C Rating";
+            Label_MaxCurr.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Volt
+            // 
+            Label_Volt.AutoSize = true;
+            Label_Volt.Location = new Point(339, 50);
+            Label_Volt.Name = "Label_Volt";
+            Label_Volt.Size = new Size(106, 21);
+            Label_Volt.TabIndex = 18;
+            Label_Volt.Text = "Rated Voltage";
+            Label_Volt.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_trigger
+            // 
+            Label_trigger.AutoSize = true;
+            Label_trigger.Location = new Point(339, 260);
+            Label_trigger.Name = "Label_trigger";
+            Label_trigger.Size = new Size(76, 21);
+            Label_trigger.TabIndex = 22;
+            Label_trigger.Text = "Trigger %";
+            Label_trigger.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_TriggerTime
+            // 
+            Label_TriggerTime.AutoSize = true;
+            Label_TriggerTime.Location = new Point(339, 294);
+            Label_TriggerTime.Name = "Label_TriggerTime";
+            Label_TriggerTime.Size = new Size(97, 21);
+            Label_TriggerTime.TabIndex = 23;
+            Label_TriggerTime.Text = "Trigger Time";
+            Label_TriggerTime.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_CutVolt
+            // 
+            Label_CutVolt.AutoSize = true;
+            Label_CutVolt.Location = new Point(339, 85);
+            Label_CutVolt.Name = "Label_CutVolt";
+            Label_CutVolt.Size = new Size(109, 21);
+            Label_CutVolt.TabIndex = 21;
+            Label_CutVolt.Text = "Cutoff Voltage";
+            Label_CutVolt.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Label_Soc
+            // 
+            Label_Soc.AutoSize = true;
+            Label_Soc.Location = new Point(339, 225);
+            Label_Soc.Name = "Label_Soc";
+            Label_Soc.Size = new Size(115, 21);
+            Label_Soc.TabIndex = 24;
+            Label_Soc.Text = "Wanted SOC %";
+            Label_Soc.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // FactoryInformationBox
+            // 
+            FactoryInformationBox.Controls.Add(Label_MinCurr);
+            FactoryInformationBox.Controls.Add(Textbox_MinCurrent);
+            FactoryInformationBox.Controls.Add(label9);
+            FactoryInformationBox.Controls.Add(Label_Soc);
+            FactoryInformationBox.Controls.Add(Label_CutVolt);
+            FactoryInformationBox.Controls.Add(Label_TriggerTime);
+            FactoryInformationBox.Controls.Add(Label_trigger);
+            FactoryInformationBox.Controls.Add(Label_Volt);
+            FactoryInformationBox.Controls.Add(Label_MaxCurr);
+            FactoryInformationBox.Controls.Add(Label_Cap);
+            FactoryInformationBox.Controls.Add(label7);
+            FactoryInformationBox.Controls.Add(Textbox_ExpectedSoc);
+            FactoryInformationBox.Controls.Add(Textbox_TriggerTime);
+            FactoryInformationBox.Controls.Add(Textbox_CutoffVoltage);
+            FactoryInformationBox.Controls.Add(label3);
+            FactoryInformationBox.Controls.Add(label4);
+            FactoryInformationBox.Controls.Add(label5);
+            FactoryInformationBox.Controls.Add(Textbox_TriggerPercent);
+            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
+            FactoryInformationBox.Controls.Add(Textbox_MaxCurrent);
+            FactoryInformationBox.Controls.Add(Textbox_BulkVoltage);
+            FactoryInformationBox.Controls.Add(label1);
+            FactoryInformationBox.Controls.Add(label6);
+            FactoryInformationBox.Controls.Add(label2);
+            FactoryInformationBox.Controls.Add(Textbox_Capacity);
+            FactoryInformationBox.Location = new Point(12, 231);
+            FactoryInformationBox.Name = "FactoryInformationBox";
+            FactoryInformationBox.Size = new Size(433, 381);
+            FactoryInformationBox.TabIndex = 18;
+            FactoryInformationBox.TabStop = false;
+            FactoryInformationBox.Text = "Factory Information";
+            // 
+            // Label_MinCurr
+            // 
+            Label_MinCurr.AutoSize = true;
+            Label_MinCurr.Location = new Point(339, 189);
+            Label_MinCurr.Name = "Label_MinCurr";
+            Label_MinCurr.Size = new Size(173, 21);
+            Label_MinCurr.TabIndex = 27;
+            Label_MinCurr.Text = "Min current or C Rating";
+            Label_MinCurr.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Textbox_MinCurrent
+            // 
+            Textbox_MinCurrent.Location = new Point(210, 187);
+            Textbox_MinCurrent.Name = "Textbox_MinCurrent";
+            Textbox_MinCurrent.PlaceholderText = "Max Current";
+            Textbox_MinCurrent.Size = new Size(123, 29);
+            Textbox_MinCurrent.TabIndex = 7;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(9, 189);
+            label9.Name = "label9";
+            label9.Size = new Size(164, 21);
+            label9.TabIndex = 26;
+            label9.Text = "Max discharge current";
+            label9.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // Timer_Update
+            // 
+            Timer_Update.Enabled = true;
+            Timer_Update.Tick += StandardUpdate;
+            // 
+            // Timer_LateUpdate
+            // 
+            Timer_LateUpdate.Enabled = true;
+            Timer_LateUpdate.Interval = 1000;
+            Timer_LateUpdate.Tick += LateUpdate;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(907, 714);
-            Controls.Add(Label_KnownSOC);
-            Controls.Add(Label_AccumulatedCharge);
-            Controls.Add(Label_TriggerActualTime);
-            Controls.Add(checkBox1);
             Controls.Add(ConsoleBox);
             Controls.Add(OperationsBox_UI);
             Controls.Add(LiveInfoData);
             Controls.Add(menuStrip1);
+            Controls.Add(FactoryInformationBox);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
@@ -1260,13 +1391,22 @@
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             OperationsBox_UI.ResumeLayout(false);
+            OperationsBox_UI.PerformLayout();
+            flowLayoutPanel3.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
+            Tab_ChargePage.ResumeLayout(false);
+            flowLayoutPanel1.ResumeLayout(false);
+            flowLayoutPanel1.PerformLayout();
+            Tab_DischargePage.ResumeLayout(false);
+            flowLayoutPanel2.ResumeLayout(false);
+            flowLayoutPanel2.PerformLayout();
             ControlPanel.ResumeLayout(false);
-            FactoryInformationBox.ResumeLayout(false);
-            FactoryInformationBox.PerformLayout();
             ConsoleBox.ResumeLayout(false);
             ConsoleBox.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            FactoryInformationBox.ResumeLayout(false);
+            FactoryInformationBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1312,7 +1452,7 @@
         private ToolStripMenuItem SocketTab_Connect_Btn;
         private ToolStripMenuItem SocketTab_Disconnect_Btn;
         private ToolStripMenuItem toolStripTextBox1;
-        private ToolStripMenuItem toolStripMenuItem3;
+        private ToolStripMenuItem ToolStripMenu_ExportSettings;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripMenuItem RuntimeCSV_ToolstripItem;
         private ToolStripSeparator toolStripSeparator5;
@@ -1346,35 +1486,49 @@
         private RichTextBox Console_Simple_Textbox_UI;
         private ToolStripMenuItem openManualFormToolStripMenuItem;
         private ToolStripMenuItem openSequencerToolStripMenuItem;
-        private GroupBox FactoryInformationBox;
-        private Button ApplyBatteryDataButton;
-        private TextBox Textbox_MaxCurrent;
-        private TextBox Textbox_BulkVoltage;
-        private Label label1;
-        private Label label6;
-        private Label label2;
-        private TextBox Textbox_Cappacity;
-        private TextBox Textbox_TriggerTime;
-        private TextBox Textbox_CutoffVoltage;
-        private Label label3;
-        private Label label4;
-        private Label label5;
-        private TextBox Textbox_TriggerProcent;
-        private Label label7;
-        private TextBox Textbox_ExpectedSoc;
         private Button button2;
         private Button button1;
-        private Label Label_Soc;
-        private Label Label_CutVolt;
-        private Label Label_TriggerTime;
-        private Label Label_trigger;
-        private Label Label_Volt;
-        private Label Label_MaxCurr;
-        private Label Label_Cap;
         private TextBox InputField_StoredValueVoltage;
         private CheckBox checkBox1;
         private Label Label_TriggerActualTime;
         private Label Label_AccumulatedCharge;
         private Label Label_KnownSOC;
+        private TextBox Textbox_Capacity;
+        private Label label2;
+        private Label label6;
+        private Label label1;
+        private TextBox Textbox_BulkVoltage;
+        private TextBox Textbox_MaxCurrent;
+        private Button ApplyBatteryDataButton;
+        private TextBox Textbox_TriggerPercent;
+        private Label label5;
+        private Label label4;
+        private Label label3;
+        private TextBox Textbox_CutoffVoltage;
+        private TextBox Textbox_TriggerTime;
+        private TextBox Textbox_ExpectedSoc;
+        private Label label7;
+        private Label Label_Cap;
+        private Label Label_MaxCurr;
+        private Label Label_Volt;
+        private Label Label_trigger;
+        private Label Label_TriggerTime;
+        private Label Label_CutVolt;
+        private Label Label_Soc;
+        private GroupBox FactoryInformationBox;
+        private Label Label_MinCurr;
+        private TextBox Textbox_MinCurrent;
+        private Label label9;
+        private TabControl tabControl1;
+        private TabPage Tab_IdlePage;
+        private TabPage Tab_ChargePage;
+        private TabPage Tab_DischargePage;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.Timer Timer_Update;
+        private System.Windows.Forms.Timer Timer_LateUpdate;
+        private ComboBox ComboBox_SettingConfigSelect;
+        private FlowLayoutPanel flowLayoutPanel3;
+        private Button button3;
     }
 }

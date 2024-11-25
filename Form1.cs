@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
     {
-        private LogManager? logManager;
+        private LogManager? _logManager;
         private TcpConnectionHandler? _tcpHandler;
         private CommandManager? _commandManager;
         private string? _SaveLocationCSV;
@@ -13,7 +14,6 @@ namespace sm70_cp_450_GUI
 
         public static MainForm? Instance { get; set; }
 
-        private Timer? errorCleanupTimer;
         private readonly Stopwatch _stopwatch = new();
 
         private enum SequenceSteps
@@ -33,7 +33,7 @@ namespace sm70_cp_450_GUI
         private double _ReadPower;
 
         private double _BulkVoltage;
-        private double _CutoffVoltage;
+        private double _MinimumVoltage;
         private double _Capacity;
         private double _MaxCurrent;
         private double _MinCurrent;
@@ -49,30 +49,29 @@ namespace sm70_cp_450_GUI
         {
             InitializeComponent();
             Instance = this;
-            Load += MainForm_Load;
+            Load += MainForm_Init;
         }
 
-        private void MainForm_Load(object? sender, EventArgs? e)
+        private void MainForm_Init(object? sender, EventArgs? e)
         {
-            _commandManager = CommandManager.Instance;
-            logManager = LogManager.Instance;
             _tcpHandler = TcpConnectionHandler.Instance;
+            _commandManager = CommandManager.Instance;
+            _logManager = LogManager.Instance;
 
             if (_tcpHandler != null)
             {
                 _tcpHandler.OnConnectionLost += HandleConnectionLost;
             }
 
-            if (logManager != null)
+            if (_logManager != null)
             {
-                logManager.OnLogUpdate += LogManager_OnLogUpdate;
+                _logManager.OnLogUpdate += LogManager_OnLogUpdate;
             }
 
             toolStripMenuSetting_keepSessionData.Checked = Properties.Settings.Default._KeepMemory;
             _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
             _SaveLocationLOG = Properties.Settings.Default.SaveLocationLOG;
 
-            InitTimers();
             Show();
         }
 
@@ -123,28 +122,9 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        private void InitTimers()
-        {
-            Timer? updateTimer = new() { Interval = 1000 };
-            updateTimer.Tick += (sender, e) => StandardUpdate();
-            updateTimer.Start();
-
-            Timer? lateUpdateTimer = new() { Interval = 5000 };
-            lateUpdateTimer.Tick += (sender, e) => LateUpdate();
-            lateUpdateTimer.Start();
-
-            if (logManager != null)
-            {
-                errorCleanupTimer = new Timer { Interval = 1000 };
-                errorCleanupTimer.Tick += (sender, e) => logManager.UpdateConsole();
-                errorCleanupTimer.Start();
-            }
-        }
-
-        private void StandardUpdate()
+        private void StandardUpdate(object sender, EventArgs e)
         {
             if (_tcpHandler == null || !_tcpHandler.IsConnected) return;
-
             _commandManager?.Request_Measure_Voltage();
             _commandManager?.Request_Measure_Current();
             _commandManager?.Request_Measure_Power();
@@ -153,30 +133,35 @@ namespace sm70_cp_450_GUI
             _commandManager?.Request_Source_Power();
             _commandManager?.Request_Source_Current_Negative();
             _commandManager?.Request_Source_Power_Negative();
-
             StateManager();
         }
 
-        private void LateUpdate()
+        private void LateUpdate(object sender, EventArgs e)
         {
             if (_tcpHandler == null) return;
-
             LiveInfoData.Text = $"SM70-CP-450 Controller Status: {(_tcpHandler.IsConnected ? "Connected" : "Not Connected")}";
-
             _commandManager?.RequestRemoteSetting_CV();
             _commandManager?.RequestRemoteSetting_CC();
             _commandManager?.RequestRemoteSetting_CP();
         }
 
-        private void LogManager_OnLogUpdate(string logMessage)
+        private void LogManager_OnLogUpdate(List<LogManager.LogEntry> logEntries)
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(() => LogManager_OnLogUpdate(logMessage)));
+                Invoke(new Action(() => LogManager_OnLogUpdate(logEntries)));
             }
             else
             {
-                Console_Simple_Textbox_UI.Text = logMessage;
+                Console_Simple_Textbox_UI.Clear();
+
+                foreach (var logEntry in logEntries)
+                {
+                    Console_Simple_Textbox_UI.SelectionColor = logEntry.DisplayColor;
+                    Console_Simple_Textbox_UI.AppendText($"{logEntry.Time:yyyy-MM-dd HH:mm:ss} - {logEntry.Message} (Count: {logEntry.Count}){Environment.NewLine}");
+                }
+
+                Console_Simple_Textbox_UI.ScrollToCaret();
             }
         }
 
@@ -190,15 +175,18 @@ namespace sm70_cp_450_GUI
             {
                 case SequenceSteps.idle:
                     SetValuesToMachine(_BulkVoltage, 2, 2, 2, 2);
+                    tabControl1.SelectedTab = Tab_IdlePage;
                     break;
                 case SequenceSteps.Charging:
+                    tabControl1.SelectedTab = Tab_ChargePage;
                     HandleCharging();
                     break;
                 case SequenceSteps.Discharging:
+                    tabControl1.SelectedTab = Tab_DischargePage;
                     HandleDischarging();
                     break;
                 default:
-                    logManager?.AddDebugLogMessage("Unknown sequence step.");
+                    _logManager?.AddErrorLogMessage("StateManager: Unknown sequence step.");
                     break;
             }
         }
@@ -206,31 +194,30 @@ namespace sm70_cp_450_GUI
         private void HandleCharging()
         {
             SetValuesToMachine(_BulkVoltage);
-
             if (_ReadVoltage >= _BulkVoltage)
             {
                 if (_ReadCurrent <= _TriggerPercentValue)
                 {
+                    _stopwatch.Start();
                     checkBox1.Checked = true;
                     if (_stopwatch.IsRunning && _stopwatch.Elapsed >= _TriggerTime)
                     {
                         CurrentStep = SequenceSteps.Discharging;
-                        MessageBox.Show("Battery fully charged. Switching to discharge mode.");
-                        _stopwatch.Restart();
+                        _logManager?.AddInfoLogMessage("StateManager_HC: Battery fully charged. Switching to discharge mode.");
                         checkBox1.Checked = false;
                     }
                 }
                 else
                 {
                     checkBox1.Checked = false;
-                    _stopwatch.Restart();
+                    _stopwatch.Reset();
                 }
             }
         }
 
         private void HandleDischarging()
         {
-            SetValuesToMachine(_CutoffVoltage);
+            SetValuesToMachine(_MinimumVoltage);
 
             double elapsedHours = _stopwatch.Elapsed.TotalHours;
             double accumulatedCharge = Math.Max(0, _Capacity - (Math.Abs(_ReadCurrent) * elapsedHours));
@@ -243,7 +230,7 @@ namespace sm70_cp_450_GUI
             {
                 _stopwatch.Stop();
                 CurrentStep = SequenceSteps.idle;
-                MessageBox.Show($"Target SOC {_ExpectedSoc}% reached. Stopping discharge.");
+                _logManager?.AddInfoLogMessage($"StateManager_HD: Target SOC {_ExpectedSoc}% reached. Stopping discharge.");
             }
         }
 
@@ -261,7 +248,7 @@ namespace sm70_cp_450_GUI
             _commandManager?.SetOutputPowerNegative(powerNeg);
         }
 
-        
+
         private void ManualSetValues()
         {
             _BulkVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltage.Text);
@@ -275,24 +262,25 @@ namespace sm70_cp_450_GUI
         private void SaveInitialBatterySettings()
         {
             _BulkVoltage = UtilityBase.ParseInput(Textbox_BulkVoltage.Text);
-            _CutoffVoltage = UtilityBase.ParseInput(Textbox_CutoffVoltage.Text);
-            _Capacity = UtilityBase.ParseInput(Textbox_Cappacity.Text);
+            _MinimumVoltage = UtilityBase.ParseInput(Textbox_CutoffVoltage.Text);
+            _Capacity = UtilityBase.ParseInput(Textbox_Capacity.Text);
             _MaxCurrent = UtilityBase.ParseInput(Textbox_MaxCurrent.Text);
-            _MinCurrent = -Math.Abs(UtilityBase.ParseInput(Textbox_MaxCurrent.Text));
-            _MaxPower = 5000;
-            _MinPower = -5000;
+            _MinCurrent = -Math.Abs(UtilityBase.ParseInput(Textbox_MinCurrent.Text));
+            _MaxPower = _MaxCurrent * _BulkVoltage;
+            _MinPower = -Math.Abs(_MinCurrent * _MinimumVoltage);
             _ExpectedSoc = UtilityBase.ParseInput(Textbox_ExpectedSoc.Text);
-            _TriggerPercent = UtilityBase.ParseInput(Textbox_TriggerProcent.Text);
+            _TriggerPercent = UtilityBase.ParseInput(Textbox_TriggerPercent.Text);
             _TriggerTime = TimeSpan.FromSeconds(UtilityBase.ParseInput(Textbox_TriggerTime.Text));
             _TriggerPercentValue = (_MaxCurrent / 100 * _TriggerPercent);
 
             // Update UI Labels with new settings
             Label_Volt.Text = _BulkVoltage.ToString();
-            Label_CutVolt.Text = _CutoffVoltage.ToString();
+            Label_CutVolt.Text = _MinimumVoltage.ToString();
             Label_Cap.Text = _Capacity.ToString();
-            Label_MaxCurr.Text = _MaxCurrent.ToString();
+            Label_MaxCurr.Text = $"{_MaxCurrent}A / {_MaxPower}W";
+            Label_MinCurr.Text = $"{_MinCurrent}A / {_MinPower}W";
             Label_Soc.Text = _ExpectedSoc.ToString();
-            Label_trigger.Text = $"{_TriggerPercentValue}A - {_TriggerPercent}%";
+            Label_trigger.Text = $"{_TriggerPercent}% = {_TriggerPercentValue}A";
             Label_TriggerTime.Text = _TriggerTime.ToString();
 
             DataSet = true;
@@ -307,27 +295,23 @@ namespace sm70_cp_450_GUI
 
                 if (result == DialogResult.No)
                 {
-                    // Cancel the closing action
                     e.Cancel = true;
                     return;
                 }
 
                 // Prevent the application from closing until the connection is properly terminated
-                e.Cancel = true; // Cancel the initial closing
+                e.Cancel = true;
 
                 // Attempt to close the TCP connection
                 try
                 {
                     await _tcpHandler.CloseConnectionAsync();
-                    
-
-                    // After closing the connection, proceed to close the form
-                    e.Cancel = false; // Allow the application to close
-                    Close(); // Programmatically close the form
+                    e.Cancel = false;
+                    Close();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to close the connection: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logManager?.AddErrorLogMessage($"Failed to close the connection: {ex.Message}");
                 }
             }
         }
@@ -377,17 +361,23 @@ namespace sm70_cp_450_GUI
                             _commandManager?.SetOutputState(false);
                         }
                         break;
+                    case "SaveSettings":
+                        _logManager?.ExportSettings(false, "Settings");
+                        break;
+                    case "LoadSettings":
+                        _logManager?.ImportSettings("test1");
+                        break;
                     case "SaveCSV":
-                        logManager?.ExportToCsv(false, _SaveLocationCSV);
+                        _logManager?.ExportToCsv(false, _SaveLocationCSV);
                         break;
                     case "SaveAsCSV":
-                        logManager?.ExportToCsv(true, null);
+                        _logManager?.ExportToCsv(true, null);
                         break;
                     case "SaveLOG":
-                        logManager?.ExportLogToFile(false, _SaveLocationLOG);
+                        _logManager?.ExportLogToFile(false, _SaveLocationLOG);
                         break;
                     case "SaveAsLOG":
-                        logManager?.ExportLogToFile(true, null);
+                        _logManager?.ExportLogToFile(true, null);
                         break;
                     case "ToggleConsole":
                         _ConsoleState = !_ConsoleState;
@@ -423,7 +413,7 @@ namespace sm70_cp_450_GUI
                         }
                         break;
                     default:
-                        MessageBox.Show($"Tag: {tag}, not recognized");
+                        _logManager?.AddErrorLogMessage($"Tag: {tag}, not recognized");
                         break;
                 }
             }

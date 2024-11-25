@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static sm70_cp_450_GUI.MainForm;
+using System.Windows.Forms;
 
 namespace sm70_cp_450_GUI
 {
@@ -11,135 +12,120 @@ namespace sm70_cp_450_GUI
     {
         private static LogManager? _instance;
 
-        private int _currentErrorIndex = 0;  // Index to cycle through errors
-        private int _errorDisplayCounter = 0;  // Counter for slower error display
-        private readonly int _errorDisplayInterval = 10;  // Change this to set slower rate (e.g., 10 ticks = 10 seconds)
-
         // Private constructor to prevent direct instantiation
         private LogManager() { }
-        public static LogManager Instance{get{_instance ??= new LogManager();return _instance;}}
+
+        public static LogManager Instance
+        {
+            get
+            {
+                _instance ??= new LogManager();
+                return _instance;
+            }
+        }
 
         // Define a delegate for the log update event
-        public delegate void LogUpdateEventHandler(string logMessage);
-
-        // Define an event based on the delegate
+        public delegate void LogUpdateEventHandler(List<LogEntry> logEntries);
         public event LogUpdateEventHandler? OnLogUpdate;
 
-        public Dictionary<string, (int Count, DateTime LastOccurred)> _errorMessages = new();
-        public Dictionary<string, (int Count, DateTime LastOccurred)> _infoMessages = new();
-        public List<BatteryMetrics> batteryData = new();
+        // List to store log entries
+        public List<LogEntry> _logEntries = new();
+
+        public class LogEntry
+        {
+            public enum LogType { Info, Error }
+
+            public DateTime Time { get; set; }
+            public string Message { get; set; }
+            public LogType Type { get; set; }
+            public Color DisplayColor { get; set; }
+            public int Count { get; set; }
+
+            public LogEntry(string message, LogType type)
+            {
+                Time = DateTime.Now;
+                Message = message;
+                Type = type;
+                DisplayColor = type == LogType.Error ? Color.Red : Color.Black;
+                Count = 1;
+            }
+        }
+
+        // Inner BatteryMetrics class to store metrics data
         public class BatteryMetrics
         {
             public DateTime Time { get; set; }
             public double Voltage { get; set; }
             public double Current { get; set; }
             public double Power { get; set; }
+            public int Soc { get; set; }
         }
 
-        public void AddDebugLogMessage(string LogMessage)
-        {
-            DateTime currentTime = DateTime.Now;
+        // List to store battery metrics data
+        public List<BatteryMetrics> batteryData = new();
 
-            if (LogMessage.Contains('❌') || LogMessage.Contains("[ERROR]"))
-            {
-                _errorMessages[LogMessage] = _errorMessages.ContainsKey(LogMessage)
-                    ? (_errorMessages[LogMessage].Count + 1, currentTime)
-                    : (1, currentTime);
-                LogErrorBasedOnConsoleState();  // Updated to conditionally update based on console state
-            }
-
-            _infoMessages[LogMessage] = _infoMessages.ContainsKey(LogMessage)
-                ? (_infoMessages[LogMessage].Count + 1, currentTime)
-                : (1, currentTime);
-        }
-
-        public void LogErrorBasedOnConsoleState()
-        {
-            if(MainForm.Instance != null)
-            {
-                if (MainForm.Instance._ConsoleState)  // Console is open
-                {
-                    UpdateConsole();  // Send detailed, multiline errors to the console textbox.
-                }
-                else  // Console is closed
-                {
-                    DisplaySingleErrorInLabel();  // Show one error every 2 seconds on a label.
-                }
-            }
-        }
-
-        // Update multiline error messages in the console
-        public void UpdateConsole()
-        {
-            StringBuilder sb = new();
-            DateTime now = DateTime.Now;
-
-            // Remove errors that have expired
-            List<string> expiredErrors = _errorMessages
-                .Where(e => (now - e.Value.LastOccurred).TotalSeconds > 10)
-                .Select(e => e.Key)
-                .ToList();
-
-            foreach (string? errorKey in expiredErrors)
-            {
-                _errorMessages.Remove(errorKey);
-            }
-
-            // Show all remaining errors sorted by last occurrence
-            var sortedErrors = _errorMessages.OrderByDescending(e => e.Value.LastOccurred);
-            foreach (var error in sortedErrors)
-            {
-                string formattedTime = error.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                sb.AppendLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
-            }
-
-            // Trigger an update to the UI with the log messages
-            OnLogUpdate?.Invoke(sb.ToString());
-        }
-
-        // Show a single error on the label (simplified for closed console)
-        public void DisplaySingleErrorInLabel()
-        {
-            if (MainForm.Instance != null)
-            {
-                _errorDisplayCounter++;
-                if (_errorDisplayCounter >= _errorDisplayInterval)
-                {
-                    if (_errorMessages.Count > 0)
-                    {
-                        // Ensure the index wraps around if it exceeds the number of errors
-                        if (_currentErrorIndex >= _errorMessages.Count)
-                        {
-                            _currentErrorIndex = 0;  // Reset the index to loop back to the start
-                        }
-
-                        // Get the error at the current index
-                        var error = _errorMessages.ElementAt(_currentErrorIndex);
-
-                        // Truncate the error message if it's too long
-                        string truncatedError = TruncateMessage(error.Key, 40);
-                        MainForm.Instance.Console_Short_ErrorLabel.Text = $"{truncatedError}";  // Update the label
-
-                        // Move to the next error for the next update
-                        _currentErrorIndex++;
-                    }
-                    _errorDisplayCounter = 0;
-                }
-            }
-        }
-        public void CollectBatteryMetrics(double V, double C, double P)
+        // Method to add battery metrics
+        public void CollectBatteryMetrics(double voltage, double current, double power, int soc)
         {
             BatteryMetrics metrics = new()
             {
                 Time = DateTime.Now,
-                Voltage = V,
-                Current = C,
-                Power = P,
+                Voltage = voltage,
+                Current = current,
+                Power = power,
+                Soc = soc,
             };
             batteryData.Add(metrics);
         }
 
-        public void ExportToCsv(bool SaveAs, string? saveLocation)
+        // Method to add info messages
+        public void AddInfoLogMessage(string message)
+        {
+            AddLogMessage(message, LogEntry.LogType.Info);
+        }
+
+        // Method to add error messages
+        public void AddErrorLogMessage(string message)
+        {
+            AddLogMessage(message, LogEntry.LogType.Error);
+        }
+
+        // General method to add a log message
+        private void AddLogMessage(string message, LogEntry.LogType type)
+        {
+            var existingLog = _logEntries.FirstOrDefault(log => log.Message == message && log.Type == type);
+            if (existingLog != null)
+            {
+                // Update the existing log entry
+                existingLog.Count++;
+                existingLog.Time = DateTime.Now;
+            }
+            else
+            {
+                // Add a new log entry
+                _logEntries.Add(new LogEntry(message, type));
+            }
+
+            // Update the console to reflect all messages
+            UpdateConsole();
+        }
+
+        // Update multiline error and information messages in the console
+        private void UpdateConsole()
+        {
+            DateTime now = DateTime.Now;
+
+            // Remove expired error logs (older than 10 seconds)
+            _logEntries.RemoveAll(log => log.Type == LogEntry.LogType.Error && (now - log.Time).TotalSeconds > 10);
+
+            // Sort logs by most recent occurrence
+            var sortedLogs = _logEntries.OrderByDescending(log => log.Time).ToList();
+
+            // Trigger an update to the UI with all log messages
+            OnLogUpdate?.Invoke(sortedLogs);
+        }
+
+        public void ExportToCsv(bool saveAs, string? saveLocation)
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -148,46 +134,41 @@ namespace sm70_cp_450_GUI
                 FileName = "battery_data.csv"
             };
 
-            if (SaveAs)
+            if (saveAs)
             {
-                // Show the dialog and check if the user clicks OK
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
 
-                    // Write the CSV file
                     using StreamWriter writer = new(filePath);
                     writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
-                    foreach (BatteryMetrics data in batteryData)
+                    foreach (var data in batteryData)
                     {
-                        writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W");  // Data rows
+                        writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W, {data.Soc} %");  // Data rows
                     }
                 }
             }
-            else if (!SaveAs && saveLocation != null)
+            else if (!saveAs && saveLocation != null)
             {
-                // Ensure the folder exists
                 if (!Directory.Exists(saveLocation))
                 {
                     Directory.CreateDirectory(saveLocation);
                 }
 
-                // Append current time to the file name
                 string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
                 string fileNameWithTime = $"battery_data_{timestamp}.csv";
                 string filePath = Path.Combine(saveLocation, fileNameWithTime);
 
-                // Write the CSV file
                 using StreamWriter writer = new(filePath);
                 writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
-                foreach (BatteryMetrics data in batteryData)
+                foreach (var data in batteryData)
                 {
-                    writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W");  // Data rows
+                    writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W, {data.Soc} %");  // Data rows
                 }
             }
         }
 
-        public void ExportLogToFile(bool SaveAs, string? saveLocation)
+        public void ExportLogToFile(bool saveAs, string? saveLocation)
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -196,138 +177,50 @@ namespace sm70_cp_450_GUI
                 FileName = "log.txt"
             };
 
-            if (SaveAs)
+            if (saveAs)
             {
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
 
                     using StreamWriter writer = new(filePath);
-                    writer.WriteLine("Error Log:");
-                    foreach (var error in _errorMessages.OrderByDescending(e => e.Value.LastOccurred))
-                    {
-                        string formattedTime = error.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                        writer.WriteLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
-                    }
-
-                    writer.WriteLine("\nInfo/Warning Log:");
-                    foreach (var info in _infoMessages.OrderByDescending(i => i.Value.LastOccurred))
-                    {
-                        string formattedTime = info.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                        writer.WriteLine($"{formattedTime} - {info.Key} (Count: {info.Value.Count})");
-                    }
+                    WriteLogsToWriter(writer);
                 }
             }
-            else if (!SaveAs && saveLocation != null)
+            else if (!saveAs && saveLocation != null)
             {
-                // Ensure the folder exists
                 if (!Directory.Exists(saveLocation))
                 {
                     Directory.CreateDirectory(saveLocation);
                 }
 
-                // Append current time to the file name
                 string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
                 string fileNameWithTime = $"log_{timestamp}.txt";
                 string filePath = Path.Combine(saveLocation, fileNameWithTime);
 
                 using StreamWriter writer = new(filePath);
-                writer.WriteLine("Error Log:");
-                foreach (var error in _errorMessages.OrderByDescending(e => e.Value.LastOccurred))
-                {
-                    string formattedTime = error.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                    writer.WriteLine($"{formattedTime} - {error.Key} (Count: {error.Value.Count})");
-                }
-
-                writer.WriteLine("\nInfo/Warning Log:");
-                foreach (var info in _infoMessages.OrderByDescending(i => i.Value.LastOccurred))
-                {
-                    string formattedTime = info.Value.LastOccurred.ToString("yyyy-MM-dd HH:mm:ss");
-                    writer.WriteLine($"{formattedTime} - {info.Key} (Count: {info.Value.Count})");
-                }
+                WriteLogsToWriter(writer);
             }
         }
-        
-        //private void SaveSettings(object sender, EventArgs e)
-        //{
-        //    if(MainForm.Instance == null)
-        //    {
-        //        return;
-        //    }
-        //    SaveFileDialog? saveFileDialog = new()
-        //    {
-        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Save as .txt file
-        //        Title = "Save Factory Settings",
-        //        FileName = "factory_settings.txt"
-        //    };
-
-        //    if (saveFileDialog.ShowDialog() == DialogResult.OK)
-        //    {
-        //        string filePath = saveFileDialog.FileName;
-
-        //        using (StreamWriter? writer = new(filePath))
-        //        {
-        //            // Save the settings in comma-separated format (CSV-like)
-        //            writer.WriteLine($"{MainForm.Instance._CutOffDischargeVoltage},{MainForm.Instance._MaxChargeVoltage},{MainForm.Instance._MaxCurrent},{MainForm.Instance._MaxPower},{MainForm.Instance._MinCurrent},{MainForm.Instance._MinPower}");
-        //        }
-
-        //        _ = MessageBox.Show("Settings successfully saved to " + filePath);
-        //    }
-        //}
-
-        //private void LoadSettings(object sender, EventArgs e)
-        //{
-        //    OpenFileDialog? openFileDialog = new()
-        //    {
-        //        Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",  // Load from .txt file
-        //        Title = "Load Factory Settings"
-        //    };
-
-        //    if (openFileDialog.ShowDialog() == DialogResult.OK)
-        //    {
-        //        string filePath = openFileDialog.FileName;
-
-        //        using StreamReader? reader = new(filePath);
-        //        string? line = reader.ReadLine();
-        //        if (!string.IsNullOrEmpty(line))
-        //        {
-        //            // Split the values by comma
-        //            string[] values = line.Split(',');
-
-        //            if (values.Length == 5)
-        //            {
-        //                _StoredVoltageSetting = double.Parse(values[0]);
-        //                _StoredCurrent = double.Parse(values[1]);
-        //                _StoredPower = double.Parse(values[2]);
-        //                _StoredNegativeCurrent = double.Parse(values[3]);
-        //                _StoredNegativePower = double.Parse(values[4]);
-
-        //                // Populate the UI fields with the loaded values
-        //                InputField_StoredValueVoltage.Text = _StoredVoltageSetting.ToString() + " V";
-        //                InputField_StoredValueCurrentPlus.Text = _StoredCurrent.ToString() + " A";
-        //                InputField_StoredValuePowerPlus.Text = _StoredPower.ToString() + " W";
-        //                InputField_StoredValueCurrentMin.Text = "-" + Math.Abs(_StoredNegativeCurrent).ToString() + " A";
-        //                InputField_StoredValuePowerMin.Text = "-" + Math.Abs(_StoredNegativePower).ToString() + " W";
-
-        //                _ = MessageBox.Show("Settings successfully loaded from " + filePath);
-        //            }
-        //            else
-        //            {
-        //                _ = MessageBox.Show("Error: Incorrect format in the settings file.");
-        //            }
-        //        }
-        //    }
-        //}
 
 
-        private static string TruncateMessage(string errorMessage, int TruncateLength)
+        public void ExportSettings(bool saveAs, string? saveLocation)
         {
-            if (errorMessage.Length > TruncateLength)
+            
+        }
+
+        public void ImportSettings(string filename)
+        {
+
+        }
+
+        private void WriteLogsToWriter(StreamWriter writer)
+        {
+            foreach (var log in _logEntries.OrderByDescending(log => log.Time))
             {
-                return $"{errorMessage[..TruncateLength]}...";
+                string formattedTime = log.Time.ToString("HH:mm:ss");
+                writer.WriteLine($"{formattedTime} - {log.Message} (Count: {log.Count})");
             }
-            return errorMessage;
         }
     }
-
 }
