@@ -30,7 +30,16 @@ namespace sm70_cp_450_GUI
         private bool _isProcessingQueryQueue = false;
         private bool _isProcessingCommandQueue = false;
 
-        public bool IsConnected => _tcpClient?.Connected ?? false;
+        public enum ConnectionStates
+        {
+            NotConnected,
+            Connecting,
+            Established,
+            Terminated,
+            Failed,
+        }
+        public ConnectionStates ConnectionState { get; private set; } = ConnectionStates.NotConnected;
+
         public event Action? OnConnectionEstablished;
         public event Action? OnConnectionLost;
 
@@ -66,27 +75,50 @@ namespace sm70_cp_450_GUI
 
         public async Task<bool> InitializeTcpClient()
         {
-            if (IsConnected) return false;
+            if (ConnectionState == ConnectionStates.Connecting || ConnectionState == ConnectionStates.Established)
+            {
+                _logManager?.AddInfoLogMessage("InitializeTcpClient: Already connected or connecting.");
+                return false;
+            }
+
+            ConnectionState = ConnectionStates.Connecting;
+            _logManager?.AddInfoLogMessage("InitializeTcpClient: Attempting to connect...");
 
             _tcpClient = new TcpClient();
             try
             {
                 await _tcpClient.ConnectAsync(_DefaultServerIp, _DefaultServerPort);
                 _networkStream = _tcpClient.GetStream();
+
+                ConnectionState = ConnectionStates.Established;
+                _logManager?.AddInfoLogMessage("InitializeTcpClient: Connection established.");
                 OnConnectionEstablished?.Invoke();
+
                 EnqueueCommand("SYSTem:REMote:CV: Remote");
                 EnqueueCommand("SYSTem:REMote:CC: Remote");
                 EnqueueCommand("SYSTem:REMote:CP: Remote");
                 EnqueueCommand("SYSTem:POWersink output,On");
+
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ConnectionState = ConnectionStates.Failed;
+                _logManager?.AddErrorLogMessage($"InitializeTcpClient: Failed to connect. Exception: {ex.Message}");
                 return false;
             }
         }
+
         public async Task CloseConnectionAsync()
         {
+            if (ConnectionState != ConnectionStates.Established)
+            {
+                _logManager?.AddInfoLogMessage("CloseConnectionAsync: No active connection to close.");
+                return;
+            }
+
+            _logManager?.AddInfoLogMessage("CloseConnectionAsync: Closing connection...");
+
             EnqueueCommand("OUTPut OFF");
             EnqueueCommand("SOUR:POW 0");
             EnqueueCommand("SOUR:POW:NEG 0");
@@ -94,13 +126,13 @@ namespace sm70_cp_450_GUI
             EnqueueCommand("SYSTem:REMote:CC: Front");
             EnqueueCommand("SYSTem:REMote:CP: Front");
 
-            await Task.Delay(4000);
+            await Task.Delay(1000);
 
-            // Close the network stream and TCP client asynchronously
             _networkStream?.Close();
-            await Task.Delay(100); // Small delay to ensure stream closure before client closes
+            await Task.Delay(100);
             _tcpClient?.Close();
 
+            ConnectionState = ConnectionStates.Terminated;
             OnConnectionLost?.Invoke();
             _logManager?.AddInfoLogMessage("CloseConnectionAsync: Connection closed.");
         }
@@ -129,7 +161,6 @@ namespace sm70_cp_450_GUI
                     return;
                 }
 
-                // Set the appropriate numeric value
                 switch (query)
                 {
                     case "MEASure:VOLtage?":
@@ -201,7 +232,7 @@ namespace sm70_cp_450_GUI
         // Process the query queue
         private async void ProcessQueryQueue()
         {
-            if (IsConnected)
+            if (ConnectionState == ConnectionStates.Established)
             {
                 if (_isProcessingQueryQueue) return;
 

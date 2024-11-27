@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
+using static sm70_cp_450_GUI.TcpConnectionHandler;
+using static System.Windows.Forms.AxHost;
 using Timer = System.Windows.Forms.Timer;
 
 namespace sm70_cp_450_GUI
@@ -124,7 +126,7 @@ namespace sm70_cp_450_GUI
 
         private void StandardUpdate(object sender, EventArgs e)
         {
-            if (_tcpHandler == null || !_tcpHandler.IsConnected) return;
+            if (_tcpHandler == null || _tcpHandler.ConnectionState != ConnectionStates.Established) return;
             _commandManager?.Request_Measure_Voltage();
             _commandManager?.Request_Measure_Current();
             _commandManager?.Request_Measure_Power();
@@ -139,7 +141,7 @@ namespace sm70_cp_450_GUI
         private void LateUpdate(object sender, EventArgs e)
         {
             if (_tcpHandler == null) return;
-            LiveInfoData.Text = $"SM70-CP-450 Controller Status: {(_tcpHandler.IsConnected ? "Connected" : "Not Connected")}";
+            LiveInfoData.Text = $"SM70-CP-450 Connection Status: {_tcpHandler.ConnectionState}"; 
             _commandManager?.RequestRemoteSetting_CV();
             _commandManager?.RequestRemoteSetting_CC();
             _commandManager?.RequestRemoteSetting_CP();
@@ -167,7 +169,7 @@ namespace sm70_cp_450_GUI
 
         private void StateManager()
         {
-            if (_tcpHandler == null || !_tcpHandler.IsConnected || !DataSet) return;
+            if (_tcpHandler == null || _tcpHandler.ConnectionState != ConnectionStates.Established || !DataSet) return;
 
             Label_TriggerActualTime.Text = _stopwatch.Elapsed.Seconds.ToString();
 
@@ -248,17 +250,6 @@ namespace sm70_cp_450_GUI
             _commandManager?.SetOutputPowerNegative(powerNeg);
         }
 
-
-        private void ManualSetValues()
-        {
-            _BulkVoltage = UtilityBase.ParseInput(InputField_StoredValueVoltage.Text);
-            _MaxCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentPlus.Text);
-            _MinCurrent = UtilityBase.ParseInput(InputField_StoredValueCurrentMin.Text);
-            _MaxPower = UtilityBase.ParseInput(InputField_StoredValuePowerPlus.Text);
-            _MinPower = UtilityBase.ParseInput(InputField_StoredValuePowerMin.Text);
-            DataSet = true;
-        }
-
         private void SaveInitialBatterySettings()
         {
             _BulkVoltage = UtilityBase.ParseInput(Textbox_BulkVoltage.Text);
@@ -286,11 +277,11 @@ namespace sm70_cp_450_GUI
             DataSet = true;
         }
 
+        //warn user / disconnect socket before closing 
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_tcpHandler != null && _tcpHandler.IsConnected)
+            if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
             {
-                // Notify user that the application is attempting to close the connection first
                 var result = MessageBox.Show("Closing the application will terminate the connection. Do you want to proceed?", "Confirm Close", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.No)
@@ -299,10 +290,8 @@ namespace sm70_cp_450_GUI
                     return;
                 }
 
-                // Prevent the application from closing until the connection is properly terminated
                 e.Cancel = true;
 
-                // Attempt to close the TCP connection
                 try
                 {
                     await _tcpHandler.CloseConnectionAsync();
@@ -315,6 +304,8 @@ namespace sm70_cp_450_GUI
                 }
             }
         }
+
+        //handles (almost )every onClick action
         private async void ButtonHandler(object sender, EventArgs e)
         {
             string? tag = null;
@@ -335,9 +326,6 @@ namespace sm70_cp_450_GUI
             {
                 switch (tag)
                 {
-                    case "ManualSetValues":
-                        ManualSetValues();
-                        break;
                     case "setData":
                         SaveInitialBatterySettings();
                         break;
@@ -348,14 +336,14 @@ namespace sm70_cp_450_GUI
                         new UpdatedForm().Show();
                         break;
                     case "Start":
-                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
                         {
                             CurrentStep = SequenceSteps.Charging;
                             _commandManager?.SetOutputState(true);
                         }
                         break;
                     case "Stop":
-                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
                         {
                             CurrentStep = SequenceSteps.idle;
                             _commandManager?.SetOutputState(false);
@@ -390,13 +378,13 @@ namespace sm70_cp_450_GUI
                         Console_Short_ErrorLabel.Text = "This is where error should appear if there are any";
                         break;
                     case "TryConnectSocket":
-                        if (_tcpHandler != null && !_tcpHandler.IsConnected)
+                        if (_tcpHandler != null && _tcpHandler.ConnectionState != ConnectionStates.Established)
                         {
                             await _tcpHandler.InitializeTcpClient();
                         }
                         break;
                     case "DisconnectSocket":
-                        if (_tcpHandler != null && _tcpHandler.IsConnected)
+                        if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
                         {
                             await _tcpHandler.CloseConnectionAsync();
                         }
