@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             menuStrip1 = new MenuStrip();
@@ -66,8 +69,6 @@
             LinkToDeltaElectronica = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripTextBox1 = new ToolStripMenuItem();
-            openManualFormToolStripMenuItem = new ToolStripMenuItem();
-            openSequencerToolStripMenuItem = new ToolStripMenuItem();
             Timer_Update = new System.Windows.Forms.Timer(components);
             Timer_LateUpdate = new System.Windows.Forms.Timer(components);
             flowLayoutPanel3 = new FlowLayoutPanel();
@@ -99,18 +100,14 @@
             Label_MachineAppliedCurrentPlus_UI = new Label();
             Label_Remote_CC_UI = new Label();
             Label_MachineAppliedCurrentMin_UI = new Label();
-            tabControl1 = new TabControl();
-            Tab_IdlePage = new TabPage();
-            Tab_ChargePage = new TabPage();
-            flowLayoutPanel1 = new FlowLayoutPanel();
             checkBox1 = new CheckBox();
             Label_TriggerActualTime = new Label();
-            Tab_DischargePage = new TabPage();
-            flowLayoutPanel2 = new FlowLayoutPanel();
+            Progressbar_TriggerTime = new ProgressBar();
             Label_AccumulatedCharge = new Label();
             Label_KnownSOC = new Label();
             FactoryInformationBox = new GroupBox();
-            ApplyBatteryDataButton = new Button();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            button3 = new Button();
             flowLayoutPanel4 = new FlowLayoutPanel();
             groupBox3 = new GroupBox();
             Textbox_TriggerPercent = new TextBox();
@@ -131,6 +128,10 @@
             Label_Soc = new Label();
             Label_CutVolt = new Label();
             Textbox_ExpectedSoc = new TextBox();
+            liveBatteryChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
+            radioButton3 = new RadioButton();
             menuStrip1.SuspendLayout();
             ConsoleBox.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -140,21 +141,18 @@
             tableLayoutPanel9.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
-            tabControl1.SuspendLayout();
-            Tab_ChargePage.SuspendLayout();
-            flowLayoutPanel1.SuspendLayout();
-            Tab_DischargePage.SuspendLayout();
-            flowLayoutPanel2.SuspendLayout();
             FactoryInformationBox.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel4.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)liveBatteryChart).BeginInit();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5, openManualFormToolStripMenuItem, openSequencerToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolsToolStripMenuItem, toolStripMenuItem5 });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(904, 24);
@@ -386,7 +384,7 @@
             // 
             // LinkToDeltaElectronica
             // 
-            LinkToDeltaElectronica.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
+            LinkToDeltaElectronica.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
             LinkToDeltaElectronica.ForeColor = Color.Blue;
             LinkToDeltaElectronica.Image = Properties.Resources.StatusHelp;
             LinkToDeltaElectronica.Name = "LinkToDeltaElectronica";
@@ -402,7 +400,7 @@
             // 
             // toolStripTextBox1
             // 
-            toolStripTextBox1.Font = new Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point);
+            toolStripTextBox1.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
             toolStripTextBox1.ForeColor = Color.Blue;
             toolStripTextBox1.Image = Properties.Resources.SourceControlSites;
             toolStripTextBox1.Name = "toolStripTextBox1";
@@ -410,24 +408,6 @@
             toolStripTextBox1.Tag = "OpenGitURL";
             toolStripTextBox1.Text = "https://github.com/HendrikdeJong/sm70-cp-450-GUI";
             toolStripTextBox1.Click += ButtonHandler;
-            // 
-            // openManualFormToolStripMenuItem
-            // 
-            openManualFormToolStripMenuItem.Name = "openManualFormToolStripMenuItem";
-            openManualFormToolStripMenuItem.Size = new Size(116, 20);
-            openManualFormToolStripMenuItem.Tag = "OpenManualForm";
-            openManualFormToolStripMenuItem.Text = "OpenManualForm";
-            openManualFormToolStripMenuItem.Click += ButtonHandler;
-            // 
-            // openSequencerToolStripMenuItem
-            // 
-            openSequencerToolStripMenuItem.Enabled = false;
-            openSequencerToolStripMenuItem.Name = "openSequencerToolStripMenuItem";
-            openSequencerToolStripMenuItem.ShowShortcutKeys = false;
-            openSequencerToolStripMenuItem.Size = new Size(103, 20);
-            openSequencerToolStripMenuItem.Tag = "OpenSequencer";
-            openSequencerToolStripMenuItem.Text = "OpenSequencer";
-            openSequencerToolStripMenuItem.Click += ButtonHandler;
             // 
             // Timer_Update
             // 
@@ -484,6 +464,7 @@
             ToggleConsole_Btn.Size = new Size(23, 22);
             ToggleConsole_Btn.Tag = "ToggleConsole";
             ToggleConsole_Btn.Text = "Close Console";
+            ToggleConsole_Btn.Click += ButtonHandler;
             // 
             // ConsoleClear_Btn
             // 
@@ -494,6 +475,7 @@
             ConsoleClear_Btn.Size = new Size(23, 22);
             ConsoleClear_Btn.Tag = "ClearConsole";
             ConsoleClear_Btn.Text = "Clear console";
+            ConsoleClear_Btn.Click += ButtonHandler;
             // 
             // Console_DownloadBtn
             // 
@@ -504,6 +486,7 @@
             Console_DownloadBtn.Size = new Size(23, 22);
             Console_DownloadBtn.Tag = "SaveLOG";
             Console_DownloadBtn.Text = "Download Log";
+            Console_DownloadBtn.Click += ButtonHandler;
             // 
             // toolStripSeparator4
             // 
@@ -523,7 +506,7 @@
             // 
             Console_Simple_Textbox_UI.BackColor = SystemColors.ControlLight;
             Console_Simple_Textbox_UI.Dock = DockStyle.Fill;
-            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Console_Simple_Textbox_UI.Font = new Font("Segoe UI", 9F);
             Console_Simple_Textbox_UI.ForeColor = SystemColors.ActiveCaptionText;
             Console_Simple_Textbox_UI.Location = new Point(3, 25);
             Console_Simple_Textbox_UI.Name = "Console_Simple_Textbox_UI";
@@ -557,6 +540,7 @@
             button2.Tag = "Stop";
             button2.Text = "Stop";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += ButtonHandler;
             // 
             // button1
             // 
@@ -568,6 +552,7 @@
             button1.Tag = "Start";
             button1.Text = "Restart";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += ButtonHandler;
             // 
             // Operation_Start
             // 
@@ -579,6 +564,7 @@
             Operation_Start.Tag = "Start";
             Operation_Start.Text = "Start";
             Operation_Start.UseVisualStyleBackColor = true;
+            Operation_Start.Click += ButtonHandler;
             // 
             // LiveInfoData
             // 
@@ -635,7 +621,7 @@
             // 
             Label_MachineAppliedVoltage_UI.AutoSize = true;
             Label_MachineAppliedVoltage_UI.Dock = DockStyle.Fill;
-            Label_MachineAppliedVoltage_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedVoltage_UI.Font = new Font("Segoe UI", 12F);
             Label_MachineAppliedVoltage_UI.Location = new Point(145, 0);
             Label_MachineAppliedVoltage_UI.Name = "Label_MachineAppliedVoltage_UI";
             Label_MachineAppliedVoltage_UI.Size = new Size(137, 33);
@@ -647,7 +633,7 @@
             // 
             Label_Remote_CV_UI.AutoSize = true;
             Label_Remote_CV_UI.Dock = DockStyle.Fill;
-            Label_Remote_CV_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CV_UI.Font = new Font("Segoe UI", 12F);
             Label_Remote_CV_UI.Location = new Point(3, 0);
             Label_Remote_CV_UI.Name = "Label_Remote_CV_UI";
             Label_Remote_CV_UI.Size = new Size(136, 33);
@@ -676,7 +662,7 @@
             // 
             Label_MachineAppliedPowerPlus_UI.AutoSize = true;
             Label_MachineAppliedPowerPlus_UI.Dock = DockStyle.Fill;
-            Label_MachineAppliedPowerPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedPowerPlus_UI.Font = new Font("Segoe UI", 12F);
             Label_MachineAppliedPowerPlus_UI.Location = new Point(146, 0);
             Label_MachineAppliedPowerPlus_UI.Name = "Label_MachineAppliedPowerPlus_UI";
             Label_MachineAppliedPowerPlus_UI.Size = new Size(137, 33);
@@ -688,7 +674,7 @@
             // 
             Label_Remote_CP_UI.AutoSize = true;
             Label_Remote_CP_UI.Dock = DockStyle.Fill;
-            Label_Remote_CP_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CP_UI.Font = new Font("Segoe UI", 12F);
             Label_Remote_CP_UI.Location = new Point(3, 0);
             Label_Remote_CP_UI.Name = "Label_Remote_CP_UI";
             Label_Remote_CP_UI.Size = new Size(137, 33);
@@ -700,7 +686,7 @@
             // 
             Label_MachineAppliedPowerMin_UI.AutoSize = true;
             Label_MachineAppliedPowerMin_UI.Dock = DockStyle.Fill;
-            Label_MachineAppliedPowerMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedPowerMin_UI.Font = new Font("Segoe UI", 12F);
             Label_MachineAppliedPowerMin_UI.Location = new Point(146, 33);
             Label_MachineAppliedPowerMin_UI.Name = "Label_MachineAppliedPowerMin_UI";
             Label_MachineAppliedPowerMin_UI.Size = new Size(137, 33);
@@ -712,7 +698,7 @@
             // 
             WattageDisplay.AutoSize = true;
             WattageDisplay.Dock = DockStyle.Fill;
-            WattageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
+            WattageDisplay.Font = new Font("Segoe UI", 21F);
             WattageDisplay.Location = new Point(586, 0);
             WattageDisplay.Margin = new Padding(4, 0, 4, 0);
             WattageDisplay.Name = "WattageDisplay";
@@ -725,7 +711,7 @@
             // 
             VoltageDisplay.AutoSize = true;
             VoltageDisplay.Dock = DockStyle.Fill;
-            VoltageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
+            VoltageDisplay.Font = new Font("Segoe UI", 21F);
             VoltageDisplay.Location = new Point(4, 0);
             VoltageDisplay.Margin = new Padding(4, 0, 4, 0);
             VoltageDisplay.Name = "VoltageDisplay";
@@ -738,7 +724,7 @@
             // 
             AmperageDisplay.AutoSize = true;
             AmperageDisplay.Dock = DockStyle.Fill;
-            AmperageDisplay.Font = new Font("Segoe UI", 21F, FontStyle.Regular, GraphicsUnit.Point);
+            AmperageDisplay.Font = new Font("Segoe UI", 21F);
             AmperageDisplay.Location = new Point(295, 0);
             AmperageDisplay.Margin = new Padding(4, 0, 4, 0);
             AmperageDisplay.Name = "AmperageDisplay";
@@ -768,7 +754,7 @@
             // 
             Label_MachineAppliedCurrentPlus_UI.AutoSize = true;
             Label_MachineAppliedCurrentPlus_UI.Dock = DockStyle.Fill;
-            Label_MachineAppliedCurrentPlus_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedCurrentPlus_UI.Font = new Font("Segoe UI", 12F);
             Label_MachineAppliedCurrentPlus_UI.Location = new Point(145, 0);
             Label_MachineAppliedCurrentPlus_UI.Name = "Label_MachineAppliedCurrentPlus_UI";
             Label_MachineAppliedCurrentPlus_UI.Size = new Size(137, 33);
@@ -780,7 +766,7 @@
             // 
             Label_Remote_CC_UI.AutoSize = true;
             Label_Remote_CC_UI.Dock = DockStyle.Fill;
-            Label_Remote_CC_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_Remote_CC_UI.Font = new Font("Segoe UI", 12F);
             Label_Remote_CC_UI.Location = new Point(3, 0);
             Label_Remote_CC_UI.Name = "Label_Remote_CC_UI";
             Label_Remote_CC_UI.Size = new Size(136, 33);
@@ -792,7 +778,7 @@
             // 
             Label_MachineAppliedCurrentMin_UI.AutoSize = true;
             Label_MachineAppliedCurrentMin_UI.Dock = DockStyle.Fill;
-            Label_MachineAppliedCurrentMin_UI.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Label_MachineAppliedCurrentMin_UI.Font = new Font("Segoe UI", 12F);
             Label_MachineAppliedCurrentMin_UI.Location = new Point(145, 33);
             Label_MachineAppliedCurrentMin_UI.Name = "Label_MachineAppliedCurrentMin_UI";
             Label_MachineAppliedCurrentMin_UI.Size = new Size(137, 33);
@@ -800,58 +786,11 @@
             Label_MachineAppliedCurrentMin_UI.Text = "-0 A";
             Label_MachineAppliedCurrentMin_UI.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(Tab_IdlePage);
-            tabControl1.Controls.Add(Tab_ChargePage);
-            tabControl1.Controls.Add(Tab_DischargePage);
-            tabControl1.ItemSize = new Size(290, 26);
-            tabControl1.Location = new Point(12, 443);
-            tabControl1.Name = "tabControl1";
-            tabControl1.Padding = new Point(0, 0);
-            tabControl1.RightToLeft = RightToLeft.No;
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(880, 100);
-            tabControl1.SizeMode = TabSizeMode.Fixed;
-            tabControl1.TabIndex = 40;
-            tabControl1.TabStop = false;
-            // 
-            // Tab_IdlePage
-            // 
-            Tab_IdlePage.Location = new Point(4, 30);
-            Tab_IdlePage.Name = "Tab_IdlePage";
-            Tab_IdlePage.Padding = new Padding(3);
-            Tab_IdlePage.Size = new Size(872, 66);
-            Tab_IdlePage.TabIndex = 0;
-            Tab_IdlePage.Text = "Idle";
-            Tab_IdlePage.UseVisualStyleBackColor = true;
-            // 
-            // Tab_ChargePage
-            // 
-            Tab_ChargePage.Controls.Add(flowLayoutPanel1);
-            Tab_ChargePage.Location = new Point(4, 30);
-            Tab_ChargePage.Name = "Tab_ChargePage";
-            Tab_ChargePage.Padding = new Padding(3);
-            Tab_ChargePage.Size = new Size(872, 66);
-            Tab_ChargePage.TabIndex = 1;
-            Tab_ChargePage.Text = "Charging";
-            Tab_ChargePage.UseVisualStyleBackColor = true;
-            // 
-            // flowLayoutPanel1
-            // 
-            flowLayoutPanel1.Controls.Add(checkBox1);
-            flowLayoutPanel1.Controls.Add(Label_TriggerActualTime);
-            flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.Location = new Point(3, 3);
-            flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(866, 60);
-            flowLayoutPanel1.TabIndex = 34;
-            // 
             // checkBox1
             // 
             checkBox1.AutoSize = true;
             checkBox1.Enabled = false;
-            checkBox1.Location = new Point(3, 3);
+            checkBox1.Location = new Point(15, 474);
             checkBox1.Name = "checkBox1";
             checkBox1.RightToLeft = RightToLeft.Yes;
             checkBox1.Size = new Size(137, 25);
@@ -862,9 +801,8 @@
             // 
             // Label_TriggerActualTime
             // 
-            Label_TriggerActualTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             Label_TriggerActualTime.AutoSize = true;
-            Label_TriggerActualTime.Location = new Point(146, 7);
+            Label_TriggerActualTime.Location = new Point(17, 505);
             Label_TriggerActualTime.Margin = new Padding(3);
             Label_TriggerActualTime.Name = "Label_TriggerActualTime";
             Label_TriggerActualTime.Size = new Size(51, 21);
@@ -872,33 +810,18 @@
             Label_TriggerActualTime.Text = "Time: ";
             Label_TriggerActualTime.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // Tab_DischargePage
+            // Progressbar_TriggerTime
             // 
-            Tab_DischargePage.Controls.Add(flowLayoutPanel2);
-            Tab_DischargePage.Location = new Point(4, 30);
-            Tab_DischargePage.Name = "Tab_DischargePage";
-            Tab_DischargePage.Padding = new Padding(3);
-            Tab_DischargePage.Size = new Size(872, 66);
-            Tab_DischargePage.TabIndex = 2;
-            Tab_DischargePage.Text = "Discharging";
-            Tab_DischargePage.UseVisualStyleBackColor = true;
-            // 
-            // flowLayoutPanel2
-            // 
-            flowLayoutPanel2.Controls.Add(Label_AccumulatedCharge);
-            flowLayoutPanel2.Controls.Add(Label_KnownSOC);
-            flowLayoutPanel2.Dock = DockStyle.Fill;
-            flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel2.Location = new Point(3, 3);
-            flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(866, 60);
-            flowLayoutPanel2.TabIndex = 34;
+            Progressbar_TriggerTime.Location = new Point(74, 505);
+            Progressbar_TriggerTime.Name = "Progressbar_TriggerTime";
+            Progressbar_TriggerTime.Size = new Size(82, 25);
+            Progressbar_TriggerTime.TabIndex = 43;
             // 
             // Label_AccumulatedCharge
             // 
             Label_AccumulatedCharge.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             Label_AccumulatedCharge.AutoSize = true;
-            Label_AccumulatedCharge.Location = new Point(3, 0);
+            Label_AccumulatedCharge.Location = new Point(12, 545);
             Label_AccumulatedCharge.Name = "Label_AccumulatedCharge";
             Label_AccumulatedCharge.Size = new Size(172, 21);
             Label_AccumulatedCharge.TabIndex = 28;
@@ -909,7 +832,7 @@
             // 
             Label_KnownSOC.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             Label_KnownSOC.AutoSize = true;
-            Label_KnownSOC.Location = new Point(3, 21);
+            Label_KnownSOC.Location = new Point(12, 576);
             Label_KnownSOC.Name = "Label_KnownSOC";
             Label_KnownSOC.Size = new Size(114, 21);
             Label_KnownSOC.TabIndex = 29;
@@ -918,25 +841,42 @@
             // 
             // FactoryInformationBox
             // 
-            FactoryInformationBox.Controls.Add(ApplyBatteryDataButton);
+            FactoryInformationBox.Controls.Add(tableLayoutPanel1);
             FactoryInformationBox.Controls.Add(flowLayoutPanel4);
             FactoryInformationBox.Location = new Point(12, 183);
             FactoryInformationBox.Name = "FactoryInformationBox";
-            FactoryInformationBox.Size = new Size(880, 254);
+            FactoryInformationBox.Size = new Size(880, 251);
             FactoryInformationBox.TabIndex = 41;
             FactoryInformationBox.TabStop = false;
             FactoryInformationBox.Text = "Settings";
             // 
-            // ApplyBatteryDataButton
+            // tableLayoutPanel1
             // 
-            ApplyBatteryDataButton.Dock = DockStyle.Bottom;
-            ApplyBatteryDataButton.Location = new Point(3, 196);
-            ApplyBatteryDataButton.Name = "ApplyBatteryDataButton";
-            ApplyBatteryDataButton.Size = new Size(874, 55);
-            ApplyBatteryDataButton.TabIndex = 32;
-            ApplyBatteryDataButton.Tag = "setData";
-            ApplyBatteryDataButton.Text = "Apply";
-            ApplyBatteryDataButton.UseVisualStyleBackColor = true;
+            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.Controls.Add(button3, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Bottom;
+            tableLayoutPanel1.Location = new Point(3, 190);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel1.Size = new Size(874, 58);
+            tableLayoutPanel1.TabIndex = 32;
+            // 
+            // button3
+            // 
+            button3.Dock = DockStyle.Fill;
+            button3.Location = new Point(3, 3);
+            button3.Name = "button3";
+            button3.Size = new Size(285, 52);
+            button3.TabIndex = 30;
+            button3.Tag = "setData";
+            button3.Text = "Apply settings";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += ButtonHandler;
             // 
             // flowLayoutPanel4
             // 
@@ -946,11 +886,12 @@
             flowLayoutPanel4.Dock = DockStyle.Top;
             flowLayoutPanel4.Location = new Point(3, 25);
             flowLayoutPanel4.Name = "flowLayoutPanel4";
-            flowLayoutPanel4.Size = new Size(874, 165);
+            flowLayoutPanel4.Size = new Size(874, 162);
             flowLayoutPanel4.TabIndex = 31;
             // 
             // groupBox3
             // 
+            groupBox3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBox3.Controls.Add(Textbox_TriggerPercent);
             groupBox3.Controls.Add(Textbox_TriggerTime);
             groupBox3.Controls.Add(Label_trigger);
@@ -1000,6 +941,7 @@
             // 
             // groupBox2
             // 
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             groupBox2.Controls.Add(Textbox_MaxCurrent);
             groupBox2.Controls.Add(Label_MaxCurr);
             groupBox2.Controls.Add(Label_Volt);
@@ -1008,7 +950,7 @@
             groupBox2.Controls.Add(Label_Cap);
             groupBox2.Location = new Point(187, 3);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(355, 147);
+            groupBox2.Size = new Size(355, 145);
             groupBox2.TabIndex = 29;
             groupBox2.TabStop = false;
             groupBox2.Text = "Charge settings";
@@ -1069,6 +1011,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             groupBox1.Controls.Add(Textbox_MinCurrent);
             groupBox1.Controls.Add(Label_MinCurr);
             groupBox1.Controls.Add(Textbox_CutoffVoltage);
@@ -1077,7 +1020,7 @@
             groupBox1.Controls.Add(Textbox_ExpectedSoc);
             groupBox1.Location = new Point(548, 3);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(320, 147);
+            groupBox1.Size = new Size(320, 145);
             groupBox1.TabIndex = 28;
             groupBox1.TabStop = false;
             groupBox1.Text = "Discharge settings";
@@ -1136,19 +1079,76 @@
             Textbox_ExpectedSoc.Size = new Size(123, 29);
             Textbox_ExpectedSoc.TabIndex = 8;
             // 
+            // liveBatteryChart
+            // 
+            chartArea1.Name = "ChartArea1";
+            liveBatteryChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            liveBatteryChart.Legends.Add(legend1);
+            liveBatteryChart.Location = new Point(379, 440);
+            liveBatteryChart.Name = "liveBatteryChart";
+            liveBatteryChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Excel;
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            liveBatteryChart.Series.Add(series1);
+            liveBatteryChart.Size = new Size(510, 175);
+            liveBatteryChart.TabIndex = 42;
+            liveBatteryChart.Text = "chart1";
+            // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Checked = true;
+            radioButton1.Location = new Point(18, 442);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(53, 25);
+            radioButton1.TabIndex = 44;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Idle";
+            radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(125, 442);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(92, 25);
+            radioButton2.TabIndex = 45;
+            radioButton2.Text = "Charging";
+            radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            radioButton3.AutoSize = true;
+            radioButton3.Location = new Point(262, 440);
+            radioButton3.Name = "radioButton3";
+            radioButton3.Size = new Size(111, 25);
+            radioButton3.TabIndex = 46;
+            radioButton3.Text = "Discharging";
+            radioButton3.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(904, 724);
+            Controls.Add(radioButton3);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
+            Controls.Add(Label_AccumulatedCharge);
+            Controls.Add(Label_KnownSOC);
+            Controls.Add(checkBox1);
+            Controls.Add(ConsoleBox);
+            Controls.Add(Label_TriggerActualTime);
+            Controls.Add(Progressbar_TriggerTime);
+            Controls.Add(liveBatteryChart);
             Controls.Add(FactoryInformationBox);
             Controls.Add(LiveInfoData);
-            Controls.Add(tabControl1);
             Controls.Add(ControlPanel);
-            Controls.Add(ConsoleBox);
             Controls.Add(flowLayoutPanel3);
             Controls.Add(menuStrip1);
-            Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Segoe UI", 12F);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
             Name = "MainForm";
@@ -1171,14 +1171,8 @@
             tableLayoutPanel5.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
-            tabControl1.ResumeLayout(false);
-            Tab_ChargePage.ResumeLayout(false);
-            flowLayoutPanel1.ResumeLayout(false);
-            flowLayoutPanel1.PerformLayout();
-            Tab_DischargePage.ResumeLayout(false);
-            flowLayoutPanel2.ResumeLayout(false);
-            flowLayoutPanel2.PerformLayout();
             FactoryInformationBox.ResumeLayout(false);
+            tableLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel4.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
@@ -1186,6 +1180,7 @@
             groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)liveBatteryChart).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1228,8 +1223,6 @@
         private ToolStripMenuItem toolStripMenuItem6;
         private ToolStripTextBox toolStripTextBox2;
         private ToolStripTextBox toolStripTextBox3;
-        private ToolStripMenuItem openManualFormToolStripMenuItem;
-        private ToolStripMenuItem openSequencerToolStripMenuItem;
         private System.Windows.Forms.Timer Timer_Update;
         private System.Windows.Forms.Timer Timer_LateUpdate;
         private FlowLayoutPanel flowLayoutPanel3;
@@ -1261,37 +1254,37 @@
         private Label Label_MachineAppliedCurrentPlus_UI;
         private Label Label_Remote_CC_UI;
         private Label Label_MachineAppliedCurrentMin_UI;
-        private TabControl tabControl1;
-        private TabPage Tab_IdlePage;
-        private TabPage Tab_ChargePage;
-        private FlowLayoutPanel flowLayoutPanel1;
         private CheckBox checkBox1;
         private Label Label_TriggerActualTime;
-        private TabPage Tab_DischargePage;
-        private FlowLayoutPanel flowLayoutPanel2;
         private Label Label_AccumulatedCharge;
         private Label Label_KnownSOC;
         private GroupBox FactoryInformationBox;
-        private Button ApplyBatteryDataButton;
         private FlowLayoutPanel flowLayoutPanel4;
         private GroupBox groupBox3;
-        private TextBox Textbox_TriggerPercent;
-        private TextBox Textbox_TriggerTime;
+        public TextBox Textbox_TriggerPercent;
+        public TextBox Textbox_TriggerTime;
         private Label Label_trigger;
         private Label Label_TriggerTime;
         private GroupBox groupBox1;
-        private TextBox Textbox_MinCurrent;
+        public TextBox Textbox_MinCurrent;
         private Label Label_MinCurr;
-        private TextBox Textbox_CutoffVoltage;
+        public TextBox Textbox_CutoffVoltage;
         private Label Label_Soc;
         private Label Label_CutVolt;
-        private TextBox Textbox_ExpectedSoc;
+        public TextBox Textbox_ExpectedSoc;
         private GroupBox groupBox2;
         private TextBox Textbox_MaxCurrent;
         private Label Label_MaxCurr;
         private Label Label_Volt;
-        private TextBox Textbox_Capacity;
-        private TextBox Textbox_BulkVoltage;
+        public TextBox Textbox_Capacity;
+        public TextBox Textbox_BulkVoltage;
         private Label Label_Cap;
+        private System.Windows.Forms.DataVisualization.Charting.Chart liveBatteryChart;
+        private ProgressBar Progressbar_TriggerTime;
+        private RadioButton radioButton1;
+        private RadioButton radioButton2;
+        private RadioButton radioButton3;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Button button3;
     }
 }

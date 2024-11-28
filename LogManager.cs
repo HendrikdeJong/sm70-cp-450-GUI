@@ -29,26 +29,17 @@ namespace sm70_cp_450_GUI
         public event LogUpdateEventHandler? OnLogUpdate;
 
         // List to store log entries
-        public List<LogEntry> _logEntries = new();
+        public List<LogEntry> _logEntries = [];
 
-        public class LogEntry
+        public class LogEntry(string message, LogEntry.LogType type)
         {
             public enum LogType { Info, Error }
 
-            public DateTime Time { get; set; }
-            public string Message { get; set; }
-            public LogType Type { get; set; }
-            public Color DisplayColor { get; set; }
-            public int Count { get; set; }
-
-            public LogEntry(string message, LogType type)
-            {
-                Time = DateTime.Now;
-                Message = message;
-                Type = type;
-                DisplayColor = type == LogType.Error ? Color.Red : Color.Black;
-                Count = 1;
-            }
+            public DateTime Time { get; set; } = DateTime.Now;
+            public string Message { get; set; } = message;
+            public LogType Type { get; set; } = type;
+            public Color DisplayColor { get; set; } = type == LogType.Error ? Color.Red : Color.Black;
+            public int Count { get; set; } = 1;
         }
 
         // Inner BatteryMetrics class to store metrics data
@@ -62,7 +53,7 @@ namespace sm70_cp_450_GUI
         }
 
         // List to store battery metrics data
-        public List<BatteryMetrics> batteryData = new();
+        public List<BatteryMetrics> batteryData = [];
 
         // Method to add battery metrics
         public void CollectBatteryMetrics(double voltage, double current, double power, int soc)
@@ -78,50 +69,40 @@ namespace sm70_cp_450_GUI
             batteryData.Add(metrics);
         }
 
-        // Method to add info messages
         public void AddInfoLogMessage(string message)
         {
             AddLogMessage(message, LogEntry.LogType.Info);
         }
 
-        // Method to add error messages
         public void AddErrorLogMessage(string message)
         {
             AddLogMessage(message, LogEntry.LogType.Error);
         }
 
-        // General method to add a log message
         private void AddLogMessage(string message, LogEntry.LogType type)
         {
             var existingLog = _logEntries.FirstOrDefault(log => log.Message == message && log.Type == type);
             if (existingLog != null)
             {
-                // Update the existing log entry
                 existingLog.Count++;
                 existingLog.Time = DateTime.Now;
             }
             else
             {
-                // Add a new log entry
                 _logEntries.Add(new LogEntry(message, type));
             }
 
-            // Update the console to reflect all messages
             UpdateConsole();
         }
 
-        // Update multiline error and information messages in the console
         private void UpdateConsole()
         {
             DateTime now = DateTime.Now;
 
-            // Remove expired error logs (older than 10 seconds)
             _logEntries.RemoveAll(log => log.Type == LogEntry.LogType.Error && (now - log.Time).TotalSeconds > 10);
 
-            // Sort logs by most recent occurrence
             var sortedLogs = _logEntries.OrderByDescending(log => log.Time).ToList();
 
-            // Trigger an update to the UI with all log messages
             OnLogUpdate?.Invoke(sortedLogs);
         }
 
@@ -141,10 +122,10 @@ namespace sm70_cp_450_GUI
                     string filePath = saveFileDialog.FileName;
 
                     using StreamWriter writer = new(filePath);
-                    writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
+                    writer.WriteLine("Time,Voltage,Current,Power,SOC");
                     foreach (var data in batteryData)
                     {
-                        writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W, {data.Soc} %");  // Data rows
+                        writer.WriteLine($"{data.Time},{Math.Round(data.Voltage, 3)} V,{Math.Round(data.Current, 3)} A,{data.Power} W,{data.Soc}%");
                     }
                 }
             }
@@ -160,13 +141,14 @@ namespace sm70_cp_450_GUI
                 string filePath = Path.Combine(saveLocation, fileNameWithTime);
 
                 using StreamWriter writer = new(filePath);
-                writer.WriteLine("Time,Voltage,Current,Power");  // CSV header
+                writer.WriteLine("Time,Voltage,Current,Power,SOC");
                 foreach (var data in batteryData)
                 {
-                    writer.WriteLine($"{data.Time},{Math.Round((data.Voltage / 10000), 3)} V,{Math.Round((data.Current / 1000), 3)} A,{data.Power} W, {data.Soc} %");  // Data rows
+                    writer.WriteLine($"{data.Time},{Math.Round(data.Voltage, 3)} V,{Math.Round(data.Current, 3)} A,{data.Power} W,{data.Soc}%");
                 }
             }
         }
+
 
         public void ExportLogToFile(bool saveAs, string? saveLocation)
         {
@@ -206,7 +188,16 @@ namespace sm70_cp_450_GUI
 
         public void ExportSettings(bool saveAs, string? saveLocation)
         {
-            
+            //MainForm.Instance?._BulkVoltage
+            //MainForm.Instance?._MinimumVoltage
+            //MainForm.Instance?._Capacity
+            //MainForm.Instance?._MaxCurrent
+            //MainForm.Instance?._MinCurrent
+            //MainForm.Instance?._MaxPower
+            //MainForm.Instance?._ExpectedSoc
+            //MainForm.Instance?._TriggerPercent
+            //MainForm.Instance?._TriggerTime
+            //MainForm.Instance?._TriggerPercentValue
         }
 
         public void ImportSettings(string filename)

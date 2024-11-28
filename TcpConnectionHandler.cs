@@ -60,7 +60,6 @@ namespace sm70_cp_450_GUI
         private TcpConnectionHandler()
         {
             _logManager = LogManager.Instance;
-            // Automatically initialize on startup
             Task.Run(() => InitializeTcpClient());
         }
 
@@ -139,7 +138,6 @@ namespace sm70_cp_450_GUI
 
         private void UpdateInternalState(string query, string response)
         {
-            // Define a set of queries that expect double values.
             var numericQueries = new HashSet<string>
             {
                 "MEASure:VOLtage?",
@@ -152,7 +150,6 @@ namespace sm70_cp_450_GUI
                 "SOURce:POWer:NEGative?"
             };
 
-            // Check if the query expects a numeric value
             if (numericQueries.Contains(query))
             {
                 if (!double.TryParse(response, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsedValue))
@@ -194,7 +191,6 @@ namespace sm70_cp_450_GUI
             }
             else
             {
-                // Handle string queries that do not expect numeric values
                 switch (query)
                 {
                     case "SYSTem:REMote:CV?":

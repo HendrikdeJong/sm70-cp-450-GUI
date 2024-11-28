@@ -1,9 +1,7 @@
 using System.Diagnostics;
-using System.Text.Json;
 using static sm70_cp_450_GUI.TcpConnectionHandler;
-using static System.Windows.Forms.AxHost;
-using Timer = System.Windows.Forms.Timer;
-
+using System.ComponentModel;
+using System.Windows.Forms.DataVisualization.Charting;
 namespace sm70_cp_450_GUI
 {
     public partial class MainForm : Form
@@ -14,6 +12,7 @@ namespace sm70_cp_450_GUI
         private string? _SaveLocationCSV;
         private string? _SaveLocationLOG;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public static MainForm? Instance { get; set; }
 
         private readonly Stopwatch _stopwatch = new();
@@ -26,6 +25,7 @@ namespace sm70_cp_450_GUI
         }
 
         private SequenceSteps CurrentStep = SequenceSteps.idle;
+        private SequenceSteps lastknownstep;
 
         public bool _ConsoleState = false;
         private bool DataSet = false;
@@ -34,18 +34,25 @@ namespace sm70_cp_450_GUI
         private double _ReadCurrent;
         private double _ReadPower;
 
-        private double _BulkVoltage;
-        private double _MinimumVoltage;
-        private double _Capacity;
-        private double _MaxCurrent;
-        private double _MinCurrent;
-        private double _MaxPower;
-        private double _MinPower;
+        public double _BulkVoltage;
+        public double _MinimumVoltage;
+        public double _Capacity;
+        public double _MaxCurrent;
+        public double _MinCurrent;
+        public double _MaxPower;
+        public double _MinPower;
 
-        private double _ExpectedSoc;
-        private double _TriggerPercentValue;
-        private double _TriggerPercent;
-        private TimeSpan _TriggerTime;
+        public double _ExpectedSoc;
+        public double _TriggerPercentValue;
+        public double _TriggerPercent;
+        public TimeSpan _TriggerTime;
+
+        private double _lastRecordedVoltage = double.MinValue;
+        private double _lastRecordedCurrent = double.MinValue;
+
+        private const double VoltageThreshold = 0.1; // Change in voltage in V to be considered significant
+        private const double CurrentThreshold = 0.5; // Change in current in A to be considered significant
+
 
         public MainForm()
         {
@@ -74,6 +81,8 @@ namespace sm70_cp_450_GUI
             _SaveLocationCSV = Properties.Settings.Default.SaveLocationCSV;
             _SaveLocationLOG = Properties.Settings.Default.SaveLocationLOG;
 
+
+            InitializeFullCycleBatteryChart();
             Show();
         }
 
@@ -93,6 +102,71 @@ namespace sm70_cp_450_GUI
                 Label_Remote_CP_UI.Text = "N/A";
             }
         }
+        private void InitializeFullCycleBatteryChart()
+        {
+            liveBatteryChart.Series.Clear();
+            ChartArea chartArea = new()
+            {
+                Name = "BatteryChartArea",
+                AxisX = { Title = "Time", LabelStyle = { Format = "HH:mm:ss" } },
+                AxisY = { Title = "Voltage (V) / Current (A)" }
+            };
+            liveBatteryChart.ChartAreas.Add(chartArea);
+
+            Series voltageSeries = new()
+            {
+                Name = "Voltage",
+                ChartType = SeriesChartType.Line,
+                XValueType = ChartValueType.DateTime,
+                BorderWidth = 2,
+                Color = Color.Blue
+            };
+
+            Series currentSeries = new()
+            {
+                Name = "Current",
+                ChartType = SeriesChartType.Line,
+                XValueType = ChartValueType.DateTime,
+                BorderWidth = 2,
+                Color = Color.Green
+            };
+
+            Series cvModeSeries = new()
+            {
+                Name = "Constant Voltage Mode",
+                ChartType = SeriesChartType.Point,
+                XValueType = ChartValueType.DateTime,
+                Color = Color.Purple,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 8
+            };
+
+            Series ccModeSeries = new()
+            {
+                Name = "Constant Current Mode",
+                ChartType = SeriesChartType.Point,
+                XValueType = ChartValueType.DateTime,
+                Color = Color.Orange,
+                MarkerStyle = MarkerStyle.Triangle,
+                MarkerSize = 8
+            };
+
+            Series dischargeSeries = new()
+            {
+                Name = "Discharge Mode",
+                ChartType = SeriesChartType.Point,
+                XValueType = ChartValueType.DateTime,
+                Color = Color.Red,
+                MarkerStyle = MarkerStyle.Diamond,
+                MarkerSize = 8
+            };
+
+            liveBatteryChart.Series.Add(voltageSeries);
+            liveBatteryChart.Series.Add(currentSeries);
+            liveBatteryChart.Series.Add(cvModeSeries);
+            liveBatteryChart.Series.Add(ccModeSeries);
+            liveBatteryChart.Series.Add(dischargeSeries);
+        }
 
         public void UpdateAllUIFields()
         {
@@ -104,23 +178,51 @@ namespace sm70_cp_450_GUI
             }
             else
             {
-                // Update the UI fields with the current values from TcpConnectionHandler
                 _ReadVoltage = _tcpHandler.MeasuredVoltage;
                 _ReadCurrent = _tcpHandler.MeasuredCurrent;
                 _ReadPower = _tcpHandler.MeasuredPower;
 
+                VoltageDisplay.Text = $"{_ReadVoltage} V";
+                AmperageDisplay.Text = $"{_ReadCurrent} A";
+                WattageDisplay.Text = $"{_ReadPower} W";
                 Label_Remote_CV_UI.Text = _tcpHandler.SystemRemoteSettingVoltage;
                 Label_Remote_CC_UI.Text = _tcpHandler.SystemRemoteSettingCurrent;
                 Label_Remote_CP_UI.Text = _tcpHandler.SystemRemoteSettingPower;
 
-                VoltageDisplay.Text = $"{_ReadVoltage} V";
-                AmperageDisplay.Text = $"{_ReadCurrent} A";
-                WattageDisplay.Text = $"{_ReadPower} W";
-                Label_MachineAppliedVoltage_UI.Text = $"{_tcpHandler.SourceVoltage} V";
-                Label_MachineAppliedCurrentPlus_UI.Text = $"{_tcpHandler.SourceCurrent} A";
-                Label_MachineAppliedPowerPlus_UI.Text = $"{_tcpHandler.SourcePower} W";
-                Label_MachineAppliedCurrentMin_UI.Text = $"{_tcpHandler.SourceNegativeCurrent} A";
-                Label_MachineAppliedPowerMin_UI.Text = $"{_tcpHandler.SourceNegativePower} W";
+                _logManager?.CollectBatteryMetrics(_ReadVoltage, _ReadCurrent, _ReadPower, (int)_ExpectedSoc);
+
+                bool voltageSignificantChange = Math.Abs(_ReadVoltage - _lastRecordedVoltage) > VoltageThreshold;
+                bool currentSignificantChange = Math.Abs(_ReadCurrent - _lastRecordedCurrent) > CurrentThreshold;
+
+                if (voltageSignificantChange || currentSignificantChange)
+                {
+                    DateTime now = DateTime.Now;
+
+                    _lastRecordedVoltage = _ReadVoltage;
+                    _lastRecordedCurrent = _ReadCurrent;
+
+                    liveBatteryChart.Series["Voltage"].Points.AddXY(now, _ReadVoltage);
+                    liveBatteryChart.Series["Current"].Points.AddXY(now, _ReadCurrent);
+
+                    if (CurrentStep == SequenceSteps.Charging)
+                    {
+                        if (_ReadCurrent <= _TriggerPercentValue)
+                        {
+                            liveBatteryChart.Series["Constant Voltage Mode"].Points.AddXY(now, _ReadVoltage);
+                        }
+                        else
+                        {
+                            liveBatteryChart.Series["Constant Current Mode"].Points.AddXY(now, _ReadCurrent);
+                        }
+                    }
+                    else if (CurrentStep == SequenceSteps.Discharging)
+                    {
+                        liveBatteryChart.Series["Discharge Mode"].Points.AddXY(now, _ReadCurrent);
+                    }
+
+                    // Refresh the chart to reflect changes
+                    liveBatteryChart.Invalidate();
+                }
             }
         }
 
@@ -156,13 +258,11 @@ namespace sm70_cp_450_GUI
             else
             {
                 Console_Simple_Textbox_UI.Clear();
-
                 foreach (var logEntry in logEntries)
                 {
                     Console_Simple_Textbox_UI.SelectionColor = logEntry.DisplayColor;
-                    Console_Simple_Textbox_UI.AppendText($"{logEntry.Time:yyyy-MM-dd HH:mm:ss} - {logEntry.Message} (Count: {logEntry.Count}){Environment.NewLine}");
+                    Console_Simple_Textbox_UI.AppendText($"{logEntry.Time:HH:mm:ss} - {logEntry.Message} (Count: {logEntry.Count}){Environment.NewLine}");
                 }
-
                 Console_Simple_Textbox_UI.ScrollToCaret();
             }
         }
@@ -172,19 +272,20 @@ namespace sm70_cp_450_GUI
             if (_tcpHandler == null || _tcpHandler.ConnectionState != ConnectionStates.Established || !DataSet) return;
 
             Label_TriggerActualTime.Text = _stopwatch.Elapsed.Seconds.ToString();
+            Progressbar_TriggerTime.Value = (100 / _TriggerTime.Seconds * _stopwatch.Elapsed.Seconds);
 
             switch (CurrentStep)
             {
                 case SequenceSteps.idle:
                     SetValuesToMachine(_BulkVoltage, 2, 2, 2, 2);
-                    tabControl1.SelectedTab = Tab_IdlePage;
+                    radioButton1.Checked = true;
                     break;
                 case SequenceSteps.Charging:
-                    tabControl1.SelectedTab = Tab_ChargePage;
+                    radioButton2.Checked = true;
                     HandleCharging();
                     break;
                 case SequenceSteps.Discharging:
-                    tabControl1.SelectedTab = Tab_DischargePage;
+                    radioButton3.Checked = true;
                     HandleDischarging();
                     break;
                 default:
@@ -305,7 +406,7 @@ namespace sm70_cp_450_GUI
             }
         }
 
-        //handles (almost )every onClick action
+        //handles (almost) every onClick action
         private async void ButtonHandler(object sender, EventArgs e)
         {
             string? tag = null;
@@ -329,22 +430,18 @@ namespace sm70_cp_450_GUI
                     case "setData":
                         SaveInitialBatterySettings();
                         break;
-                    case "OpenManualForm":
-                        new ManualForm().Show();
-                        break;
-                    case "OpenSequencer":
-                        new UpdatedForm().Show();
-                        break;
                     case "Start":
                         if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
                         {
-                            CurrentStep = SequenceSteps.Charging;
+                            if (lastknownstep == SequenceSteps.idle) lastknownstep = SequenceSteps.Charging;
+                            CurrentStep = lastknownstep;
                             _commandManager?.SetOutputState(true);
                         }
                         break;
                     case "Stop":
                         if (_tcpHandler != null && _tcpHandler.ConnectionState == ConnectionStates.Established)
                         {
+                            lastknownstep = CurrentStep;
                             CurrentStep = SequenceSteps.idle;
                             _commandManager?.SetOutputState(false);
                         }
@@ -369,7 +466,7 @@ namespace sm70_cp_450_GUI
                         break;
                     case "ToggleConsole":
                         _ConsoleState = !_ConsoleState;
-                        ToggleConsole_Btn.Text = _ConsoleState ? "Open console" : "Close console";
+                        ToggleConsole_Btn.Text = _ConsoleState ? "Close console" : "Open console";
                         ConsoleBox.Height = _ConsoleState ? ConsoleBox.MaximumSize.Height : ConsoleBox.MinimumSize.Height;
                         Console_Simple_Textbox_UI.Visible = _ConsoleState;
                         break;
